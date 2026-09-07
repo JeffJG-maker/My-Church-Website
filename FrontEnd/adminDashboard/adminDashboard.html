@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Church Admin Dashboard</title>
+
+    <link rel="stylesheet" href="../fontAwesome/fontawesome-free-6.7.2-web/css/all.min.css">
+
+    <link rel="stylesheet" href="adminDashboard.css">
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+
+                <div class="admin-logo">
+                    <i class="fas fa-church"></i>
+                </div>
+
+                <div>
+                    <h2>Church Admin</h2>
+                    <span>Admin Panel</span>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-navigation">
+
+                <div class="nav-section">
+
+                    <span class="nav-section-title">MAIN</span>
+
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                </div>
+
+
+                <div class="nav-section">
+
+                    <span class="nav-section-title">MANAGE</span>
+
+                    <a href="adminSermons.html" class="nav-link">
+                        <i class="fas fa-book-open"></i>
+                        <span>Sermons</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Categories</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Events</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-photo-video"></i>
+                        <span>Media</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="far fa-comment-alt"></i>
+                        <span>Messages</span>
+                    </a>
+
+                </div>
+
+
+                <div class="nav-section">
+
+                    <span class="nav-section-title">SYSTEM</span>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+
+                </div>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <div class="admin-profile-mini">
+
+                    <div class="profile-avatar">
+                        A
+                    </div>
+
+                    <div>
+                        <strong>Administrator</strong>
+                        <span>Super Admin</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN AREA
+        ========================== -->
+
+        <div class="main-area">
+
+
+            <!-- =========================
+                 TOP HEADER
+            ========================== -->
+
+            <header class="dashboard-header">
+
+                <div class="header-left">
+
+                    <button class="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    <div>
+
+                        <h1>Welcome back, Admin! 👋</h1>
+
+                        <p>
+                            Here's what's happening with your church today.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="header-right">
+
+                    <div class="search-box">
+
+                        <i class="fas fa-search"></i>
+
+                        <input type="text" placeholder="Search anything...">
+
+                    </div>
+
+
+                    <button class="header-icon">
+                        <i class="far fa-bell"></i>
+                        <span class="notification-number">3</span>
+                    </button>
+
+
+                    <button class="header-icon">
+                        <i class="far fa-envelope"></i>
+                        <span class="notification-number">2</span>
+                    </button>
+
+
+                    <div class="admin-account">
+
+                        <div class="account-avatar">
+                            A
+                        </div>
+
+                        <div class="account-info">
+
+                            <strong>Admin</strong>
+                            <span>Super Admin</span>
+
+                        </div>
+
+                        <i class="fas fa-chevron-down"></i>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 DASHBOARD CONTENT
+            ========================== -->
+
+            <main class="dashboard-content">
+
+
+                <div class="page-heading">
+
+                    <div>
+                        <h2>Dashboard</h2>
+                        <p>Overview of your church platform.</p>
+                    </div>
+
+                    <button class="date-filter">
+                        <i class="far fa-calendar-alt"></i>
+                        This Month
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                </div>
+
+
+                <!-- =========================
+                     STATISTICS
+                ========================== -->
+
+                <section class="statistics-grid">
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon sermons-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+
+                        <div class="stat-information">
+
+                            <span>Total Sermons</span>
+
+                            <h3>128</h3>
+
+                            <p class="growth">
+                                <i class="fas fa-arrow-up"></i>
+                                12% from last month
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon views-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+
+                        <div class="stat-information">
+
+                            <span>Total Views</span>
+
+                            <h3>24.5K</h3>
+
+                            <p class="growth">
+                                <i class="fas fa-arrow-up"></i>
+                                18% from last month
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon users-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+
+                        <div class="stat-information">
+
+                            <span>Total Users</span>
+
+                            <h3>1,842</h3>
+
+                            <p class="growth">
+                                <i class="fas fa-arrow-up"></i>
+                                8% from last month
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon events-icon">
+                            <i class="far fa-calendar-alt"></i>
+                        </div>
+
+                        <div class="stat-information">
+
+                            <span>Upcoming Events</span>
+
+                            <h3>6</h3>
+
+                            <p class="growth">
+                                <i class="fas fa-arrow-up"></i>
+                                2 new events
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="stat-card">
+
+                        <div class="stat-icon messages-icon">
+                            <i class="far fa-comment-alt"></i>
+                        </div>
+
+                        <div class="stat-information">
+
+                            <span>Total Messages</span>
+
+                            <h3>256</h3>
+
+                            <p class="growth">
+                                <i class="fas fa-arrow-up"></i>
+                                15% from last month
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                </section>
+
+
+                <!-- =========================
+                     MIDDLE SECTION
+                ========================== -->
+
+                <section class="dashboard-grid">
+
+
+                    <!-- VIEWS CHART -->
+
+                    <article class="dashboard-card views-card">
+
+                        <div class="card-heading">
+
+                            <div>
+                                <h3>Views Overview</h3>
+                                <span>Sermon views over time</span>
+                            </div>
+
+                            <button class="small-filter">
+                                This Month
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="chart">
+
+                            <div class="chart-y-axis">
+
+                                <span>8K</span>
+                                <span>6K</span>
+                                <span>4K</span>
+                                <span>2K</span>
+                                <span>0</span>
+
+                            </div>
+
+
+                            <div class="chart-area">
+
+                                <div class="chart-lines">
+
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+
+                                </div>
+
+
+                                <svg class="chart-line" viewBox="0 0 700 250" preserveAspectRatio="none">
+
+                                    <polyline
+                                        points="0,180 40,145 80,160 120,120 160,180 200,145 240,75 280,105 320,85 360,130 400,195 440,140 480,125 520,150 560,95 600,105 640,60 700,25" />
+
+                                </svg>
+
+
+                                <div class="chart-x-axis">
+
+                                    <span>May 20</span>
+                                    <span>May 27</span>
+                                    <span>Jun 3</span>
+                                    <span>Jun 10</span>
+                                    <span>Jun 17</span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- TOP SERMONS -->
+
+                    <article class="dashboard-card">
+
+                        <div class="card-heading">
+
+                            <h3>Top Sermons</h3>
+
+                            <a href="#">View All</a>
+
+                        </div>
+
+
+                        <div class="top-sermons-list">
+
+
+                            <div class="top-sermon">
+
+                                <span class="sermon-rank">1</span>
+
+                                <img src="media/Walking By Faith Thumbnail.jpg" alt="">
+
+                                <div class="sermon-name">
+
+                                    <strong>
+                                        Walking By Faith
+                                    </strong>
+
+                                    <span>Pastor Tobore</span>
+
+                                </div>
+
+                                <b>4.6K</b>
+
+                            </div>
+
+
+                            <div class="top-sermon">
+
+                                <span class="sermon-rank">2</span>
+
+                                <img src="media/The Power of Prayer Thumbnail.jpg" alt="">
+
+                                <div class="sermon-name">
+
+                                    <strong>
+                                        The Power of Prayer
+                                    </strong>
+
+                                    <span>Pastor Tobore</span>
+
+                                </div>
+
+                                <b>3.2K</b>
+
+                            </div>
+
+
+                            <div class="top-sermon">
+
+                                <span class="sermon-rank">3</span>
+
+                                <img src="media/Living a Life of Purpose Thumbnail.jpg" alt="">
+
+                                <div class="sermon-name">
+
+                                    <strong>
+                                        Living a Life of Purpose
+                                    </strong>
+
+                                    <span>Pastor Paul</span>
+
+                                </div>
+
+                                <b>2.8K</b>
+
+                            </div>
+
+
+                            <div class="top-sermon">
+
+                                <span class="sermon-rank">4</span>
+
+                                <img src="media/The Power of Consecration Thumbnail.jpg" alt="">
+
+                                <div class="sermon-name">
+
+                                    <strong>
+                                        The Power of Consecration
+                                    </strong>
+
+                                    <span>Pastor Paul</span>
+
+                                </div>
+
+                                <b>2.1K</b>
+
+                            </div>
+
+
+                            <div class="top-sermon">
+
+                                <span class="sermon-rank">5</span>
+
+                                <img src="media/Purity Thumbnail.jpg" alt="">
+
+                                <div class="sermon-name">
+
+                                    <strong>
+                                        Purity
+                                    </strong>
+
+                                    <span>Pastor Tobore</span>
+
+                                </div>
+
+                                <b>1.9K</b>
+
+                            </div>
+
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- RECENT ACTIVITY -->
+
+                    <article class="dashboard-card">
+
+                        <div class="card-heading">
+
+                            <h3>Recent Activity</h3>
+
+                            <a href="#">View All</a>
+
+                        </div>
+
+
+                        <div class="activity-list">
+
+
+                            <div class="activity-item">
+
+                                <div class="activity-icon sermon-activity">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+
+                                <div>
+                                    <strong>New sermon added</strong>
+                                    <p>"The Power of Prayer" was added</p>
+                                </div>
+
+                                <span>2m</span>
+
+                            </div>
+
+
+                            <div class="activity-item">
+
+                                <div class="activity-icon user-activity">
+                                    <i class="fas fa-user"></i>
+                                </div>
+
+                                <div>
+                                    <strong>New user registered</strong>
+                                    <p>A new member joined</p>
+                                </div>
+
+                                <span>12m</span>
+
+                            </div>
+
+
+                            <div class="activity-item">
+
+                                <div class="activity-icon message-activity">
+                                    <i class="far fa-comment"></i>
+                                </div>
+
+                                <div>
+                                    <strong>New message</strong>
+                                    <p>A visitor sent a message</p>
+                                </div>
+
+                                <span>25m</span>
+
+                            </div>
+
+
+                            <div class="activity-item">
+
+                                <div class="activity-icon update-activity">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+
+                                <div>
+                                    <strong>Sermon updated</strong>
+                                    <p>"Living a Life of Purpose"</p>
+                                </div>
+
+                                <span>1h</span>
+
+                            </div>
+
+
+                        </div>
+
+                    </article>
+
+
+                </section>
+
+
+                <!-- =========================
+                     BOTTOM SECTION
+                ========================== -->
+
+                <section class="dashboard-grid bottom-grid">
+
+
+                    <!-- CATEGORIES -->
+
+                    <article class="dashboard-card category-card">
+
+                        <div class="card-heading">
+
+                            <h3>Sermons by Category</h3>
+
+                        </div>
+
+
+                        <div class="category-content">
+
+                            <div class="donut-chart">
+                                <div></div>
+                            </div>
+
+
+                            <div class="category-list">
+
+                                <div>
+                                    <span>
+                                        <i></i>
+                                        Faith
+                                    </span>
+                                    <b>35%</b>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        <i></i>
+                                        Prayer
+                                    </span>
+                                    <b>25%</b>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        <i></i>
+                                        Teaching
+                                    </span>
+                                    <b>20%</b>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        <i></i>
+                                        Worship
+                                    </span>
+                                    <b>10%</b>
+                                </div>
+
+                                <div>
+                                    <span>
+                                        <i></i>
+                                        Others
+                                    </span>
+                                    <b>10%</b>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- UPCOMING EVENTS -->
+
+                    <article class="dashboard-card">
+
+                        <div class="card-heading">
+
+                            <h3>Upcoming Events</h3>
+
+                            <a href="#">View All</a>
+
+                        </div>
+
+
+                        <div class="event-list">
+
+
+                            <div class="dashboard-event">
+
+                                <div class="event-date">
+
+                                    <span>JUN</span>
+                                    <strong>25</strong>
+
+                                </div>
+
+                                <div class="event-information">
+
+                                    <strong>Sunday Worship Service</strong>
+
+                                    <span>
+                                        June 25, 2026 · 9:00 AM
+                                    </span>
+
+                                </div>
+
+                                <small>Upcoming</small>
+
+                            </div>
+
+
+                            <div class="dashboard-event">
+
+                                <div class="event-date">
+
+                                    <span>JUN</span>
+                                    <strong>30</strong>
+
+                                </div>
+
+                                <div class="event-information">
+
+                                    <strong>Youth Conference</strong>
+
+                                    <span>
+                                        June 30, 2026 · 10:00 AM
+                                    </span>
+
+                                </div>
+
+                                <small>Upcoming</small>
+
+                            </div>
+
+
+                            <div class="dashboard-event">
+
+                                <div class="event-date">
+
+                                    <span>JUL</span>
+                                    <strong>07</strong>
+
+                                </div>
+
+                                <div class="event-information">
+
+                                    <strong>Prayer & Fasting</strong>
+
+                                    <span>
+                                        July 7, 2026 · 6:00 AM
+                                    </span>
+
+                                </div>
+
+                                <small>Upcoming</small>
+
+                            </div>
+
+
+                        </div>
+
+                    </article>
+
+
+                    <!-- SYSTEM OVERVIEW -->
+
+                    <article class="dashboard-card">
+
+                        <div class="card-heading">
+
+                            <h3>System Overview</h3>
+
+                        </div>
+
+
+                        <div class="system-list">
+
+
+                            <div class="system-item">
+
+                                <div class="system-title">
+
+                                    <span>
+                                        <i class="fas fa-database"></i>
+                                        Database
+                                    </span>
+
+                                    <b>Healthy</b>
+
+                                </div>
+
+                                <div class="progress">
+                                    <span style="width: 35%;"></span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="system-item">
+
+                                <div class="system-title">
+
+                                    <span>
+                                        <i class="fas fa-cloud"></i>
+                                        Storage
+                                    </span>
+
+                                    <b>45%</b>
+
+                                </div>
+
+                                <div class="progress">
+                                    <span style="width: 45%;"></span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="system-item">
+
+                                <div class="system-title">
+
+                                    <span>
+                                        <i class="fas fa-users"></i>
+                                        Active Users
+                                    </span>
+
+                                    <b>1,842</b>
+
+                                </div>
+
+                                <div class="progress">
+                                    <span style="width: 60%;"></span>
+                                </div>
+
+                            </div>
+
+
+                            <div class="system-item">
+
+                                <div class="system-title">
+
+                                    <span>
+                                        <i class="fas fa-server"></i>
+                                        Server Usage
+                                    </span>
+
+                                    <b>35%</b>
+
+                                </div>
+
+                                <div class="progress">
+                                    <span style="width: 35%;"></span>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </article>
+
+                </section>
+
+            </main>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

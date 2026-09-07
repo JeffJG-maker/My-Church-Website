@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LFC Sermons</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="fontAwesome/fontawesome-free-6.7.2-web/css/all.min.css">
+    <link rel="stylesheet" href="All Sermons.css">
+    <script src="AllSermons.js" defer></script>
+</head>
+
+<body>
+    <div class="display-screen-heading">
+        <div class="brand-area">
+            <button id="back-btn" title="Return to Home Page">
+                <a href="../LandingHomePage/index.html">
+                    <i class="fas fa-home"></i>
+                </a>
+            </button>
+            <div class="ham-menu" title="Navigate Pages">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <img src="../media/Big Winnersogo.png" alt="" height="25" width="35">
+        </div>
+        <div class="search-field-area">
+            <div id="search-container">
+                <div class="search-find-sermon">
+                    <input type="search" id="input-search" placeholder="search">
+                    <button type="submit" id="submit-button"><i class="fas fa-search"
+                            style="color: white;"></i></button>
+                </div>
+                <div class="search-suggestions"></div>
+            </div>
+        </div>
+        <i class="far fa-bell"></i>
+    </div>
+
+    <div class="screen-output">
+        <nav>
+            <div class="change-theme-background">
+                <span id="theme-heading">Change Theme Color</span>
+                <div class="theme-colors-list in-active"> 
+                    <button data-theme="dark">Dark Theme</button>
+                    <button data-theme="light">White Theme</button>
+                </div>
+            </div>
+            <div class="navigation-page-links">
+                <a href="index.html">
+                    <i class="fas fa-home"></i>
+                    <p>Home</p>
+                </a>
+                <a href="aboutUs.html">
+                    <i class="fas fa-place-of-worship"></i>
+                    <p>About-Us</p>
+                </a>
+                <a href="Get in Touch.html">
+                    <i class="fas fa-phone"></i>
+                    <p>Contact-Us</p>
+                </a>
+
+            </div>
+
+            <div>
+                <button id="download-btn">
+                    <i class="fas fa-download"></i>
+                    <p>Downloads</p>
+                </button>
+            </div>
+            <div class="sign-out-area">
+                <a href="loginPage.html">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <p>Sign-out</p>
+                </a>
+            </div>
+        </nav>
+        <div class="error-message hidden">
+            <h2>Something went wrong</h2>
+            <p>We couldn't load the sermons.</p>
+            <button id="retry-btn">Try Again</button>
+        </div>
+        <div class="bodyCon">
+            <div class="sermon-categories">
+                <button class="slide-button previous-category">&LeftAngleBracket;</button>
+                <button class="slide-button next-category">&RightAngleBracket;</button>
+                <div class="category-list"></div>
+                <div class="thin-color-layer-one"></div>
+                <div class="thin-color-layer-two"></div>
+            </div>
+            <main>
+                <div class="top-media-sec">
+                    <h1>SERMONS</h1>
+                    <div class="sort-by">
+                        <label for="media-type">Sort by:</label>
+                        <select id="media-type">
+                            <option value="video">Video</option>
+                            <option value="audio">Audio</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="category-sermon-results"></div>
+
+
+                <div class="theAudios">
+                    <div class="audio-con">
+
+                        <div>
+                            <div class="img-audio">
+                                <img src="media/Winners Logo.png" alt="">
+                                <div>
+                                    <p>Gospelminds</p>
+                                    <p>GospelMinds-Nations Are Waiting(Minister Lawrence)feat. <span>El' Grace</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <audio src="audiofile/My-Heart-Will-Trust-Darlene-Zschech.mp3" controls></audio>
+                        </div>
+
+                        <div>
+                            <div class="img-audio">
+                                <img src="media/Winners Logo.png" alt="">
+                                <div>
+                                    <p>Gospelminds</p>
+                                    <p>GospelMinds-Nations Are Waiting(Minister Lawrence)feat. <span>El' Grace</span>
+                                    </p>
+                                </div>
+                            </div>
+                            <audio src="audiofile/My-Heart-Will-Trust-Darlene-Zschech.mp3" controls></audio>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="theVideos">
+                    <div class="video-con">
+                        <!-- THE VIDEO CARDS -->
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="media-displayer-screen">
+            <div class="video-display">
+                <!-- THE VIDEO DISPLAY LEFT FRACTION -->
+                <section id="display-section">
+                    <div class="video-player">
+                        <!-- <video src="" controls autoplay id="current-video" download></video> -->
+                    </div>
+
+                    <div>
+                        <div class="titling-area">
+                            <div>
+                                <h2 id="title" style="font-size: clamp(1.2em, 2vw, 1.4em);"><!-- title -->Faith Grows
+                                </h2>
+                                <p id="minister-name"><!-- speaker --><strong>speaker:</strong> Pastor Tobore Friday</p>
+                            </div>
+                            <button id="subscribe-btn" class="subscribe-btn">subscribe</button>
+                        </div>
+                        <div class="download-buttons">
+                            <button>
+                                <i class="fas fa-download"></i>
+                                <span>Download Audio (MP3)</span></button>
+                            <a id="download-video">
+                                <button>
+                                    <i class="fas fa-download"></i>
+                                    <span>Download Video (MP4)</span>
+                                </button>
+                            </a>
+                            <button>
+                                <span><i class="fas fa-share"></i> Share</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <article class="video-description">
+
+                    </article>
+                </section>
+                <!-- THE VIDEO LIST RIGHT -->
+                <aside>
+                    <div class="the-video-list">
+                        <!-- <div class="sermon-categories">
+                            <button id="all-sermons">All</button>
+                            <button id="latest-sermons">latest sermons</button>
+                            <button id="prayer-sermons">Prayer sermons</button>
+                        </div> -->
+                        <div class="video-containing-cards">
+                            <!-- THE VIDEO CARDS -->
+                        </div>
+                    </div>
+                </aside>
+            </div>
+
+            <div class="audio-display">
+                <section>
+
+                </section>
+                <aside>
+
+                </aside>
+            </div>
+
+        </div>
+        <div class="load-container">
+            <div class="loader"></div>
+        </div>
+    </div>
+
+
+    <!-- <script src="AllSermons.js"></script> -->
+</body>
+
+</html>

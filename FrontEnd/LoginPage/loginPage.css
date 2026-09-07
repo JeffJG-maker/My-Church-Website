@@ -1,0 +1,153 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: tahoma;
+}
+
+body{
+    /* background-image: url("media/formBackgroundImage.png"); */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+main{
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+    box-shadow: 2px 0 5rem #929090;
+    height: min-content;
+    min-height: 70vh;
+}
+
+.login{
+    background-color: #080836;
+    color: white;
+    width: 50%;
+    text-align: center;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.welcome-first{
+    display: none;
+}
+
+
+form{
+    width: 60%;
+}
+
+.login h2{
+    margin-bottom: 1.5rem;
+}
+
+h2{
+    margin: 1.5rem ;
+}
+
+input{
+    width: 100%;
+    padding: 0.5rem 0;
+    margin: 1rem 0;
+    background-color: transparent;
+    border: none;
+    border-bottom:2px solid #d1d1d1;
+    outline: none;
+    color:#d1d1d1
+}
+
+input::placeholder{
+    color: #d1d1d1;
+}
+
+input:focus{
+    border-color:#bd9d73;
+}
+
+section{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2.5em 0;
+    gap: 1.5em;
+    justify-content: center;
+}
+
+section a:first-child{
+    padding: 0.7rem 1.7rem;
+    border-radius: 1em;
+    font-size: 1rem;
+    border:1px solid white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+section a:first-child:hover{
+    transform:scale(0.99);
+    transition: transform 0.7s;
+    background:linear-gradient(#202046) ;
+    box-shadow: none;
+    color: white;
+}
+
+
+a{
+    color:white;
+}
+
+.welcome{
+    width: 50%;
+    background-color: white;
+    color: #090947;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+i{
+    font-size: 7rem;
+}
+
+span{
+    font-size: 3em;
+}
+
+@media (max-width: 600px) {
+    body{
+        height: min-content;
+    }
+    main{
+        flex-direction: column;
+        width: 100%;   
+    }
+
+    .login{
+        width: 100%;
+        padding: 4em 0;
+        font-size: clamp(0.7em, 1vw, 1em);
+        height: 100vh;
+    }
+
+    .welcome-first{
+        display: block;
+    }
+    .welcome-first i{
+        font-size: 8em;
+    }
+    .welcome{
+        display: none;
+    }
+
+    section{
+        flex-flow: wrap;
+    }
+}

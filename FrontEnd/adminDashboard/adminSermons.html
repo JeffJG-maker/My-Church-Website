@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Sermons</title>
+
+    <link rel="stylesheet" href="../fontAwesome/fontawesome-free-6.7.2-web/css/all.min.css">
+
+    <link rel="stylesheet" href="adminSermons.css">
+    <script src="adminSermons.js" defer></script>
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+
+                <div class="admin-logo">
+                    <i class="fas fa-church"></i>
+                </div>
+
+                <div>
+                    <h2>Church Admin</h2>
+                    <span>Admin Panel</span>
+                </div>
+
+            </div>
+
+
+            <nav class="sidebar-navigation">
+
+                <div class="nav-section">
+
+                    <span class="nav-section-title">MAIN</span>
+
+                    <a href="adminDashboard.html" class="nav-link">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Dashboard</span>
+                    </a>
+
+                </div>
+
+
+                <div class="nav-section">
+
+                    <span class="nav-section-title">MANAGE</span>
+
+                    <a href="adminSermons.html" class="nav-link active">
+                        <i class="fas fa-book-open"></i>
+                        <span>Sermons</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Categories</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="far fa-calendar-alt"></i>
+                        <span>Events</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-photo-video"></i>
+                        <span>Media</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="far fa-comment-alt"></i>
+                        <span>Messages</span>
+                    </a>
+
+                </div>
+
+
+                <div class="nav-section">
+
+                    <span class="nav-section-title">SYSTEM</span>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+
+                </div>
+
+            </nav>
+
+
+            <div class="sidebar-bottom">
+
+                <div class="admin-profile-mini">
+
+                    <div class="profile-avatar">
+                        A
+                    </div>
+
+                    <div>
+                        <strong>Administrator</strong>
+                        <span>Super Admin</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN AREA
+        ========================== -->
+
+        <div class="main-area">
+
+
+            <!-- HEADER -->
+
+            <header class="dashboard-header">
+
+                <div class="header-left">
+
+                    <button class="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    <div>
+
+                        <h1>Welcome back, Admin! 👋</h1>
+
+                        <p>
+                            Manage your church sermons from here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="header-right">
+
+                    <div class="search-box">
+
+                        <i class="fas fa-search"></i>
+
+                        <input type="text" placeholder="Search anything...">
+
+                    </div>
+
+
+                    <button class="header-icon">
+
+                        <i class="far fa-bell"></i>
+
+                        <span class="notification-number">
+                            3
+                        </span>
+
+                    </button>
+
+
+                    <button class="header-icon">
+
+                        <i class="far fa-envelope"></i>
+
+                        <span class="notification-number">
+                            2
+                        </span>
+
+                    </button>
+
+
+                    <div class="admin-account">
+
+                        <div class="account-avatar">
+                            A
+                        </div>
+
+                        <div class="account-info">
+
+                            <strong>Admin</strong>
+                            <span>Super Admin</span>
+
+                        </div>
+
+                        <i class="fas fa-chevron-down"></i>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 SERMON CONTENT
+            ========================== -->
+
+            <main class="dashboard-content">
+
+
+                <!-- PAGE HEADING -->
+
+                <div class="page-heading">
+
+                    <div>
+
+                        <h2>Sermons</h2>
+
+                        <p>
+                            Manage, update and organize your sermons.
+                        </p>
+
+                    </div>
+
+
+                    <button class="add-sermon-btn">
+
+                        <i class="fas fa-plus"></i>
+
+                        Add New Sermon
+
+                    </button>
+
+                </div>
+
+
+                <!-- =========================
+                     SERMON SUMMARY
+                ========================== -->
+
+                <section class="sermon-summary">
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+
+                        <div>
+
+                            <span>Total Sermons</span>
+
+                            <h3>128</h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+
+                        <div>
+
+                            <span>Categories</span>
+
+                            <h3>8</h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="summary-card">
+
+                        <div class="summary-icon">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+
+                        <div>
+
+                            <span>Total Views</span>
+
+                            <h3>24.5K</h3>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- =========================
+                     SERMON TOOLBAR
+                ========================== -->
+
+                <section class="sermon-toolbar">
+
+                    <div class="sermon-search">
+
+                        <i class="fas fa-search"></i>
+
+                        <input type="text" id="sermon-search" placeholder="Search sermons...">
+
+                    </div>
+
+
+                    <select id="category-filter">
+
+                        <option value="all">
+                            All Categories
+                        </option>
+
+                        <option value="faith">
+                            Faith
+                        </option>
+
+                        <option value="prayer">
+                            Prayer
+                        </option>
+
+                        <option value="teaching">
+                            Teaching
+                        </option>
+
+                        <option value="worship">
+                            Worship
+                        </option>
+
+                    </select>
+
+
+                    <select id="speaker-filter">
+
+                        <option value="all">
+                            All Speakers
+                        </option>
+
+                        <option value="Pastor Tobore">
+                            Pastor Tobore
+                        </option>
+
+                        <option value="Pastor Paul">
+                            Pastor Paul
+                        </option>
+
+                    </select>
+
+                </section>
+
+
+                <!-- =========================
+                     SERMON TABLE
+                ========================== -->
+                <div class="table-header">
+
+                    <div>
+
+                        <h3>All Sermons</h3>
+
+                        <span>
+                            Showing your available sermons
+                        </span>
+
+                    </div>
+
+                    <button class="refresh-btn">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+
+                </div>
+
+                <section class="sermon-table-card">
+
+
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Sermon</th>
+
+                                    <th>Speaker</th>
+
+                                    <th>Category</th>
+
+                                    <th>Date</th>
+
+                                    <th>Duration</th>
+
+                                    <th>Actions</th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="sermon-table-body">
+
+
+                                <!-- SERMON 1 -->
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="sermon-table-info">
+
+                                            <img src="media/Walking By Faith Thumbnail.jpg" alt="">
+
+                                            <div>
+
+                                                <strong>
+                                                    Walking By Faith
+                                                </strong>
+
+                                                <span>
+                                                    ID: 1
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+                                        Pastor Tobore
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="category-badge">
+                                            Faith
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+                                        July 12, 2026
+                                    </td>
+
+
+                                    <td>
+                                        45:00
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="action-buttons">
+
+                                            <button class="view-btn" title="View">
+
+                                                <i class="far fa-eye"></i>
+
+                                            </button>
+
+
+                                            <button class="edit-btn" title="Edit">
+
+                                                <i class="fas fa-edit"></i>
+
+                                            </button>
+
+
+                                            <button class="delete-btn" title="Delete">
+
+                                                <i class="fas fa-trash"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+
+                                <!-- SERMON 2 -->
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="sermon-table-info">
+
+                                            <img src="media/Living a Life of Purpose Thumbnail.jpg" alt="">
+
+                                            <div>
+
+                                                <strong>
+                                                    Living a Life of Purpose
+                                                </strong>
+
+                                                <span>
+                                                    ID: 2
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+                                        Pastor Paul
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="category-badge teaching">
+                                            Teaching
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+                                        August 12, 2026
+                                    </td>
+
+
+                                    <td>
+                                        48:10
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="action-buttons">
+
+                                            <button class="view-btn" title="View">
+
+                                                <i class="far fa-eye"></i>
+
+                                            </button>
+
+
+                                            <button class="edit-btn" title="Edit">
+
+                                                <i class="fas fa-edit"></i>
+
+                                            </button>
+
+
+                                            <button class="delete-btn" title="Delete">
+
+                                                <i class="fas fa-trash"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    <!-- =========================
+                         PAGINATION
+                    ========================== -->
+
+                    <div class="pagination">
+
+                        <span>
+                            Showing 1–3 of 128 sermons
+                        </span>
+
+
+                        <div class="pagination-buttons">
+
+                            <button disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+
+                            <button class="current-page">
+                                1
+                            </button>
+
+                            <button>
+                                2
+                            </button>
+
+                            <button>
+                                3
+                            </button>
+
+                            <span>...</span>
+
+                            <button>
+                                43
+                            </button>
+
+                            <button>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <!-- =========================
+     ADD SERMON MODAL
+========================== -->
+
+    <dialog id="add-sermon-modal" class="sermon-modal">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Add New Sermon</h2>
+                <p>Add a new sermon to your church library.</p>
+            </div>
+
+            <button type="button" class="close-modal-btn" id="close-add-sermon">
+
+                <i class="fas fa-times"></i>
+
+            </button>
+
+        </div>
+
+
+        <form id="add-sermon-form">
+
+            <!-- SERMON TITLE -->
+
+            <div class="form-group">
+
+                <label for="sermon-title">
+                    Sermon Title
+                </label>
+
+                <input type="text" id="sermon-title" name="title" placeholder="Enter sermon title" required>
+
+            </div>
+
+
+            <!-- SPEAKER + CATEGORY -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="sermon-speaker">
+                        Speaker
+                    </label>
+
+                    <input type="text" id="sermon-speaker" name="speaker" placeholder="e.g. Pastor Tobore" required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="sermon-category">
+                        Category
+                    </label>
+
+                    <select id="sermon-category" name="category" required>
+
+                        <option value="">
+                            Select category
+                        </option>
+
+                        <option value="Faith">
+                            Faith
+                        </option>
+
+                        <option value="Prayer">
+                            Prayer
+                        </option>
+
+                        <option value="Teaching">
+                            Teaching
+                        </option>
+
+                        <option value="Worship">
+                            Worship
+                        </option>
+
+                        <option value="Praise">
+                            Praise
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- DATE + DURATION -->
+
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="sermon-date">
+                        Sermon Date
+                    </label>
+
+                    <input type="date" id="sermon-date" name="date" required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="sermon-duration">
+                        Duration
+                    </label>
+
+                    <input type="text" id="sermon-duration" name="duration" placeholder="e.g. 45:00" required>
+
+                </div>
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="form-group">
+
+                <label for="sermon-description">
+                    Description
+                </label>
+
+                <textarea id="sermon-description" name="description" rows="5"
+                    placeholder="Write a short description of the sermon..." required></textarea>
+
+            </div>
+
+
+            <!-- THUMBNAIL -->
+
+            <div class="form-group">
+
+                <label for="sermon-thumbnail">
+                    Thumbnail
+                </label>
+
+                <div class="file-input">
+
+                    <i class="fas fa-image"></i>
+
+                    <div>
+
+                        <strong>
+                            Choose sermon thumbnail
+                        </strong>
+
+                        <span>
+                            JPG, PNG or WEBP
+                        </span>
+
+                    </div>
+
+                    <input type="file" id="sermon-thumbnail" name="thumbnail" accept="image/*">
+
+                </div>
+
+            </div>
+
+
+            <!-- VIDEO -->
+
+            <div class="form-group">
+
+                <label for="sermon-video">
+                    Sermon Video
+                </label>
+
+                <div class="file-input">
+
+                    <i class="fas fa-video"></i>
+
+                    <div>
+
+                        <strong>
+                            Choose sermon video
+                        </strong>
+
+                        <span>
+                            MP4, WebM or MOV
+                        </span>
+
+                    </div>
+
+                    <input type="file" id="sermon-video" name="video" accept="video/*">
+
+                </div>
+
+            </div>
+
+
+            <!-- FORM ACTIONS -->
+
+            <div class="modal-actions">
+
+                <button type="reset" class="cancel-btn" id="cancel-add-sermon">
+
+                    Cancel
+
+                </button>
+
+
+                <button type="submit" class="save-sermon-btn">
+
+                    <i class="fas fa-plus"></i>
+
+                    Add Sermon
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+    <dialog id="edit-sermon-modal" class="sermon-modal">
+
+        <div class="modal-header">
+            <div>
+                <h2>Edit Sermon</h2>
+                <p>Update the sermon information.</p>
+            </div>
+
+            <button type="button" class="close-modal-btn" id="close-edit-sermon">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="edit-sermon-form">
+
+            <div class="form-group">
+                <label for="edit-sermon-title">Sermon Title</label>
+                <input type="text" id="edit-sermon-title" name="title" required>
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="edit-sermon-speaker">Speaker</label>
+                    <input type="text" id="edit-sermon-speaker" name="speaker" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-sermon-category">Category</label>
+
+                    <select id="edit-sermon-category" name="category" required>
+
+                        <option value="">Select category</option>
+                        <option value="Faith">Faith</option>
+                        <option value="Prayer">Prayer</option>
+                        <option value="Teaching">Teaching</option>
+                        <option value="Worship">Worship</option>
+                        <option value="Praise">Praise</option>
+
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="edit-sermon-date">Sermon Date</label>
+
+                    <input type="date" id="edit-sermon-date" name="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-sermon-duration">Duration</label>
+
+                    <input type="text" id="edit-sermon-duration" name="duration" required>
+                </div>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="edit-sermon-description">
+                    Description
+                </label>
+
+                <textarea id="edit-sermon-description" name="description" rows="5" required></textarea>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button type="button" class="cancel-btn" id="cancel-edit-sermon">
+                    Cancel
+                </button>
+
+                <button type="submit" class="save-sermon-btn">
+
+                    <i class="fas fa-save"></i>
+                    Save Changes
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+</body>
+
+</html>
