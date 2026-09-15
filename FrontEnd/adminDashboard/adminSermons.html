@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../fontAwesome/fontawesome-free-6.7.2-web/css/all.min.css">
 
     <link rel="stylesheet" href="adminSermons.css">
-    <script src="adminSermons.js" defer></script>
+    <script src="adminSermons.js" type="module" defer></script>
 </head>
 
 <body>
@@ -157,57 +157,6 @@
                 </div>
 
 
-                <div class="header-right">
-
-                    <div class="search-box">
-
-                        <i class="fas fa-search"></i>
-
-                        <input type="text" placeholder="Search anything...">
-
-                    </div>
-
-
-                    <button class="header-icon">
-
-                        <i class="far fa-bell"></i>
-
-                        <span class="notification-number">
-                            3
-                        </span>
-
-                    </button>
-
-
-                    <button class="header-icon">
-
-                        <i class="far fa-envelope"></i>
-
-                        <span class="notification-number">
-                            2
-                        </span>
-
-                    </button>
-
-
-                    <div class="admin-account">
-
-                        <div class="account-avatar">
-                            A
-                        </div>
-
-                        <div class="account-info">
-
-                            <strong>Admin</strong>
-                            <span>Super Admin</span>
-
-                        </div>
-
-                        <i class="fas fa-chevron-down"></i>
-
-                    </div>
-
-                </div>
 
             </header>
 
@@ -233,15 +182,6 @@
 
                     </div>
 
-
-                    <button class="add-sermon-btn">
-
-                        <i class="fas fa-plus"></i>
-
-                        Add New Sermon
-
-                    </button>
-
                 </div>
 
 
@@ -251,7 +191,7 @@
 
                 <section class="sermon-summary">
 
-                    <div class="summary-card">
+                    <div class="summary-card" id="major-total-sermons">
 
                         <div class="summary-icon">
                             <i class="fas fa-book-open"></i>
@@ -268,7 +208,7 @@
                     </div>
 
 
-                    <div class="summary-card">
+                    <div class="summary-card" id="total-sermon-categories">
 
                         <div class="summary-icon">
                             <i class="fas fa-layer-group"></i>
@@ -310,12 +250,15 @@
 
                 <section class="sermon-toolbar">
 
-                    <div class="sermon-search">
+                    <div class="search-field">
+                        <div class="sermon-search">
 
-                        <i class="fas fa-search"></i>
+                            <i class="fas fa-search"></i>
 
-                        <input type="text" id="sermon-search" placeholder="Search sermons...">
+                            <input type="text" id="sermon-search" placeholder="Search sermons...">
 
+                        </div>
+                        <div class="search-suggestions"></div>
                     </div>
 
 
@@ -635,9 +578,137 @@
 
             </main>
 
+            <div>
+
+            </div>
+
         </div>
 
+        <!-- ==============================
+         LATEST SERMONS ADDED
+    ===============================-->
+
+
+        <div class="dashboard-column">
+
+            <div class="header-right">
+
+                <!-- <div class="search-box">
+
+                        <i class="fas fa-search"></i>
+
+                        <input type="text" placeholder="Search anything...">
+
+                    </div> -->
+
+
+                <!-- <button class="header-icon">
+
+                        <i class="far fa-bell"></i>
+
+                        <span class="notification-number">
+                            3
+                        </span>
+
+                    </button>
+
+
+                    <button class="header-icon">
+
+                        <i class="far fa-envelope"></i>
+
+                        <span class="notification-number">
+                            2
+                        </span>
+
+                    </button> -->
+
+                <div class="theme-selection">
+                    <button class="active-theme" data-theme="light"><i class="far fa-sun"></i></button>
+                    <button data-theme="dark"><i class="fas fa-moon"></i></button>
+                </div>
+
+
+                <div class="admin-account">
+
+                    <div class="account-avatar">
+                        A
+                    </div>
+
+                    <div class="account-info">
+
+                        <strong>Admin</strong>
+                        <span>Super Admin</span>
+
+                    </div>
+
+                    <i class="fas fa-chevron-down"></i>
+
+                </div>
+
+            </div>
+
+            <!-- SECTION: LATEST SERMONS ADDED -->
+            <div>
+                <h2 class="section-title">Latest Sermons Added</h2>
+                <div class="card-container">
+
+                    <!-- Sermon item 1 -->
+                    <div class="latest-sermon-row">
+                        <img class="latest-sermon-thumbnail" src="https://unsplash.com" alt="Sermon Cover">
+                        <div class="latest-sermon-info">
+                            <p class="latest-sermon-text">
+                                <span class="highlight-title">Walking in Faith (Part 2)</span> has been uploaded to
+                                the
+                                audio catalog.
+                            </p>
+                            <p class="timestamp">2 minutes ago</p>
+                        </div>
+                    </div>
+
+                    <!-- Sermon item 2 -->
+                    <div class="latest-sermon-row">
+                        <img class="latest-sermon-thumbnail" src="https://unsplash.com" alt="Sermon Cover">
+                        <div class="latest-sermon-info">
+                            <p class="latest-sermon-text">
+                                <span class="highlight-title">Grace Abounds Video Series</span> was successfully
+                                archived.
+                            </p>
+                            <p class="timestamp">9 minutes ago</p>
+                        </div>
+                    </div>
+
+                    <!-- Sermon item 3 -->
+                    <div class="latest-sermon-row">
+                        <img class="latest-sermon-thumbnail" src="https://unsplash.com" alt="Sermon Cover">
+                        <div class="latest-sermon-info">
+                            <p class="latest-sermon-text">
+                                <span class="highlight-title">The Blessed Life Study</span> transcripts are now
+                                available.
+                            </p>
+                            <p class="timestamp">15 minutes ago</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Add Sermon Button (Positioned cleanly underneath the card container) -->
+            <button class="btn-add-dashed" id="add-sermon-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="12" x2="12" y1="5" y2="19"></line>
+                    <line x1="5" x2="19" y1="12" y2="12"></line>
+                </svg>
+                Add Sermon
+            </button>
+
+        </div>
+
+
     </div>
+
+
+
 
     <!-- =========================
      ADD SERMON MODAL

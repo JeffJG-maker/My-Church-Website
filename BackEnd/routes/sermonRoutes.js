@@ -9,10 +9,12 @@ const {
     getSermon,
     createSermon,
     updateSermon,
-    deleteSermon
+    deleteSermon, 
+    getLatestSermons
 } = require("../controllers/sermonController");
 
 router.get("/", getSermons);
+router.get("/latest", getLatestSermons);
 router.get("/:id", getSermon);
 router.post(
     "/",
@@ -23,6 +25,6 @@ router.post(
     createSermon
 );
 router.put("/:id", updateSermon);
-router.delete("/:id", deleteSermon)
+router.delete("/:id", deleteSermon);
 
 module.exports = router;

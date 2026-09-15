@@ -38,21 +38,24 @@ const getSermon = async (req, res) => {
     }
 };
 
+const getLatestSermons = async (req, res) => {
+    try {
+        const sermons = await Sermon
+            .find()
+            .sort({ createdAt: -1 })
+            .limit(4);
+
+        res.json(sermons);
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to fetch latest sermons"
+        });
+    }
+};
+
 const createSermon = async (req, res) => {
-    // try {
-    //     const lastSermon = await Sermon
-    //         .findOne({ id: { $exists: true } })
-    //         .sort({ id: -1 });
-
-    //     const nextId = lastSermon
-    //         ? Number(lastSermon.id) + 1
-    //         : 1;
-
-    //     const sermon = await Sermon.create({
-    //         ...req.body,
-    //         id: nextId
-    //     });
-    // }
 
     try {
 
@@ -153,6 +156,7 @@ const deleteSermon = async (req, res) => {
 module.exports = {
     getSermons,
     getSermon,
+    getLatestSermons,
     createSermon,
     updateSermon,
     deleteSermon

@@ -31,7 +31,7 @@ const changeThemeManager = document.querySelector('.change-theme-background');
 const themeColorList = document.querySelector('.theme-colors-list');
 const body = document.body;
 const root = document.documentElement;
-
+const MEDIA_BASE_URL = "http://localhost:5000";
 
 
 // const VidCon
@@ -73,6 +73,18 @@ const loadData = async (filePath) => {
     }
 };
 
+const getMediaUrl = (filePath) => {
+
+    if (!filePath) return "";
+
+    let cleanPath = filePath;
+
+    cleanPath = cleanPath.replace(/^(\.\.\/)+/, "");
+
+    cleanPath = cleanPath.replace(/^BackEnd\//, "");
+
+    return `${MEDIA_BASE_URL}/${cleanPath}`;
+};
 
 /* _____________________________________________________
 SERMON CARDS DATA DISPLAY
@@ -85,7 +97,7 @@ const renderSermons = (sermons) => {
         html +=
             `<div class="vid-card" data-id="${sermon.id}">
         <div class="vid-thumbnail">
-        <video class="block-video"poster="${sermon.thumbnail}" src="${sermon.videoUrl}" muted></video>
+        <video class="block-video"poster="${getMediaUrl(sermon.thumbnail)}" src="${getMediaUrl(sermon.videoUrl)}" muted></video>
         <h4>${sermon.duration}</h4>
         </div>
         <div>
@@ -110,8 +122,8 @@ const openSermon = (sermon) => {
     videoPlayerContainer.appendChild(clickedVideo);
     clickedVideo.setAttribute('id', 'current-video');
     clickedVideo.controls = true;
-    clickedVideo.poster = sermon.thumbnail;
-    clickedVideo.src = sermon.videoUrl;
+    clickedVideo.poster = getMediaUrl(sermon.thumbnail);
+    clickedVideo.src = getMediaUrl(sermon.videoUrl);
     clickedVideo.load();
     clickedVideo.play()
 
@@ -246,7 +258,6 @@ const searchSermons = (searchValue) => {
 
 const renderSuggestions = (matches) => {
     let html = "";
-    searchContainer.innerHTML = "";
     if (matches.length === 0) {
         html = `<div class="suggested-sermon"><p style="color: silver">No matching sermon found...</p>
         </div>`;
@@ -312,6 +323,14 @@ const searchButtonClick = () => {
     searchContainer.classList.add('hidden');
 
 }
+
+// const searchFunctions = {
+//     searchSermons,
+//     renderSuggestions,
+//     handleSearchInput,
+// }
+
+// export default searchFunctions;
 
 search.addEventListener("keydown", e => {
     if (e.key === "Enter") {

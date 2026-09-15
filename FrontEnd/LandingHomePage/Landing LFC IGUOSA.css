@@ -8,12 +8,13 @@
 :root {
     --semantic-background: #04040f;
     --semantic-text: white;
-    --text-color: navy;
+    --text-color: #030e5c;
     --body-background: white;
     --item-background: lightgrey;
     --contact-welcome-space: #eeecec;
     --event-card-button: #bd1717;
     --event-card-text: red;
+    --card-shadow: #ceceff;
 }
 
 .dark-theme {
@@ -26,6 +27,7 @@
     --contact-welcome-space: #17172c;
     --event-card-button: gold;
     --event-card-text: white;
+    --card-shadow: #171717;
 }
 
 
@@ -36,6 +38,7 @@ html {
 
 body {
     background-color: var(--body-background);
+    transition: 0.3s;
 }
 
 /* MAIN AREA */
@@ -550,10 +553,11 @@ nav ul li a {
     z-index: 2;
     background-color: var(--body-background);
     box-shadow: 0 0 1px darkgrey;
+    transition: 0.3s;
 }
 
 .event-card {
-    box-shadow: 0 0 3px darkgrey;
+    box-shadow: 0 10px 30px var(--card-shadow);
     border-radius: 0.5em;
     padding: 1.5em 1em;
     display: flex;
@@ -770,7 +774,7 @@ nav ul li a {
     background-color: var(--body-background);
     border-radius: 0.3em;
     overflow: hidden;
-    /* box-shadow: 0 0 5px lightgrey; */
+    box-shadow: none;
     color: var(--text-color);
 }
 
@@ -1167,7 +1171,7 @@ footer button:hover {
     font-size: 30px;
 }
 
-.contact-call-btn button {
+.contact-call-btn>a {
     display: flex;
     gap: 1.5em;
     color: var(--body-background);
@@ -1175,17 +1179,18 @@ footer button:hover {
     background-color: var(--text-color);
     border: none;
     border-radius: 20px;
-    padding: 0.5em 1em;
+    padding: 1em 1.5em;
     cursor: pointer;
+    text-decoration: none;
 }
 
-.contact-call-btn button:hover {
+.contact-call-btn>a:hover {
     transform: translateY(-2px);
     transition: transform 0.5s;
     background-color: #29346e;
 }
 
-.contact-call-btn button p {
+.contact-call-btn>a p {
     color: var(--body-background);
     font-size: clamp(1em, 2vw, 1.3em);
 }
