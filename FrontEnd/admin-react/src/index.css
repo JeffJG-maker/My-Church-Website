@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@import "tailwindcss";
+
+:root {
+    --background: #0c0c1f;
+    --card-background: #131323;
+}

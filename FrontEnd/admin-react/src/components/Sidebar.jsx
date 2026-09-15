@@ -1,12 +1,26 @@
 
 import NavSection from "./NavSection";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+    faChartPie,
+    faBookOpen,
+    faLayerGroup,
+    faPhotoVideo,
+    faCalendarAlt,
+    faUsers,
+    faChartLine,
+    faCog,
+    faChurch,
+} from "@fortawesome/free-solid-svg-icons";
+
+import { faCommentAlt } from "@fortawesome/free-regular-svg-icons"
 
 
 
 const mainLinks = [
     {
         name: "Dashboard",
-        icon: "fas fa-chart-pie",
+        icon: faChartPie,
         page: "dashboard"
     }
 ];
@@ -14,32 +28,32 @@ const mainLinks = [
 const manageLinks = [
     {
         name: "Sermons",
-        icon: "fas fa-book-open",
+        icon: faBookOpen,
         page: "sermons"
     },
     {
         name: "Categories",
-        icon: "fas fa-layer-group",
+        icon: faLayerGroup,
         page: "categories"
     },
     {
         name: "Media",
-        icon: "fas fa-photo-video",
+        icon: faPhotoVideo,
         page: "media"
     },
     {
         name: "Events",
-        icon: "far fa-calendar-alt",
+        icon: faCalendarAlt,
         page: "events"
     },
     {
         name: "Users",
-        icon: "fas fa-users",
+        icon: faUsers,
         page: "users"
     },
     {
         name: "Messages",
-        icon: "far fa-comment-alt",
+        icon: faCommentAlt,
         page: "messages"
     }
 ];
@@ -47,12 +61,12 @@ const manageLinks = [
 const systemLinks = [
     {
         name: "Analytics",
-        icon: "fas fa-chart-line",
+        icon: faChartLine,
         page: "analytics"
     },
     {
         name: "Settings",
-        icon: "fas fa-cog",
+        icon: faCog,
         page: "settings"
     }
 ];
@@ -62,12 +76,12 @@ const Sidebar = ({ activePage, setActivePage }) => {
 
     return (
         <>
-            <aside className="sidebar">
+            <aside className="sidebar w-65 h-screen bg-white flex flex-col position-fixed">
 
                 <div className="sidebar-header">
 
                     <div className="admin-logo">
-                        <i className="fas fa-church"></i>
+                        <FontAwesomeIcon icon={faChurch} />
                     </div>
 
                     <div>
@@ -127,3 +141,14 @@ const Sidebar = ({ activePage, setActivePage }) => {
 }
 
 export default Sidebar;
+
+// nav {
+//     position: fixed;
+//     top: 0;
+//     left: 0;
+//     height: 100vh;
+//     width: 250px;
+//     background-color: var(--card-background);
+//     padding: 1em;
+//     overflow-y: auto;
+// }

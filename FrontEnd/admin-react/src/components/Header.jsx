@@ -1,30 +1,32 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons"
 
 const Header = () => {
     return (
         <header className="flex items-center justify-between gap-6 p-5">
 
             <div className="header-welcome">
-                <h1 className="text-2xl font-bold text-slate-900 mb-3">Welcome back, Admin! 👋</h1>
-                <p>
+                <h1 className="text-2xl font-bold text-slate-900">Welcome back, Admin! 👋</h1>
+                <p className="mt-1 text-sm text-slate-500 ">
                     Here's what's happening with your church platform today.
                 </p>
             </div>
 
-            <div className="header-actions">
+            <div className="header-actions flex items-center gap-5">
 
-                <div className="theme-toggle">
-                    <button>
-                        <i className="fas fa-cog"></i>
+                <div className="theme-toggle flex items-center overflow-hidden rounded-lg ">
+                    <button className="w-10 h-8 bg-blue-950 cursor-pointer text-white">
+                        <FontAwesomeIcon icon={faSun} />
                     </button>
 
-                    <button>
-                        <i className="fas fa-moon"></i>
+                    <button className="w-10 h-8 bg-slate-200 cursor-pointer">
+                        <FontAwesomeIcon icon={faMoon} />
                     </button>
                 </div>
 
-                <div className="admin-profile">
-                    <div className="profile-avatar">
+                <div className="admin-profile flex items-center gap-2">
+                    <div className="profile-avatar p-2 w-10 text-white rounded-full bg-blue-950 flex item-center">
                         A
                     </div>
 

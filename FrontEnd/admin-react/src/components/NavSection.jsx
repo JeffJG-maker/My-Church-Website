@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 const NavSection = ({ links, title, activePage, setActivePage }) => {
 
     return (
@@ -15,7 +17,7 @@ const NavSection = ({ links, title, activePage, setActivePage }) => {
                             data-page={link.page}
                             onClick={() => setActivePage(link.page)}
                         >
-                            <i className={link.icon}></i>
+                            <FontAwesomeIcon icon={link.icon}/>
                             <span>{link.name}</span>
                         </a>
                     ))
