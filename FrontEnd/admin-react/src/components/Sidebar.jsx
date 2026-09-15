@@ -76,11 +76,11 @@ const Sidebar = ({ activePage, setActivePage }) => {
 
     return (
         <>
-            <aside className="sidebar w-65 h-screen bg-white flex flex-col position-fixed">
+            <aside className="sidebar w-65 h-screen bg-transparent flex flex-col fixed left-0 top-0">
 
-                <div className="sidebar-header">
+                <div className="sidebar-header flex items-center gap-3 p-5">
 
-                    <div className="admin-logo">
+                    <div className="admin-logo w-10 h-10 rounded-md flex justify-center">
                         <FontAwesomeIcon icon={faChurch} />
                     </div>
 
@@ -92,7 +92,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 </div>
 
 
-                <nav className="sidebar-navigation">
+                <nav className="sidebar-navigation flex-1 px-4 py-2 overflow-y-auto">
 
                     <NavSection
                         title="MAIN"
