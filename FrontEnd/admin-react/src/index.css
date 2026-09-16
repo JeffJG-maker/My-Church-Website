@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
-
-:root {
-    --background: #0c0c1f;
-    --card-background: #131323;
-    --sidebar-hover: #c0bbf4;
-    --active-theme-color: #282861;
+* {
+    font-family: tahoma;
 }
 
+:root {
+    --background: #f6f8fb;
+    --card-background: white;
+    --sidebar-hover: #c0bbf4;
+    --active-theme-color: #1a1a4c;
+    --card-shadow: #e2e1fd;
+}

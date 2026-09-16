@@ -4,7 +4,7 @@ import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons"
 
 const Header = () => {
     return (
-        <header className="flex items-center justify-between gap-6 p-5">
+        <header className="flex items-center justify-between gap-6">
 
             <div className="header-welcome">
                 <h1 className="text-2xl font-bold text-slate-900">Welcome back, Admin! 👋</h1>
@@ -16,11 +16,11 @@ const Header = () => {
             <div className="header-actions flex items-center gap-5">
 
                 <div className="theme-toggle flex items-center overflow-hidden rounded-lg ">
-                    <button className="w-10 h-8 bg-blue-950 cursor-pointer text-white">
+                    <button className="w-10 h-7 bg-blue-950 cursor-pointer text-white">
                         <FontAwesomeIcon icon={faSun} />
                     </button>
 
-                    <button className="w-10 h-8 bg-slate-200 cursor-pointer">
+                    <button className="w-10 h-7 bg-slate-200 cursor-pointer">
                         <FontAwesomeIcon icon={faMoon} />
                     </button>
                 </div>
