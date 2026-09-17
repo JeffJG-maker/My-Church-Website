@@ -697,7 +697,8 @@ nav ul li a {
     margin: auto;
     color: var(--text-color);
 }
-.title hr{
+
+.title hr {
     width: 50px;
     border: 2px solid darkred
 }
@@ -876,28 +877,12 @@ nav ul li a {
     color: var(--semantic-text);
 }
 
-/* THE FOOTER SECTION */
-footer {
-    position: relative;
-    height: min-content;
-    z-index: 2;
-    /* box-shadow: 0 0 1px darkgrey; */
-}
-
-footer img {
-    height: 100%;
-    width: 40%;
-    max-width: 400px;
-    position: absolute;
-}
-
 .footer-body {
     position: relative;
     z-index: 1;
     color: white;
     display: flex;
     flex-direction: column;
-    /* flex-wrap: wrap; */
     justify-content: space-between;
     background: linear-gradient(to left, var(--semantic-background),
             var(--semantic-background),
@@ -913,32 +898,247 @@ footer img {
     padding: 1.5em 3% 1.5em 6%;
 }
 
-.footer-about {
-    max-width: 350px;
+/* THE FOOTER SECTION */
+
+
+
+
+
+.site-footer {
+    background-color: var(--semantic-background);
+    color: #eff0f4;
+    padding: 80px 40px 25px 40px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+}
+
+/* 4-Column Flex/Grid alignment */
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2.2fr 1fr 1.3fr 1.5fr;
+    gap: 40px;
+    padding-bottom: 45px;
+    border-bottom: 1px solid #161a22;
+}
+
+/* Heading Typography and Underlines */
+.footer-column h3 {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 25px;
+    position: relative;
+}
+
+/* Gold Accent Line under Column 1 Title */
+.about-col h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    width: 35px;
+    height: 2px;
+    background-color: #f7b731;
+}
+
+/* Column 1 Image & Layout Positioning */
+.about-col {
+    position: relative;
+}
+
+/* Accurate Church Silhouette Graphic Blend Effect */
+.church-graphic-bg {
+    position: absolute;
+    top: -40px;
+    left: -50px;
+    width: 180px;
+    height: 220px;
+    opacity: 0.08;
+    /* Blends quietly into the dark layout */
+    pointer-events: none;
+    background-repeat: no-repeat;
+    background-size: contain;
+    /* Embedded structural silhouette representation */
+}
+
+.about-content {
+    position: relative;
+    z-index: 2;
+}
+
+.about-content p {
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+/* Yellow Button Layout */
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    background-color: #f7b731;
+    color: #090b0e;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    transition: opacity 0.2s ease;
+}
+
+.btn-primary:hover {
+    opacity: 0.9;
+}
+
+/* Column 2 Navigation Links */
+.links-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.links-col li {
+    margin-bottom: 12px;
+}
+
+.links-col a {
+    color: #9ba0a9;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.links-col a:hover {
+    color: #f7b731;
+}
+
+/* Column 3 Service Dynamic Elements */
+.service-item {
     display: flex;
-    flex-direction: column;
-    gap: 1em;
+    align-items: flex-start;
+    margin-bottom: 20px;
 }
 
-.footer-about h2 {
-    font-size: clamp(1.5em, 2vw, 2em);
+.service-item .icon {
+    color: #f7b731;
+    margin-right: 12px;
+    font-size: 10px;
+    margin-top: 5px;
 }
 
-.footer-about p {
-    font-size: clamp(1em, 2vw, 1.2em);
-    opacity: 0.85;
-    line-height: 1.5;
+.service-item strong {
+    color: #ffffff;
+    display: block;
+    font-weight: 600;
 }
 
-.footer-about button {
-    padding: 1em;
-    border-radius: 0.3em;
+.service-item p {
+    margin: 4px 0 0 0;
+    font-size: 13px;
+}
+
+/* Column 4 Newsletter Field Styling */
+.connect-col p {
+    margin-bottom: 20px;
+}
+
+.newsletter-form {
+    display: flex;
+    margin-bottom: 25px;
+}
+
+.newsletter-form input {
+    flex: 1;
+    padding: 12px 16px;
     border: none;
-    background-color: gold;
-    max-width: 200px;
-    cursor: pointer;
+    border-radius: 4px 0 0 4px;
+    background-color: #ffffff;
+    color: #090b0e;
+    font-size: 13.5px;
+    outline: none;
 }
 
+.newsletter-form button {
+    background-color: #f7b731;
+    border: none;
+    padding: 0 16px;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    color: #090b0e;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Social Media Circular Containers */
+.social-icons {
+    display: flex;
+    gap: 12px;
+}
+
+.social-icons a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #222831;
+    border-radius: 50%;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 13px;
+    transition: border-color 0.2s ease;
+}
+
+.social-icons a:hover {
+    border-color: #f7b731;
+}
+
+/* Sub-Footer Base Layout */
+.footer-bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #636a75;
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+.heart-icon {
+    color: #e74c3c;
+    margin-left: 2px;
+}
+
+/* Screen Size Adaptability Rules */
+@media (max-width: 992px) {
+    .footer-container {
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+    }
+}
+
+@media (max-width: 600px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+}
 
 
 /* THEME SELECTION AREA */

@@ -76,7 +76,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
 
     return (
         <>
-            <aside className="sidebar w-65 h-screen bg-transparent flex flex-col fixed left-0 top-0">
+            <aside className="sidebar w-63 h-screen bg-transparent flex flex-col fixed left-0 top-0">
 
                 <div className="sidebar-header flex items-center gap-3 p-3">
 

@@ -186,12 +186,12 @@ const Dashboard = () => {
                         Overview of your church platform
                     </p>
                 </div>
-
+{/* 
                 <div>
                     <button>Last 7 Days</button>
                     <button>Last 30 Days</button>
                     <button>Custom Range</button>
-                </div>
+                </div> */}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
@@ -261,7 +261,7 @@ const Dashboard = () => {
                             </div>
 
                             <div>
-                                <h3 className="">{sermon.title}</h3>
+                                <h3 className="text-[14px]">{sermon.title}</h3>
                                 <p className="text-[12px]">{sermon.speaker}</p>
                             </div>
 
