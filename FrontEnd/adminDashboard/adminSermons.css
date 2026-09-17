@@ -946,7 +946,7 @@ tbody tr:hover {
     /* Reduced gap to bring the button neatly under the card */
 }
 
-.header-right{
+.header-right {
     align-self: self-end;
     margin: 1.5em 1em;
 }
@@ -960,7 +960,7 @@ tbody tr:hover {
 }
 
 /* Card Container Pattern */
-.card-container {
+#sermons-page .sidebar-section {
     background-color: var(--card);
     border-radius: 24px;
     padding: 24px;
@@ -1018,16 +1018,16 @@ tbody tr:hover {
 }
 
 /* --- Add Button Pattern --- */
-.btn-add-dashed {
+.btn-add-sermon {
     background: transparent;
-    border: 2px dashed #cbd5e0;
+    border: 2px dashed var(--text);
     border-radius: 16px;
     padding: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: var(--text-muted);
+    color: var(--text);
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
@@ -1036,10 +1036,10 @@ tbody tr:hover {
     transition: all 0.2s ease;
 }
 
-.btn-add-dashed:hover {
-    border-color: var(--purple);
+.btn-add-sermon:hover {
+    border-color: var(--card-shadow);
     color: var(--purple);
-    background-color: rgba(107, 70, 193, 0.02);
+    background-color: var(--background);
 }
 
 

@@ -187,39 +187,6 @@ const featuredSermons = [
         id: 5,
     },
 
-    {
-        videoUrl: "../media/‎Bro_just_wants_to_be_home_🤣_Can’t_Even_(viaGlenngrov‎20240413‎_Phoenix.mp4",
-        title: "Financial Fortune is My Heritage",
-        speaker: "Pastor Michael",
-        date: "February 26, 2026",
-        category: "Prosperity",
-        thumbnail: "../media/Pastor Preaching.png",
-        duration: "43:00",
-        id: 6,
-    },
-    {
-        videoUrl: "../churchData/Prophetic Tongues(720P_HD).mp4",
-        title: "The Power of Prayer",
-        speaker: "Pastor Daniel",
-        date: "August 9, 2026",
-        category: "Prayer",
-        thumbnail: "../media/FirstHomeImage.png",
-        duration: "47:15",
-        id: 7,
-        description: "Prayer opens the door for God's intervention and strengthens our relationship with Him."
-    },
-    {
-        videoUrl: "../churchData/Marry Only who fears the Lord _apostlemichaeloropko _love _marriageadvise(720P_HD).mp4",
-        title: "Covenant Day of Marriage Settlement",
-        speaker: "Pastor Grace",
-        date: "August 16, 2026",
-        category: "Holiness",
-        thumbnail: "../media/Unveling the wonders in the word.png",
-        duration: "42:10",
-        id: 8,
-        description: "Marriage is from God and there are important several things that we ought to know before and in marriage"
-    },
-
 ]
 
 const webPageSections = [
@@ -324,6 +291,11 @@ rightVidBtn.addEventListener('click', () => {
     videoSlidePosition -= 200;
     updateVideoSlider()
 });
+
+setInterval( () => {
+    videoSlidePosition -= 200;
+    updateVideoSlider()
+}, 3000)
 
 const openSermon = (sermon) => {
     if (!sermonVideoPlayer) {

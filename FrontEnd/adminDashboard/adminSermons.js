@@ -89,6 +89,32 @@ const loadLatestSermons = async () => {
     }
 };
 
+const formatTimeAgo = (date) => {
+    const now = new Date();
+    const createdAt = new Date(date);
+
+    const difference = now - createdAt;
+
+    const seconds = Math.floor(difference / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (seconds < 60) {
+        return "Just now";
+    }
+
+    else if (minutes < 60) {
+        return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+    }
+
+    else if (hours < 24) {
+        return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+    }
+
+    return `${days} day${days !== 1 ? "s" : ""} ago`;
+};
+
 const renderLatestSermons = (sermons) => {
     const container = document.querySelector(".sermon-activity-list");
     console.log("renderLatestSermons called");
@@ -101,7 +127,7 @@ const renderLatestSermons = (sermons) => {
             </div>
             <div class="activity-content">
                 <p class="activity-text"><strong>${sermon.title}</strong> has been uploaded to the video catalog.</p>
-                <span class="activity-time">${sermon.date}</span>
+                <span class="activity-time">${formatTimeAgo(sermon.createdAt)}</span>
             </div>
         </li> `).join("");;
 };

@@ -10,4 +10,9 @@
     --sidebar-hover: #c0bbf4;
     --active-theme-color: #1a1a4c;
     --card-shadow: #e2e1fd;
+    --text: #172033;
+}
+
+body {
+    background-color: var(--background);
 }

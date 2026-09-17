@@ -175,11 +175,16 @@ const systemOverview = [
 
 const Dashboard = () => {
     return (
-        <section>
-            <div>
+        <section >
+            <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1>Dashboard</h1>
-                    <p>Overview of your church platform</p>
+                    <h1 className="text-xl font-bold">
+                        Dashboard
+                    </h1>
+
+                    <p className="text-sm text-slate-500">
+                        Overview of your church platform
+                    </p>
                 </div>
 
                 <div>
@@ -189,14 +194,17 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
                 {statistics.map(stat => (
-                    <div key={stat.title}>
+                    <div
+                        key={stat.title}
+                        className="bg-[var(--card-background)] rounded-xl p-5 shadow-[0_5px_30px_0_var(--card-shadow)] transition-transform duration-300 hover:translate-y-[-3px] hover:cursor-pointer"
+                    >
                         <div>
                             <FontAwesomeIcon icon={stat.icon} />
                         </div>
 
-                        <div>
+                        <div className="flex items-center gap-4">
                             <p>{stat.title}</p>
                             <h2>{stat.value}</h2>
                         </div>
@@ -204,19 +212,48 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            <div>
-                <div>
-                    <h2>Views Overview</h2>
-                    <p>Sermon views over time</p>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
 
-                    {/* Chart will come here */}
+                <div className="lg:col-span-5 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 hover:cursor-pointer">
+
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <h2 className="text-md font-bold">
+                                Views Overview
+                            </h2>
+
+                            <p className="text-[13px] text-slate-500">
+                                Sermon views over time
+                            </p>
+                        </div>
+
+                        <button className="px-4 py-2 rounded-lg cursor-pointer bg-[var(--background)] transition-transform duration-300 hover:translate-y-[-3px] hover:bg-[var(--sidebar-hover)] hover:text-[var(--card-background)] text-[12px]">
+                            This Month
+                        </button>
+                    </div>
+
+                    <div>
+
+                    </div>
+
                 </div>
 
-                <div>
-                    <h2>Top Sermons</h2>
+                <div className="lg:col-span-3 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 hover:cursor-pointer">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-md font-bold">
+                            Top Sermons
+                        </h2>
+
+                        <button className="text-sm cursor-pointer transition-transform duration-300 hover:translate-y-[-3px]">
+                            View All
+                        </button>
+                    </div>
 
                     {topSermons.map(sermon => (
-                        <div key={sermon.id}>
+                        <div
+                            key={sermon.id}
+                            className="flex items-center gap-3"
+                        >
                             <span>{sermon.id}</span>
 
                             <div>
@@ -224,20 +261,30 @@ const Dashboard = () => {
                             </div>
 
                             <div>
-                                <h3>{sermon.title}</h3>
-                                <p>{sermon.speaker}</p>
+                                <h3 className="">{sermon.title}</h3>
+                                <p className="text-[12px]">{sermon.speaker}</p>
                             </div>
 
-                            <span>{sermon.views}</span>
+                            <span className="text-[#3737c5] bg-[#c0bbf4] px-1 text-[11px] rounded-lg">{sermon.views}</span>
                         </div>
                     ))}
                 </div>
 
-                <div>
-                    <h2>Recent Activity</h2>
+                <div className="lg:col-span-4 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] transition-transform duration-300 hover:translate-y-[-3px] rounded-xl p-5 hover:cursor-pointer">
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-md font-bold">
+                            Recent Activity
+                        </h2>
+
+                        <button className="text-sm cursor-pointer transition-transform duration-300 hover:translate-y-[-3px]">
+                            View All
+                        </button>
+                    </div>
 
                     {recentActivities.map(activity => (
-                        <div key={activity.id}>
+                        <div key={activity.id}
+                            className="flex items-center gap-3"
+                        >
                             <div>
                                 {/* Activity icon will come here */}
                             </div>
@@ -252,61 +299,116 @@ const Dashboard = () => {
                     ))}
                 </div>
             </div>
-            <div>
-                <div>
-                    <h2>Sermons by Category</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
 
-                    <div>
+                {/* Sermons by Category */}
+                <div className="lg:col-span-5 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 transition-transform duration-300 hover:translate-y-[-3px] hover:cursor-pointer">
+
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-md font-bold">
+                            Sermons by Category
+                        </h2>
+
+                        <button className="text-sm cursor-pointer transition-transform duration-300 hover:translate-y-[-3px]">
+                            View All
+                        </button>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+
                         {/* Donut chart will come here */}
-
                         <div>
+                        </div>
+
+                        {/* Category list */}
+                        <div className="flex flex-col gap-3">
                             {sermonCategories.map(category => (
-                                <div key={category.id}>
+                                <div
+                                    key={category.id}
+                                    className="flex items-center justify-between gap-5"
+                                >
                                     <span>{category.name}</span>
                                     <span>{category.percentage}</span>
                                 </div>
                             ))}
                         </div>
+
                     </div>
+
                 </div>
 
-                <div>
-                    <h2>Upcoming Events</h2>
 
-                    {upcomingEvents.map(event => (
-                        <div key={event.id}>
-                            <div>
-                                <span>{event.month}</span>
-                                <strong>{event.day}</strong>
+                {/* Upcoming Events */}
+                <div className="lg:col-span-3 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 transition-transform duration-300 hover:translate-y-[-3px] hover:cursor-pointer">
+
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-md font-bold">
+                            Upcoming Events
+                        </h2>
+
+                        <button className="text-sm cursor-pointer transition-transform duration-300 hover:translate-y-[-3px]">
+                            View All
+                        </button>
+                    </div>
+
+                    <div className="flex flex-col gap-4">
+
+                        {upcomingEvents.map(event => (
+                            <div
+                                key={event.id}
+                                className="flex items-center gap-3"
+                            >
+
+                                <div className="flex flex-col items-center">
+                                    <span>{event.month}</span>
+                                    <strong>{event.day}</strong>
+                                </div>
+
+                                <div>
+                                    <h3>{event.title}</h3>
+                                    <p>
+                                        {event.date} - {event.time}
+                                    </p>
+                                </div>
+
+                                <span>Upcoming</span>
+
                             </div>
+                        ))}
 
-                            <div>
-                                <h3>{event.title}</h3>
-                                <p>
-                                    {event.date} · {event.time}
-                                </p>
-                            </div>
+                    </div>
 
-                            <span>Upcoming</span>
-                        </div>
-                    ))}
                 </div>
 
-                <div>
-                    <h2>System Overview</h2>
 
-                    {systemOverview.map(system => (
-                        <div key={system.id}>
-                            <div>
-                                <span>{system.name}</span>
-                                <span>{system.value}</span>
-                            </div>
+                {/* System Overview */}
+                <div className="lg:col-span-4 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 transition-transform duration-300 hover:translate-y-[-3px] hover:cursor-pointer">
 
-                            <div>
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-md font-bold">
+                            System Overview
+                        </h2>
+                    </div>
+
+                    <div className="flex flex-col gap-5">
+
+                        {systemOverview.map(system => (
+                            <div key={system.id}>
+
+                                <div className="flex items-center justify-between mb-2">
+                                    <span>{system.name}</span>
+                                    <span>{system.value}</span>
+                                </div>
+
                                 {/* Progress bar will come here */}
+                                <div>
+                                </div>
+
                             </div>
-                        </div>
-                    ))}
+                        ))}
+
+                    </div>
+
                 </div>
 
             </div>

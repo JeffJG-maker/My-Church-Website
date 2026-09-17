@@ -4,10 +4,10 @@ import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons"
 
 const Header = () => {
     return (
-        <header className="flex items-center justify-between gap-6">
+        <header className="flex items-center justify-between gap-6 mb-10">
 
             <div className="header-welcome">
-                <h1 className="text-2xl font-bold text-slate-900">Welcome back, Admin! 👋</h1>
+                <h1 className="text-xl font-bold text-slate-900">Welcome back, Admin! 👋</h1>
                 <p className="mt-1 text-sm text-slate-500 ">
                     Here's what's happening with your church platform today.
                 </p>
