@@ -11,8 +11,10 @@
     --active-theme-color: #1a1a4c;
     --card-shadow: #e2e1fd;
     --text: #172033;
+    --carding: #edebff;
 }
 
 body {
     background-color: var(--background);
 }
+

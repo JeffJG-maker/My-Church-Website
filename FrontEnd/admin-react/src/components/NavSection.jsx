@@ -4,8 +4,8 @@ const NavSection = ({ links, title, activePage, setActivePage }) => {
 
     return (
         <>
-            <div className="nav-section border-b-[1px] border-[#414141] px-0 py-3">
-                <span className="nav-section-title text-slate-600 text-[12px]">
+            <div className="nav-section px-0 py-3">
+                <span className="nav-section-title text-slate-600 text-[12px] font-bold">
                     {title}
                 </span>
 
@@ -13,8 +13,8 @@ const NavSection = ({ links, title, activePage, setActivePage }) => {
                     links.map(link => (
                         <a
                             key={link.page}
-                            className={activePage === link.page ? "bg-[var(--active-theme-color)] nav-link flex items-center gap-3 no-underline rounded-md p-[8px] text-white transition-all duration-200 hover:bg-[var(--sidebar-hover)] text-[13px] hover:text-white translate-x-[5px] cursor-pointer my-2" :
-                                " flex items-center gap-3 no-underline rounded-md p-[8px] transition-all duration-200 hover:bg-[var(--sidebar-hover)] hover:text-white hover:translate-x-[3px] cursor-pointer my-2 text-[13px]"}
+                            className={activePage === link.page ? "bg-[var(--active-theme-color)] nav-link flex items-center gap-3 no-underline rounded-xl p-[8px] text-white transition-all duration-200 hover:bg-[var(--sidebar-hover)] text-[13px] hover:text-white translate-x-[5px] cursor-pointer my-2" :
+                                " flex items-center gap-3 no-underline rounded-lg p-[8px] transition-all duration-200 hover:bg-[var(--sidebar-hover)] hover:text-white hover:translate-x-[3px] cursor-pointer my-2 text-[13px]"}
                             data-page={link.page}
                             onClick={() => setActivePage(link.page)}
                         >

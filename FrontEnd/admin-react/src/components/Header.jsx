@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons"
+import { faSun, faMoon, faChevronDown } from "@fortawesome/free-solid-svg-icons"
 
 const Header = () => {
     return (
@@ -26,16 +26,16 @@ const Header = () => {
                 </div>
 
                 <div className="admin-profile flex items-center gap-2">
-                    <div className="profile-avatar p-2 w-10 text-white rounded-full bg-blue-950 flex item-center">
+                    <div className="profile-avatar p-2 w-10 text-white rounded-full bg-blue-950 flex item-center justify-center">
                         A
                     </div>
 
-                    <div className="profile-info">
-                        <strong>Admin</strong>
-                        <span>Super Admin</span>
+                    <div className="profile-info flex flex-col">
+                        <strong className="text-sm">Admin</strong>
+                        <span className="text-[12px] text-slate-600">Super Admin</span>
                     </div>
 
-                    <i className="fas fa-chevron-down"></i>
+                    <FontAwesomeIcon icon={faChevronDown} className="text-[10px]  p-2 rounded-full cursor-pointer hover:bg-[lightgrey]" />
                 </div>
 
             </div>

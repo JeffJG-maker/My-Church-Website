@@ -76,7 +76,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
 
     return (
         <>
-            <aside className="sidebar w-63 h-screen bg-transparent flex flex-col fixed left-0 top-0">
+            <aside className="sidebar w-60 h-screen bg-transparent flex flex-col fixed left-0 top-0">
 
                 <div className="sidebar-header flex items-center gap-3 p-3">
 
@@ -118,19 +118,14 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 </nav>
 
 
-                <div className="sidebar-bottom">
+                <div className="admin-profile flex items-center gap-2 border-t-[1px] border-slate-200 p-3">
+                    <div className="profile-avatar p-2 w-10 text-white rounded-full bg-blue-950 flex item-center justify-center">
+                        A
+                    </div>
 
-                    <div className="admin-profile-mini">
-
-                        <div className="profile-avatar">
-                            A
-                        </div>
-
-                        <div>
-                            <strong>Administrator</strong>
-                            <span>Super Admin</span>
-                        </div>
-
+                    <div className="profile-info flex flex-col">
+                        <strong className="text-sm">Administrator</strong>
+                        <span className="text-[12px] text-slate-600">Super Admin</span>
                     </div>
 
                 </div>
