@@ -75,34 +75,38 @@ const topSermons = [
         id: 1,
         title: "Walking By Faith",
         speaker: "Pastor Tobore",
-        views: "4.6K"
+        views: "4.6K",
+        thumbnail: "../media/sermons/walking-by-faith.jpg"
     },
     {
         id: 2,
         title: "The Power of Prayer",
         speaker: "Pastor Tobore",
-        views: "3.2K"
+        views: "3.2K",
+        thumbnail: "../media/sermons/power-of-prayer.jpg"
     },
     {
         id: 3,
         title: "Living a Life of Purpose",
         speaker: "Pastor Paul",
-        views: "2.8K"
+        views: "2.8K",
+        thumbnail: "../media/sermons/life-of-purpose.jpg"
     },
     {
         id: 4,
         title: "The Power of Consecration",
         speaker: "Pastor Paul",
-        views: "2.1K"
+        views: "2.1K",
+        thumbnail: "../media/sermons/power-of-consecration.jpg"
     },
     {
         id: 5,
         title: "Purity",
         speaker: "Pastor Tobore",
-        views: "1.9K"
+        views: "1.9K",
+        thumbnail: "../media/sermons/purity.jpg"
     }
 ];
-
 const recentActivities = [
     {
         id: 1,
@@ -214,7 +218,7 @@ const Dashboard = () => {
                         Dashboard
                     </h1>
 
-                    <p className="text-sm text-slate-500">
+                    <p className="text-[12px] text-slate-500">
                         Overview of your church platform
                     </p>
                 </div>
@@ -255,7 +259,7 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-7">
 
                 <div className="lg:col-span-5 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5">
 
@@ -277,8 +281,47 @@ const Dashboard = () => {
 
                     </div>
 
-                    <div className="h-68 mt-5">
-                        {/* Chart will come here */}
+                    <div className="h-70 mt-5">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart
+                                data={viewsData}
+                                margin={{
+                                    top: 10,
+                                    right: 5,
+                                    left: -15,
+                                    bottom: 5
+                                }}
+                            >
+                                <CartesianGrid
+                                    strokeDasharray="3 3"
+                                    vertical={false}
+                                />
+
+                                <XAxis
+                                    dataKey="date"
+                                    tick={{ fontSize: 10 }}
+                                    axisLine={false}
+                                    tickLine={false}
+                                />
+
+                                <YAxis
+                                    tick={{ fontSize: 10 }}
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tickFormatter={(value) => `${value / 1000}K`}
+                                />
+
+                                <Tooltip />
+
+                                <Line
+                                    type="monotone"
+                                    dataKey="views"
+                                    stroke="#635bff"
+                                    strokeWidth={3}
+                                    dot={false}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
                     </div>
 
                 </div>
@@ -297,14 +340,18 @@ const Dashboard = () => {
                     {topSermons.map(sermon => (
                         <div
                             key={sermon.id}
-                            className="flex items-center gap-3 py-3"
+                            className="flex items-center gap-3 py-2"
                         >
-                            <span className="text-sm">{sermon.id}</span>
+                            <span className="w-4 text-center text-xs text-slate-500 flex-shrink-0">
+                                {sermon.id}
+                            </span>
 
-                            <div
-                                className="w-11 h-11 rounded-md bg-[var(--background)] flex-shrink-0"
-                            >
-                                {/* Thumbnail */}
+                            <div className="w-11 h-11 rounded-md overflow-hidden flex-shrink-0">
+                                <img
+                                    src={sermon.thumbnail}
+                                    alt={sermon.title}
+                                    className="w-full h-full object-cover"
+                                />
                             </div>
 
                             <div className="flex-1 min-w-0">
@@ -376,7 +423,7 @@ const Dashboard = () => {
                         </button>
                     </div>
 
-                    <div className="flex  justify-between mt-10">
+                    <div className="flex  justify-between mt-14">
                         <div className="flex gap-5">
                             <div
                                 className="relative w-36 h-36 rounded-full"
@@ -468,7 +515,7 @@ const Dashboard = () => {
                                     </p>
                                 </div>
 
-                                <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-[var(--background)] text-slate-500">
+                                <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-[#d4ffd4] text-[green]">
                                     Upcoming
                                 </span>
 

@@ -8,7 +8,7 @@ const Header = () => {
 
             <div className="header-welcome">
                 <h1 className="text-xl font-bold text-slate-900">Welcome back, Admin! 👋</h1>
-                <p className="mt-1 text-sm text-slate-500 ">
+                <p className="mt-1 text-[12px] text-slate-500 ">
                     Here's what's happening with your church platform today.
                 </p>
             </div>
