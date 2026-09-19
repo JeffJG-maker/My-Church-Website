@@ -86,7 +86,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
 
                     <div>
                         <h2>Church Admin</h2>
-                        <span className="text-sm text-slate-500">Admin Panel</span>
+                        <span className="text-xs text-slate-500">Admin Panel</span>
                     </div>
 
                 </div>

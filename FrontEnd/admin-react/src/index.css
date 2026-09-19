@@ -11,11 +11,11 @@
     --active-theme-color: #1a1a4c;
     --card-shadow: #e2e1fd;
     --text: #172033;
-    --carding: #edebff;
+    --some-icon: #d4ffd4;
+    /* --carding: #edebff; */
     /* lighting-color: #d4ffd4; */
 }
 
 body {
     background-color: var(--background);
 }
-
