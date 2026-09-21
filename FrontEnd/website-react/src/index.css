@@ -1,0 +1,31 @@
+@import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #2f2f44 #0c0c19;
+}
+
+body {
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  transition:
+    background-color 0.5s ease,
+    color 0.5s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #f7b731;
+  color: #0b0b25;
+}
