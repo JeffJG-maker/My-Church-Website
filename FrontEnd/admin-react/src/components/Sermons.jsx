@@ -65,6 +65,8 @@ const sermonSummary = [
 
 const Sermons = () => {
     const [showAddModal, setShowAddModal] = useState(false);
+    const [thumbnailFile, setThumbnailFile] = useState(null);
+    const [videoFile, setVideoFile] = useState(null);
 
     return (
         <section className="sermons-page">
@@ -454,61 +456,134 @@ const Sermons = () => {
 
             {showAddModal && (
                 <div className="fixed inset-0 z-50 bg-[#0a1220a6] backdrop-blur-[3px]">
+
+                    {/* Modal */}
                     <div
                         className="
-        fixed
-        top-1/2
-        left-1/2
-        -translate-x-1/2
-        -translate-y-1/2
-        w-[min(92%,650px)]
-        max-h-[90vh]
-        p-[10px]
-        bg-[var(--card-background)]
-        rounded-[15px]
-        shadow-[0_25px_80px_#00000040]
-        overflow-hidden
-        z-50
-    "
+                absolute
+                top-1/2
+                left-1/2
+                -translate-x-1/2
+                -translate-y-1/2
+
+                w-[min(92%,650px)]
+                max-h-[90vh]
+
+                p-[10px]
+
+                bg-[var(--card-background)]
+
+                rounded-[15px]
+
+                shadow-[0_25px_80px_#00000040]
+
+                overflow-hidden
+            "
                     >
-                        <div className="flex items-start justify-between px-[25px] py-[22px] border-b border-[#e8ebf0]">
+
+                        {/* =========================
+                MODAL HEADER
+            ========================== */}
+                        <div
+                            className="
+                    flex
+                    items-start
+                    justify-between
+
+                    px-[25px]
+                    py-[22px]
+
+                    border-b
+                    border-[#e8ebf0]
+                "
+                        >
+
                             <div>
-                                <h2 className="mb-[5px] text-[18px] font-semibold text-[#6060ad]">
+
+                                <h2
+                                    className="
+                            mb-[5px]
+                            text-[18px]
+                            font-semibold
+                            text-[#6060ad]
+                        "
+                                >
                                     Add New Sermon
                                 </h2>
 
                                 <p className="text-[11px] text-slate-500">
                                     Add a new sermon to your church library.
                                 </p>
+
                             </div>
 
+
+                            {/* Close button */}
                             <button
                                 type="button"
-                                onClick={() => setShowAddModal(false)}
+                                onClick={() => {
+                                    setShowAddModal(false);
+                                    setThumbnailFile(null);
+                                    setVideoFile(null);
+                                }}
                                 className="
-        w-8
-        h-8
-        flex
-        items-center
-        justify-center
-        border-none
-        rounded-[7px]
-        bg-[#d6d6d6]
-        text-[#687284]
-        text-[12px]
-        transition-colors
-        duration-200
-        hover:bg-[#eceef1]
-        hover:text-[#222b3b]
-    "
+                        w-8
+                        h-8
+
+                        flex
+                        items-center
+                        justify-center
+
+                        border-none
+                        rounded-[7px]
+
+                        bg-[#d6d6d6]
+
+                        text-[#687284]
+                        text-[14px]
+
+                        transition-all
+                        duration-200
+
+                        hover:bg-[#eceef1]
+                        hover:text-[#222b3b]
+                    "
                             >
                                 ×
                             </button>
+
                         </div>
 
-                        <form className="max-h-[calc(90vh-85px)] overflow-y-auto p-[25px]">
+
+                        {/* =========================
+                FORM
+            ========================== */}
+                        <form
+                            className="
+                    max-h-[calc(90vh-85px)]
+                    overflow-y-auto
+                    p-[25px]
+                "
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                            }}
+                        >
+
+                            {/* =========================
+                    SERMON TITLE
+                ========================== */}
                             <div className="mb-[18px]">
-                                <label className="block mb-[7px] text-[11px] font-semibold text-[var(--text)]">
+
+                                <label
+                                    className="
+                            block
+                            mb-[7px]
+
+                            text-[11px]
+                            font-semibold
+                            text-[var(--text)]
+                        "
+                                >
                                     Sermon Title
                                 </label>
 
@@ -518,24 +593,49 @@ const Sermons = () => {
                                     placeholder="Enter sermon title"
                                     required
                                     className="
-            w-full
-            h-[42px]
-            px-3
-            border-none
-            rounded-[8px]
-            bg-[var(--background)]
-            text-[12px]
-            text-[var(--text)]
-            outline-none
-            placeholder:text-[#a7aebb]
-        "
+                            w-full
+                            h-[42px]
+
+                            px-3
+
+                            border-none
+                            rounded-[8px]
+
+                            bg-[var(--background)]
+
+                            text-[12px]
+                            text-[var(--text)]
+
+                            outline-none
+
+                            placeholder:text-[#a7aebb]
+
+                            focus:ring-[3px]
+                            focus:ring-[#087f5b14]
+                        "
                                 />
+
                             </div>
 
+
+                            {/* =========================
+                    SPEAKER + CATEGORY
+                ========================== */}
                             <div className="grid grid-cols-2 gap-[15px]">
 
+                                {/* Speaker */}
                                 <div className="mb-[18px]">
-                                    <label className="block mb-[7px] text-[11px] font-semibold text-[var(--text)]">
+
+                                    <label
+                                        className="
+                                block
+                                mb-[7px]
+
+                                text-[11px]
+                                font-semibold
+                                text-[var(--text)]
+                            "
+                                    >
                                         Speaker
                                     </label>
 
@@ -544,106 +644,573 @@ const Sermons = () => {
                                         name="speaker"
                                         placeholder="e.g. Pastor Tobore"
                                         required
-                                        className="w-full h-[42px] px-3 border-none rounded-[8px] bg-[var(--background)] text-[12px] text-[var(--text)] outline-none placeholder:text-[#a7aebb]"
+                                        className="
+                                w-full
+                                h-[42px]
+
+                                px-3
+
+                                border-none
+                                rounded-[8px]
+
+                                bg-[var(--background)]
+
+                                text-[12px]
+                                text-[var(--text)]
+
+                                outline-none
+
+                                placeholder:text-[#a7aebb]
+
+                                focus:ring-[3px]
+                                focus:ring-[#087f5b14]
+                            "
                                     />
+
                                 </div>
 
+
+                                {/* Category */}
                                 <div className="mb-[18px]">
-                                    <label className="block mb-[7px] text-[11px] font-semibold text-[var(--text)]">
+
+                                    <label
+                                        className="
+                                block
+                                mb-[7px]
+
+                                text-[11px]
+                                font-semibold
+                                text-[var(--text)]
+                            "
+                                    >
                                         Category
                                     </label>
 
                                     <select
                                         name="category"
                                         required
-                                        className="w-full h-[42px] px-3 border-none rounded-[8px] bg-[var(--background)] text-[12px] text-[var(--text)] outline-none"
+                                        className="
+                                w-full
+                                h-[42px]
+
+                                px-3
+
+                                border-none
+                                rounded-[8px]
+
+                                bg-[var(--background)]
+
+                                text-[12px]
+                                text-[var(--text)]
+
+                                outline-none
+
+                                focus:ring-[3px]
+                                focus:ring-[#087f5b14]
+                            "
                                     >
-                                        <option value="">Select category</option>
-                                        <option value="Faith">Faith</option>
-                                        <option value="Prayer">Prayer</option>
-                                        <option value="Teaching">Teaching</option>
-                                        <option value="Worship">Worship</option>
-                                        <option value="Praise">Praise</option>
+                                        <option value="">
+                                            Select category
+                                        </option>
+
+                                        <option value="Faith">
+                                            Faith
+                                        </option>
+
+                                        <option value="Prayer">
+                                            Prayer
+                                        </option>
+
+                                        <option value="Teaching">
+                                            Teaching
+                                        </option>
+
+                                        <option value="Worship">
+                                            Worship
+                                        </option>
+
+                                        <option value="Praise">
+                                            Praise
+                                        </option>
+
                                     </select>
+
                                 </div>
 
                             </div>
 
-                            <div className="form-row">
-                                <div className="form-group">
-                                    <label>Sermon Date</label>
+
+                            {/* =========================
+                    DATE + DURATION
+                ========================== */}
+                            <div className="grid grid-cols-2 gap-[15px]">
+
+                                {/* Date */}
+                                <div className="mb-[18px]">
+
+                                    <label
+                                        className="
+                                block
+                                mb-[7px]
+
+                                text-[11px]
+                                font-semibold
+                                text-[var(--text)]
+                            "
+                                    >
+                                        Sermon Date
+                                    </label>
+
                                     <input
                                         type="date"
                                         name="date"
                                         required
+                                        className="
+                                w-full
+                                h-[42px]
+
+                                px-3
+
+                                border-none
+                                rounded-[8px]
+
+                                bg-[var(--background)]
+
+                                text-[12px]
+                                text-[var(--text)]
+
+                                outline-none
+
+                                focus:ring-[3px]
+                                focus:ring-[#087f5b14]
+                            "
                                     />
+
                                 </div>
 
-                                <div className="form-group">
-                                    <label>Duration</label>
+
+                                {/* Duration */}
+                                <div className="mb-[18px]">
+
+                                    <label
+                                        className="
+                                block
+                                mb-[7px]
+
+                                text-[11px]
+                                font-semibold
+                                text-[var(--text)]
+                            "
+                                    >
+                                        Duration
+                                    </label>
+
                                     <input
                                         type="text"
                                         name="duration"
                                         placeholder="e.g. 45:00"
                                         required
+                                        className="
+                                w-full
+                                h-[42px]
+
+                                px-3
+
+                                border-none
+                                rounded-[8px]
+
+                                bg-[var(--background)]
+
+                                text-[12px]
+                                text-[var(--text)]
+
+                                outline-none
+
+                                placeholder:text-[#a7aebb]
+
+                                focus:ring-[3px]
+                                focus:ring-[#087f5b14]
+                            "
                                     />
+
                                 </div>
+
                             </div>
 
-                            <div className="form-group">
-                                <label>Description</label>
+
+                            {/* =========================
+                    DESCRIPTION
+                ========================== */}
+                            <div className="mb-[18px]">
+
+                                <label
+                                    className="
+                            block
+                            mb-[7px]
+
+                            text-[11px]
+                            font-semibold
+                            text-[var(--text)]
+                        "
+                                >
+                                    Description
+                                </label>
+
                                 <textarea
                                     name="description"
                                     rows="5"
                                     placeholder="Write a short description of the sermon..."
                                     required
+                                    className="
+                            w-full
+                            min-h-[110px]
+
+                            p-3
+
+                            border-none
+                            rounded-[8px]
+
+                            bg-[var(--background)]
+
+                            text-[12px]
+                            text-[var(--text)]
+
+                            outline-none
+
+                            resize-y
+
+                            leading-[1.5]
+
+                            placeholder:text-[#a7aebb]
+
+                            focus:ring-[3px]
+                            focus:ring-[#087f5b14]
+                        "
                                 />
+
                             </div>
 
-                            <div className="form-group">
-                                <label>Thumbnail</label>
 
-                                <div className="file-input">
-                                    <strong>Choose sermon thumbnail</strong>
-                                    <span>JPG, PNG or WEBP</span>
+                            {/* =========================
+                    THUMBNAIL
+                ========================== */}
+                            <div className="mb-[18px]">
 
+                                <label
+                                    className="
+                            block
+                            mb-[7px]
+
+                            text-[11px]
+                            font-semibold
+                            text-[var(--text)]
+                        "
+                                >
+                                    Thumbnail
+                                </label>
+
+
+                                <div
+                                    className="
+                            relative
+
+                            min-h-[68px]
+
+                            flex
+                            items-center
+
+                            gap-3
+
+                            px-[14px]
+                            py-3
+
+                            border
+                            border-dashed
+                            border-[#cfd5dd]
+
+                            rounded-[9px]
+
+                            bg-transparent
+
+                            overflow-hidden
+
+                            transition-all
+                            duration-200
+
+                            hover:border-[#1d1d46]
+                            hover:bg-[#f8fcfa]
+                        "
+                                >
+
+                                    {/* Icon */}
+                                    <div
+                                        className="
+                                w-[38px]
+                                h-[38px]
+                                shrink-0
+
+                                flex
+                                items-center
+                                justify-center
+
+                                rounded-[8px]
+
+                                bg-[#eaf7f1]
+
+                                text-[#1d1d46]
+
+                                text-[15px]
+                            "
+                                    >
+                                        🖼️
+                                    </div>
+
+
+                                    {/* Text */}
+                                    <div className="flex-1 min-w-0">
+
+                                        <strong
+                                            className="
+                                    block
+                                    mb-1
+
+                                    text-[11px]
+                                    text-[#394253]
+                                "
+                                        >
+                                            Choose sermon thumbnail
+                                        </strong>
+
+                                        <span className="block text-[9px] text-[#929baa]">
+                                            {thumbnailFile
+                                                ? thumbnailFile.name
+                                                : "JPG, PNG or WEBP"}
+                                        </span>
+
+                                    </div>
+
+
+                                    {/* Invisible actual file input */}
                                     <input
                                         type="file"
                                         name="thumbnail"
                                         accept="image/*"
+                                        onChange={(event) => {
+                                            setThumbnailFile(event.target.files[0]);
+                                        }}
+                                        className="
+        absolute
+        inset-0
+        w-full
+        h-full
+        opacity-0
+        cursor-pointer
+    "
                                     />
+
                                 </div>
+
                             </div>
 
-                            <div className="form-group">
-                                <label>Sermon Video</label>
 
-                                <div className="file-input">
-                                    <strong>Choose sermon video</strong>
-                                    <span>MP4, WebM or MOV</span>
+                            {/* =========================
+                    VIDEO
+                ========================== */}
+                            <div className="mb-[18px]">
 
+                                <label
+                                    className="
+                            block
+                            mb-[7px]
+
+                            text-[11px]
+                            font-semibold
+                            text-[var(--text)]
+                        "
+                                >
+                                    Sermon Video
+                                </label>
+
+
+                                <div
+                                    className="
+                            relative
+
+                            min-h-[68px]
+
+                            flex
+                            items-center
+
+                            gap-3
+
+                            px-[14px]
+                            py-3
+
+                            border
+                            border-dashed
+                            border-[#cfd5dd]
+
+                            rounded-[9px]
+
+                            bg-transparent
+
+                            overflow-hidden
+
+                            transition-all
+                            duration-200
+
+                            hover:border-[#1d1d46]
+                            hover:bg-[#f8fcfa]
+                        "
+                                >
+
+                                    {/* Icon */}
+                                    <div
+                                        className="
+                                w-[38px]
+                                h-[38px]
+                                shrink-0
+
+                                flex
+                                items-center
+                                justify-center
+
+                                rounded-[8px]
+
+                                bg-[#eaf7f1]
+
+                                text-[#1d1d46]
+
+                                text-[15px]
+                            "
+                                    >
+                                        🎥
+                                    </div>
+
+
+                                    {/* Text */}
+                                    <div className="flex-1 min-w-0">
+
+                                        <strong
+                                            className="
+                                    block
+                                    mb-1
+
+                                    text-[11px]
+                                    text-[#394253]
+                                "
+                                        >
+                                            Choose sermon video
+                                        </strong>
+
+                                        <span className="block text-[9px] text-[#929baa]">
+                                            {videoFile
+                                                ? videoFile.name
+                                                : "MP4, WebM or MOV"}
+                                        </span>
+
+                                    </div>
+
+
+                                    {/* Invisible file input */}
                                     <input
                                         type="file"
                                         name="video"
                                         accept="video/*"
+                                        onChange={(event) => {
+                                            setVideoFile(event.target.files[0]);
+                                        }}
+                                        className=" absolute inset-0 w-full h-full opacity-0 cursor-pointer
+    "
                                     />
                                 </div>
+
                             </div>
 
-                            <div className="modal-actions">
+
+                            {/* =========================
+                    MODAL ACTIONS
+                ========================== */}
+                            <div
+                                className="
+                        flex
+                        justify-end
+                        gap-[10px]
+
+                        pt-2
+                    "
+                            >
+
+                                {/* Cancel */}
                                 <button
                                     type="button"
-                                    onClick={() => setShowAddModal(false)}
+                                    onClick={() => {
+                                        setShowAddModal(false);
+                                        setThumbnailFile(null);
+                                        setVideoFile(null);
+                                    }}
+                                    className="
+                            h-10
+
+                            px-[17px]
+
+                            border-none
+                            rounded-[8px]
+
+                            bg-[var(--background)]
+
+                            text-[#657084]
+                            text-[11px]
+                            font-semibold
+
+                            transition-colors
+                            duration-200
+
+                            hover:bg-[#f7f8fa]
+                        "
                                 >
                                     Cancel
                                 </button>
 
-                                <button type="submit">
-                                    + Add Sermon
+
+                                {/* Add Sermon */}
+                                <button
+                                    type="submit"
+                                    className="
+                            h-10
+
+                            px-[17px]
+
+                            flex
+                            items-center
+                            gap-2
+
+                            border-none
+                            rounded-[8px]
+
+                            bg-[#1d1d46]
+
+                            text-white
+                            text-[11px]
+                            font-semibold
+
+                            transition-all
+                            duration-200
+
+                            hover:bg-[#3a3a7d]
+                            hover:-translate-y-[1px]
+                        "
+                                >
+                                    <span>+</span>
+                                    Add Sermon
                                 </button>
+
                             </div>
+
                         </form>
+
                     </div>
+
                 </div>
             )}
 
