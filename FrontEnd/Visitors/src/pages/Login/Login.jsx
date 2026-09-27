@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 import ScrollReveal from "../../components/ScrollReveal/ScrollReveal";
+
 
 function Login() {
     const [showPassword, setShowPassword] = useState(false);
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <main
@@ -178,7 +182,13 @@ function Login() {
 
                             {/* FORM */}
                             <form
-                                onSubmit={(event) => event.preventDefault()}
+                                onSubmit={(event) => {
+                                    event.preventDefault()
+                                    login();
+                                    navigate("/sermons");
+                                }
+
+                                }
                                 className="mt-8"
                             >
                                 {/* EMAIL */}
