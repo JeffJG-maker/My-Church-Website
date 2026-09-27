@@ -5,10 +5,10 @@ export const heroSlides = [
     },
     {
         image: "/media/welcomePhoto.png",
-        alt: "Welcome to Living Faith Church Iguosa",
+        alt: "Welcome toLiving Faith Church Iguosa",
     },
     {
-        image: "/media/Treasuring Christ.png",
+        image: "/media/Treasuring_Christ.png",
         alt: "Treasuring Christ",
     },
     {
@@ -20,7 +20,7 @@ export const heroSlides = [
         alt: "Living Faith Church",
     },
     {
-        image: "/media/A Prayer gathering.jpg",
+        image: "/media/A_Prayer_gathering.jpg",
         alt: "Prayer gathering",
     },
     {

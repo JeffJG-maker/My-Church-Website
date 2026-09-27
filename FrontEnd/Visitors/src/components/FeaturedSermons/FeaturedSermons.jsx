@@ -18,7 +18,7 @@ const sermons = [
         speaker: "Pastor",
         date: "May 25, 2025",
         category: "Prayer",
-        image: "/media/A Prayer gathering.jpg",
+        image: "/media/A_Prayer_gathering.jpg",
         description:
             "Learn how consistent and fervent prayer strengthens your relationship with God and produces supernatural results.",
     },
@@ -48,7 +48,7 @@ const sermons = [
         speaker: "Pastor",
         date: "May 4, 2025",
         category: "Christian Living",
-        image: "/media/Treasuring Christ.png",
+        image: "/media/Treasuring_Christ.png",
         description:
             "Discover the value of making Christ the center of your life and treasuring your relationship with Him above all else.",
     },
