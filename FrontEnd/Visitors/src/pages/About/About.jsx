@@ -174,7 +174,7 @@ function About() {
               "
                         >
                             <img
-                                src="/media/AboutUsImage.png"
+                                src="public/media/AboutUsImage.png"
                                 alt="Living Faith Church Iguosa"
                                 className="
                   h-[420px]
