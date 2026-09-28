@@ -6,6 +6,7 @@ const sermons = [
         category: "Wisdom",
         type: "video",
         thumbnail: "/media/Unveling the wonders in the word.png",
+        mediaUrl: "",
         description:
             "A powerful message on how divine wisdom produces peace and supernatural favour in the life of a believer.",
     },
@@ -17,8 +18,9 @@ const sermons = [
         category: "Prayer",
         type: "video",
         thumbnail: "/media/PowerOfPrayerThumbnail.jpg",
+        mediaUrl: "",
         description:
-            "A message encouraging believers to understand and engage the power of prayer.",
+            "A faith-building message encouraging believers to understand and engage the power of prayer.",
     },
 
     {
@@ -28,6 +30,7 @@ const sermons = [
         category: "Consecration",
         type: "video",
         thumbnail: "/media/Power Of ConsecrationThumbnail.jpg",
+        mediaUrl: "",
         description:
             "A message about the importance and power of living a consecrated life.",
     },
@@ -39,6 +42,7 @@ const sermons = [
         category: "Faith",
         type: "video",
         thumbnail: "/media/Walking By Faith Thumbnail.jpg",
+        mediaUrl: "",
         description:
             "A faith-building message about trusting God and walking according to His Word.",
     },
@@ -50,6 +54,7 @@ const sermons = [
         category: "Faith",
         type: "video",
         thumbnail: "/media/Treasuring Christ.png",
+        mediaUrl: "",
         description:
             "A message centered on the value of Christ and making Him the treasure of our lives.",
     },
@@ -61,6 +66,7 @@ const sermons = [
         category: "Faith",
         type: "video",
         thumbnail: "/media/Living Patience  Faith.png",
+        mediaUrl: "",
         description:
             "A message encouraging believers to live consistently by faith in God.",
     },
@@ -72,6 +78,7 @@ const sermons = [
         category: "Wisdom",
         type: "video",
         thumbnail: "/media/purposeThumbnail.jpg",
+        mediaUrl: "",
         description:
             "A message about discovering and walking in God's purpose.",
     },
@@ -83,6 +90,7 @@ const sermons = [
         category: "Faith",
         type: "video",
         thumbnail: "/media/theCross.png",
+        mediaUrl: "",
         description:
             "A message pointing believers to the significance of the cross of Christ.",
     },
