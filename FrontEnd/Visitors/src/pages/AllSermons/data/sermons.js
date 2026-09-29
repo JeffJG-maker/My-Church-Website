@@ -5,7 +5,7 @@ const sermons = [
         speaker: "Living Faith Church Iguosa",
         category: "Wisdom",
         type: "video",
-        thumbnail: "/media/Unveling the wonders in the word.png",
+        thumbnail: "/media/Unveling_the_wonders_in_the_word.png",
         mediaUrl: "",
         description:
             "A powerful message on how divine wisdom produces peace and supernatural favour in the life of a believer.",
@@ -29,7 +29,7 @@ const sermons = [
         speaker: "Living Faith Church Iguosa",
         category: "Consecration",
         type: "video",
-        thumbnail: "/media/Power Of ConsecrationThumbnail.jpg",
+        thumbnail: "/media/Power_Of_ConsecrationThumbnail.jpg",
         mediaUrl: "",
         description:
             "A message about the importance and power of living a consecrated life.",
@@ -41,7 +41,7 @@ const sermons = [
         speaker: "Living Faith Church Iguosa",
         category: "Faith",
         type: "video",
-        thumbnail: "/media/Walking By Faith Thumbnail.jpg",
+        thumbnail: "/media/Walking_By_Faith_Thumbnail.jpg",
         mediaUrl: "",
         description:
             "A faith-building message about trusting God and walking according to His Word.",
@@ -53,7 +53,7 @@ const sermons = [
         speaker: "Living Faith Church Iguosa",
         category: "Faith",
         type: "video",
-        thumbnail: "/media/Treasuring Christ.png",
+        thumbnail: "/media/Treasuring_Christ.png",
         mediaUrl: "",
         description:
             "A message centered on the value of Christ and making Him the treasure of our lives.",
@@ -65,7 +65,7 @@ const sermons = [
         speaker: "Living Faith Church Iguosa",
         category: "Faith",
         type: "video",
-        thumbnail: "/media/Living Patience  Faith.png",
+        thumbnail: "/media/Living_Patience_Faith.png",
         mediaUrl: "",
         description:
             "A message encouraging believers to live consistently by faith in God.",
