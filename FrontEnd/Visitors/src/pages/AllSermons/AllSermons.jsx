@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import SermonHeader from "./components/SermonHeader";
 import SermonSidebar from "./components/SermonSidebar";
-import sermons from "./data/sermons";
 
 function AllSermons() {
     const [selectedCategory, setSelectedCategory] = useState("All");
@@ -10,8 +9,42 @@ function AllSermons() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [shareMessage, setShareMessage] = useState("");
+    const [mediaError, setMediaError] = useState(false);
+
+    const [sermons, setSermons] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [fetchError, setFetchError] = useState("");
 
     const mediaRef = useRef(null);
+
+    // Fetch sermons from the JSON API
+    useEffect(() => {
+        const fetchSermons = async () => {
+            try {
+                setIsLoading(true);
+                setFetchError("");
+
+                const response = await fetch("/data/sermons.json");
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch sermons");
+                }
+
+                const data = await response.json();
+
+                setSermons(data);
+            } catch (error) {
+                console.error(error);
+                setFetchError(
+                    "Unable to load sermons right now. Please try again."
+                );
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSermons();
+    }, []);
 
     const categories = [
         "All",
@@ -47,43 +80,65 @@ function AllSermons() {
         ].slice(0, 3)
         : [];
 
-    /*
-     * Read a sermon ID from the URL.
-     *
-     * Example:
-     * /sermons?sermon=2
-     *
-     * When the page loads, we find sermon ID 2
-     * and automatically open that sermon.
-     */
-    useEffect(() => {
+    const getSermonFromUrl = () => {
         const params = new URLSearchParams(window.location.search);
         const sermonId = Number(params.get("sermon"));
 
         if (!sermonId) {
+            return null;
+        }
+
+        return sermons.find((sermon) => sermon.id === sermonId) || null;
+    };
+
+    // Open sermon from URL after sermons have been fetched
+    useEffect(() => {
+        if (isLoading || sermons.length === 0) {
             return;
         }
 
-        const sermonFromUrl = sermons.find(
-            (sermon) => sermon.id === sermonId
-        );
+        const sermonFromUrl = getSermonFromUrl();
 
         if (sermonFromUrl) {
             setSelectedSermon(sermonFromUrl);
             setIsPlaying(false);
+            setMediaError(false);
 
             window.scrollTo({
                 top: 0,
                 behavior: "smooth",
             });
         }
-    }, []);
+    }, [sermons, isLoading]);
+
+    // Handle browser Back / Forward buttons
+    useEffect(() => {
+        const handlePopState = () => {
+            const sermonFromUrl = getSermonFromUrl();
+
+            setSelectedSermon(sermonFromUrl);
+            setIsPlaying(false);
+            setMediaError(false);
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
+        };
+
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, [sermons]);
 
     const handleSearchSelect = (sermon) => {
         setSelectedSermon(sermon);
         setIsPlaying(false);
+        setMediaError(false);
 
-        window.history.replaceState(
+        window.history.pushState(
             {},
             "",
             `/sermons?sermon=${sermon.id}`
@@ -98,8 +153,9 @@ function AllSermons() {
     const handleSermonClick = (sermon) => {
         setSelectedSermon(sermon);
         setIsPlaying(false);
+        setMediaError(false);
 
-        window.history.replaceState(
+        window.history.pushState(
             {},
             "",
             `/sermons?sermon=${sermon.id}`
@@ -114,6 +170,7 @@ function AllSermons() {
     const handleBackToSermons = () => {
         setSelectedSermon(null);
         setIsPlaying(false);
+        setMediaError(false);
 
         window.history.replaceState({}, "", "/sermons");
 
@@ -132,13 +189,20 @@ function AllSermons() {
             mediaRef.current.pause();
             setIsPlaying(false);
         } else {
-            mediaRef.current.play();
-            setIsPlaying(true);
+            mediaRef.current.play().catch(() => {
+                setMediaError(true);
+                setIsPlaying(false);
+            });
         }
     };
 
     const handleMediaEnded = () => {
         setIsPlaying(false);
+    };
+
+    const handleMediaError = () => {
+        setIsPlaying(false);
+        setMediaError(true);
     };
 
     const handleShare = async () => {
@@ -224,7 +288,6 @@ function AllSermons() {
                 {selectedSermon ? (
                     <section className="min-h-screen px-4 py-6 sm:px-6 lg:px-10">
                         <div className="mx-auto max-w-6xl">
-                            {/* Back button */}
                             <button
                                 onClick={handleBackToSermons}
                                 className="mb-6 inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:-translate-x-1 hover:border-[#f7b731] hover:text-[#f7b731] dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
@@ -233,10 +296,10 @@ function AllSermons() {
                                 Back to Sermons
                             </button>
 
-                            {/* Player */}
-                            <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl dark:border-white/10 dark:bg-[#121222]">
+                            <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl shadow-[#e0e0ff] dark:border-white/10 dark:bg-[#121222] dark:shadow-none">
                                 <div className="relative aspect-video overflow-hidden bg-black">
-                                    {selectedSermon.mediaUrl ? (
+                                    {selectedSermon.mediaUrl &&
+                                        !mediaError ? (
                                         selectedSermon.type === "video" ? (
                                             <video
                                                 ref={mediaRef}
@@ -251,6 +314,7 @@ function AllSermons() {
                                                     setIsPlaying(false)
                                                 }
                                                 onEnded={handleMediaEnded}
+                                                onError={handleMediaError}
                                             />
                                         ) : (
                                             <div className="relative flex h-full items-center justify-center overflow-hidden">
@@ -289,16 +353,50 @@ function AllSermons() {
                                                         onEnded={
                                                             handleMediaEnded
                                                         }
+                                                        onError={
+                                                            handleMediaError
+                                                        }
                                                     />
                                                 </div>
                                             </div>
                                         )
+                                    ) : mediaError ? (
+                                        <div className="flex h-full items-center justify-center px-6 text-center">
+                                            <div>
+                                                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/15 text-red-500">
+                                                    <i className="fa-solid fa-triangle-exclamation text-2xl" />
+                                                </div>
+
+                                                <h2 className="mt-5 text-lg font-bold text-white">
+                                                    Unable to load this media
+                                                </h2>
+
+                                                <p className="mt-2 max-w-md text-sm text-gray-400">
+                                                    The sermon media could not
+                                                    be loaded. Please try again
+                                                    later.
+                                                </p>
+
+                                                <button
+                                                    onClick={() =>
+                                                        setMediaError(false)
+                                                    }
+                                                    className="mt-5 rounded-xl bg-[#f7b731] px-5 py-2.5 text-sm font-bold text-[#0b0b25] transition hover:-translate-y-0.5"
+                                                >
+                                                    Try Again
+                                                </button>
+                                            </div>
+                                        </div>
                                     ) : (
                                         <>
                                             <img
                                                 src={selectedSermon.thumbnail}
                                                 alt={selectedSermon.title}
                                                 className="h-full w-full object-cover"
+                                                onError={(event) => {
+                                                    event.currentTarget.style.display =
+                                                        "none";
+                                                }}
                                             />
 
                                             <div className="absolute inset-0 flex items-center justify-center bg-black/55">
@@ -323,7 +421,6 @@ function AllSermons() {
                                     )}
                                 </div>
 
-                                {/* Sermon information */}
                                 <div className="p-5 sm:p-7 lg:p-9">
                                     <div className="mb-4 flex flex-wrap gap-2">
                                         <span className="rounded-full bg-[#f7b731]/15 px-3 py-1 text-xs font-bold text-[#b27a00] dark:text-[#f7b731]">
@@ -344,23 +441,22 @@ function AllSermons() {
                                             <i className="fa-solid fa-user" />
                                         </div>
 
-                                        <span>
-                                            {selectedSermon.speaker}
-                                        </span>
+                                        <span>{selectedSermon.speaker}</span>
                                     </div>
 
                                     <p className="mt-6 max-w-4xl text-sm leading-7 text-gray-600 dark:text-gray-300 sm:text-base">
                                         {selectedSermon.description}
                                     </p>
 
-                                    {/* Action buttons */}
                                     <div className="mt-7 flex flex-wrap items-center gap-3">
                                         <button
                                             onClick={handlePlayPause}
                                             disabled={
-                                                !selectedSermon.mediaUrl
+                                                !selectedSermon.mediaUrl ||
+                                                mediaError
                                             }
-                                            className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition ${selectedSermon.mediaUrl
+                                            className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-bold transition ${selectedSermon.mediaUrl &&
+                                                    !mediaError
                                                     ? "bg-[#f7b731] text-[#0b0b25] hover:-translate-y-0.5 hover:shadow-lg"
                                                     : "cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-white/10 dark:text-gray-500"
                                                 }`}
@@ -375,11 +471,10 @@ function AllSermons() {
                                             {isPlaying ? "Pause" : "Play"}
                                         </button>
 
-                                        {selectedSermon.mediaUrl ? (
+                                        {selectedSermon.mediaUrl &&
+                                            !mediaError ? (
                                             <a
-                                                href={
-                                                    selectedSermon.mediaUrl
-                                                }
+                                                href={selectedSermon.mediaUrl}
                                                 download
                                                 className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-bold text-gray-700 transition hover:-translate-y-0.5 hover:border-[#f7b731] hover:text-[#b27a00] dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:text-[#f7b731]"
                                             >
@@ -422,7 +517,6 @@ function AllSermons() {
                                 </div>
                             </div>
 
-                            {/* Related sermons */}
                             {relatedSermons.length > 0 && (
                                 <section className="mt-10">
                                     <div className="mb-5">
@@ -442,7 +536,7 @@ function AllSermons() {
                                                 onClick={() =>
                                                     handleSermonClick(sermon)
                                                 }
-                                                className="group overflow-hidden rounded-2xl border border-gray-200 bg-white text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-white/10 dark:bg-[#121222]"
+                                                className="group overflow-hidden rounded-2xl border border-gray-200 bg-white text-left shadow-sm shadow-[#e0e0ff] transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#e0e0ff] dark:border-white/10 dark:bg-[#121222] dark:shadow-none dark:hover:shadow-none"
                                             >
                                                 <div className="relative aspect-video overflow-hidden">
                                                     <img
@@ -481,7 +575,6 @@ function AllSermons() {
                 ) : (
                     <section className="min-h-screen px-4 py-8 sm:px-6 lg:px-10">
                         <div className="mx-auto max-w-7xl">
-                            {/* Page heading */}
                             <div className="mb-8">
                                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#b27a00] dark:text-[#f7b731]">
                                     Living Faith Church Iguosa
@@ -491,15 +584,14 @@ function AllSermons() {
                                     All Sermons
                                 </h1>
 
-                                <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400 sm:text-base">
+                                <p className="mt-3 max-w-2xl leading-6 text-gray-500 dark:text-gray-400 lg:text-[13px]">
                                     Explore messages that will strengthen your
                                     faith, deepen your understanding of God's
                                     Word, and encourage your walk with Christ.
                                 </p>
                             </div>
 
-                            {/* Filters */}
-                            <div className="mb-8 flex flex-col gap-5 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-[#121222] sm:p-5 lg:flex-row lg:items-center lg:justify-between">
+                            <div className="mb-8 flex flex-col gap-5 rounded-2xl bg-white p-4 shadow-[0_15px_40px_#e0e0ff] dark:border-white/10 dark:bg-[#121222] sm:p-5 lg:flex-row lg:items-center lg:justify-between">
                                 <div>
                                     <p className="mb-3 text-xs font-bold uppercase tracking-wider text-gray-400">
                                         Categories
@@ -550,19 +642,61 @@ function AllSermons() {
                                 </div>
                             </div>
 
-                            {/* Sermon count */}
                             <div className="mb-5 flex items-center justify-between">
                                 <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
-                                    {filteredSermons.length}{" "}
-                                    {filteredSermons.length === 1
-                                        ? "sermon"
-                                        : "sermons"}{" "}
-                                    available
+                                    {isLoading
+                                        ? "Loading sermons..."
+                                        : `${filteredSermons.length} ${filteredSermons.length === 1
+                                            ? "sermon"
+                                            : "sermons"
+                                        } available`}
                                 </p>
                             </div>
 
-                            {/* Sermon cards */}
-                            {filteredSermons.length > 0 ? (
+                            {isLoading ? (
+                                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                                    {[1, 2, 3, 4, 5, 6].map((item) => (
+                                        <div
+                                            key={item}
+                                            className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm shadow-[#e0e0ff] dark:border-white/10 dark:bg-[#121222] dark:shadow-none"
+                                        >
+                                            <div className="aspect-video animate-pulse bg-gray-200 dark:bg-white/10" />
+
+                                            <div className="space-y-4 p-5">
+                                                <div className="h-5 w-4/5 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
+
+                                                <div className="h-4 w-2/5 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
+
+                                                <div className="h-4 w-1/3 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : fetchError ? (
+                                <div className="rounded-3xl border border-dashed border-red-300 bg-white px-6 py-16 text-center shadow-sm shadow-[#e0e0ff] dark:border-red-500/30 dark:bg-[#121222] dark:shadow-none">
+                                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+                                        <i className="fa-solid fa-triangle-exclamation text-xl" />
+                                    </div>
+
+                                    <h2 className="mt-5 text-xl font-bold">
+                                        Unable to load sermons
+                                    </h2>
+
+                                    <p className="mx-auto mt-2 max-w-md text-sm text-gray-500 dark:text-gray-400">
+                                        {fetchError}
+                                    </p>
+
+                                    <button
+                                        onClick={() =>
+                                            window.location.reload()
+                                        }
+                                        className="mt-6 rounded-xl bg-[#f7b731] px-5 py-3 text-sm font-bold text-[#0b0b25] transition hover:-translate-y-0.5 hover:shadow-lg"
+                                    >
+                                        <i className="fa-solid fa-rotate-right mr-2" />
+                                        Try Again
+                                    </button>
+                                </div>
+                            ) : filteredSermons.length > 0 ? (
                                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                                     {filteredSermons.map((sermon) => (
                                         <button
@@ -570,7 +704,7 @@ function AllSermons() {
                                             onClick={() =>
                                                 handleSermonClick(sermon)
                                             }
-                                            className="group overflow-hidden rounded-3xl border border-gray-200 bg-white text-left shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-2xl dark:border-white/10 dark:bg-[#121222]"
+                                            className="group overflow-hidden rounded-3xl border border-gray-200 bg-white text-left shadow-sm shadow-[#e0e0ff] transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#e0e0ff] dark:border-white/10 dark:bg-[#121222] dark:shadow-none dark:hover:shadow-none"
                                         >
                                             <div className="relative aspect-video overflow-hidden">
                                                 <img
@@ -606,6 +740,7 @@ function AllSermons() {
 
                                                 <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                                                     <i className="fa-solid fa-user text-xs" />
+
                                                     <span>
                                                         {sermon.speaker}
                                                     </span>
@@ -626,7 +761,7 @@ function AllSermons() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center dark:border-white/10 dark:bg-[#121222]">
+                                <div className="rounded-3xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center shadow-sm shadow-[#e0e0ff] dark:border-white/10 dark:bg-[#121222] dark:shadow-none">
                                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-white/5">
                                         <i className="fa-solid fa-video-slash text-xl" />
                                     </div>

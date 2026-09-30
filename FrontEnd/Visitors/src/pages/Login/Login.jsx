@@ -90,7 +90,7 @@ function Login() {
                         >
                             <div className="flex items-center gap-3">
                                 <img
-                                    src="/media/Big Winnersogo.png"
+                                    src="/media/Big_Winnersogo.png"
                                     alt="Living Faith Church Iguosa"
                                     className="h-14 w-16 object-contain"
                                 />
