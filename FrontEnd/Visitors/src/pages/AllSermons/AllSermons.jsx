@@ -24,7 +24,7 @@ function AllSermons() {
                 setIsLoading(true);
                 setFetchError("");
 
-                const response = await fetch("/data/sermons.json");
+                const response = await fetch("http://localhost:5000/api/sermons");
 
                 if (!response.ok) {
                     throw new Error("Failed to fetch sermons");
@@ -262,6 +262,7 @@ function AllSermons() {
                 setSelectedCategory={setSelectedCategory}
                 selectedType={selectedType}
                 setSelectedType={setSelectedType}
+                
             />
 
             {isMobileMenuOpen && (
@@ -282,7 +283,7 @@ function AllSermons() {
                         />
                     </div>
                 </div>
-            )}
+                )}
 
             <main className="lg:ml-72">
                 {selectedSermon ? (

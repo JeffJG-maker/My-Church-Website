@@ -19,6 +19,7 @@
         "mediaUrl": "",
         "description": "A faith-building message encouraging believers to understand and engage the power of prayer."
     },
+
     {
         "id": 3,
         "title": "The Power of Consecration",
@@ -29,6 +30,7 @@
         "mediaUrl": "",
         "description": "A message about the importance and power of living a consecrated life."
     },
+
     {
         "id": 4,
         "title": "Walking by Faith",
@@ -39,6 +41,7 @@
         "mediaUrl": "",
         "description": "A faith-building message about trusting God and walking according to His Word."
     },
+    
     {
         "id": 5,
         "title": "Treasuring Christ",

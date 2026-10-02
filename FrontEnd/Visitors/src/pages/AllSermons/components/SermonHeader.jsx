@@ -7,6 +7,7 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
     const [searchValue, setSearchValue] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [sermons, setSermons] = useState([])
 
     const [showNotifications, setShowNotifications] = useState(false);
 
@@ -43,6 +44,25 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
     const unreadCount = notifications.filter(
         (notification) => !notification.read
     ).length;
+
+    useEffect(() => {
+        const fetchSermons = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/api/sermons");
+                if (!response.ok) {
+                    throw new Error("Failed to fetch Sermons")
+                }
+                const data = await response.json();
+                setSermons(data)
+
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        fetchSermons();
+    }, []);
+
 
     const searchCheck = (value) => {
         const searchText = value.trim();
@@ -315,7 +335,7 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
 
                     {/* Notification Dropdown */}
                     {showNotifications && (
-                        <div className="absolute right-0 top-full z-50 mt-3 w-[340px] overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-[#333344] dark:bg-[#131323] sm:w-[380px]">
+                        <div className="absolute right-0 top-full z-50 mt-3 w-[340px] overflow-hidden rounded-2xl border-none bg-white shadow-2xl shadow-[#e0e0ff] dark:border-[#333344] dark:bg-[#131323] sm:w-[380px]">
 
                             {/* Header */}
                             <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-[#333344]">
@@ -362,8 +382,8 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                                     )
                                                 }
                                                 className={`flex w-full gap-3 border-b border-gray-100 px-5 py-4 text-left transition last:border-b-0 dark:border-[#333344] ${notification.read
-                                                        ? "bg-white dark:bg-[#131323]"
-                                                        : "bg-[#0d0761]/[0.03] hover:bg-gray-50 dark:bg-white/[0.03] dark:hover:bg-[#1f1f26]"
+                                                    ? "bg-white dark:bg-[#131323]"
+                                                    : "bg-[#0d0761]/[0.03] hover:bg-gray-50 dark:bg-white/[0.03] dark:hover:bg-[#1f1f26]"
                                                     }`}
                                             >
 
