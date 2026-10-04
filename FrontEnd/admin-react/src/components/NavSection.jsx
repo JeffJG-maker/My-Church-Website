@@ -4,7 +4,7 @@ const NavSection = ({ links, title, activePage, setActivePage }) => {
 
     return (
         <>
-            <div className="nav-section px-0 py-3">
+            <div className="nav-section px-0 py-1">
                 <span className="nav-section-title text-slate-600 text-[12px] font-bold">
                     {title}
                 </span>
