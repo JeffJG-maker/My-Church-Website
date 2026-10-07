@@ -1,379 +1,446 @@
-import { useState } from "react";
-import ScrollReveal from "../ScrollReveal/ScrollReveal";
-
-const sermons = [
-    {
-        id: 1,
-        title: "Walking By Faith And Not By Sight",
-        speaker: "Pastor",
-        date: "June 1, 2025",
-        category: "Faith",
-        image: "/media/FirstHomeImage.png",
-        description:
-            "Discover how to trust God completely and walk confidently according to His Word, even when circumstances appear uncertain.",
-    },
-    {
-        id: 2,
-        title: "The Power of Prayer",
-        speaker: "Pastor",
-        date: "May 25, 2025",
-        category: "Prayer",
-        image: "/media/A_Prayer_gathering.jpg",
-        description:
-            "Learn how consistent and fervent prayer strengthens your relationship with God and produces supernatural results.",
-    },
-    {
-        id: 3,
-        title: "Living A Life Of Purpose",
-        speaker: "Pastor",
-        date: "May 18, 2025",
-        category: "Purpose",
-        image: "/media/welcomePhoto.png",
-        description:
-            "Understand God's purpose for your life and discover how to live intentionally for His kingdom.",
-    },
-    {
-        id: 4,
-        title: "The Power Of Consecration",
-        speaker: "Pastor",
-        date: "May 11, 2025",
-        category: "Consecration",
-        image: "/media/theCross.png",
-        description:
-            "A message on separation unto God, spiritual discipline, and the power of living a consecrated life.",
-    },
-    {
-        id: 5,
-        title: "Treasuring Christ",
-        speaker: "Pastor",
-        date: "May 4, 2025",
-        category: "Christian Living",
-        image: "/media/Treasuring_Christ.png",
-        description:
-            "Discover the value of making Christ the center of your life and treasuring your relationship with Him above all else.",
-    },
-];
+import { useEffect, useState } from "react";
 
 function FeaturedSermons() {
+    const [sermons, setSermons] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [showPlayer, setShowPlayer] = useState(false);
+    const [showSermonList, setShowSermonList] = useState(false);
+
+    const baseUrl = import.meta.env.VITE_API_URL;
+
+    const getMediaUrl = (mediaUrl) => {
+        if (!mediaUrl) return "";
+
+        if (
+            mediaUrl.startsWith("http://") ||
+            mediaUrl.startsWith("https://")
+        ) {
+            return mediaUrl;
+        }
+
+        const cleanUrl = mediaUrl.replace(/^\/+/, "");
+
+        return `${baseUrl}/${cleanUrl}`;
+    };
+
+    useEffect(() => {
+        const fetchSermons = async () => {
+            try {
+                setLoading(true);
+                setError("");
+
+                const response = await fetch(`${baseUrl}/api/sermons`);
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch sermons.");
+                }
+
+                const data = await response.json();
+
+                const sortedSermons = [...data]
+                    .sort(
+                        (a, b) =>
+                            new Date(b.date).getTime() -
+                            new Date(a.date).getTime()
+                    )
+                    .slice(0, 5);
+
+                setSermons(sortedSermons);
+            } catch (err) {
+                console.error("Featured sermons error:", err);
+                setError("Unable to load featured sermons.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSermons();
+    }, [baseUrl]);
 
     const currentSermon = sermons[currentIndex];
 
-    const previousSermon = () => {
-        setCurrentIndex((current) =>
-            current === 0 ? sermons.length - 1 : current - 1
-        );
+    const handleSermonClick = (index) => {
+        const sermon = sermons[index];
+
+        if (!sermon) return;
+
+        setCurrentIndex(index);
+
+        if (sermon.mediaUrl) {
+            setShowPlayer(true);
+        } else {
+            setShowPlayer(false);
+        }
     };
 
-    const nextSermon = () => {
-        setCurrentIndex((current) =>
-            current === sermons.length - 1 ? 0 : current + 1
-        );
+    const handlePrevious = () => {
+        if (!sermons.length) return;
+
+        const newIndex =
+            currentIndex === 0
+                ? sermons.length - 1
+                : currentIndex - 1;
+
+        handleSermonClick(newIndex);
     };
 
-    return (
-        <section
-            className="
-        relative
-        z-10
-        w-full
-        overflow-hidden
-        bg-[#f1f1f1]
-        px-[5%]
-        py-20
-        text-[#030e5c]
+    const handleNext = () => {
+        if (!sermons.length) return;
 
-        transition-colors
-        duration-500
+        const newIndex =
+            currentIndex === sermons.length - 1
+                ? 0
+                : currentIndex + 1;
 
-        dark:bg-[#17182f]
-        dark:text-white
-      "
-        >
-            {/* SECTION TITLE */}
-            <ScrollReveal>
-                <div className="mx-auto mb-12 max-w-6xl">
-                    <div className="flex items-center gap-4">
-                        <h2
-                            className="
-                whitespace-nowrap
-                text-2xl
-                font-semibold
-                sm:text-3xl
-                lg:text-4xl
-              "
-                        >
-                            Featured Sermons
-                        </h2>
+        handleSermonClick(newIndex);
+    };
 
-                        <div className="h-px flex-1 bg-[#030e5c]/20 dark:bg-white/20"></div>
+    const handleWatchSermon = () => {
+        if (!currentSermon?.mediaUrl) {
+            alert("This sermon does not have a media file yet.");
+            return;
+        }
+
+        setShowPlayer(true);
+    };
+
+    if (loading) {
+        return (
+            <section className="bg-white px-5 py-20 text-[#17172b] dark:bg-[#101112] dark:text-white sm:px-8 lg:px-[7%]">
+                <div className="mx-auto max-w-7xl">
+
+                    {/* SECTION TITLE */}
+                    <div className="mx-auto mb-10 max-w-6xl text-center">
+                        <div className="mx-auto h-8 w-56 animate-pulse rounded bg-gray-200 dark:bg-[#181a1d]" />
+
+                        <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-gray-200 dark:bg-[#181a1d]" />
+
+                        <div className="mx-auto mt-4 h-4 max-w-xl animate-pulse rounded bg-gray-200 dark:bg-[#181a1d]" />
                     </div>
 
-                    <p
-                        className="
-              mt-3
-              max-w-2xl
-              text-sm
-              leading-6
-              text-gray-600
+                    {/* PLAYER SKELETON */}
+                    <div className="h-[80vh] max-h-[80vh] min-h-[420px] animate-pulse rounded-2xl bg-gray-100 dark:bg-[#181a1d]" />
+                </div>
+            </section>
+        );
+    }
 
-              dark:text-gray-300
-            "
-                    >
-                        Listen to messages that strengthen your faith, build your
-                        spiritual life and help you fulfill God's purpose.
+    if (error) {
+        return (
+            <section className="bg-white px-5 py-20 text-[#17172b] dark:bg-[#101112] dark:text-white sm:px-8 lg:px-[7%]">
+                <div className="mx-auto max-w-2xl text-center">
+                    <i className="fas fa-circle-exclamation text-3xl text-[#6c63ff] dark:text-[#9188ff]" />
+
+                    <h2 className="mt-4 text-xl font-semibold">
+                        Unable to load sermons
+                    </h2>
+
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        {error}
                     </p>
                 </div>
-            </ScrollReveal>
+            </section>
+        );
+    }
 
-            {/* SERMON AREA */}
-            <div className="mx-auto max-w-6xl">
-                <ScrollReveal>
-                    <div
-                        className="
-              grid
-              overflow-hidden
-              rounded-2xl
-              bg-white
-              shadow-[0_10px_35px_rgba(3,14,92,0.12)]
+    if (!sermons.length) {
+        return (
+            <section className="bg-white px-5 py-20 text-[#17172b] dark:bg-[#101112] dark:text-white sm:px-8 lg:px-[7%]">
+                <div className="mx-auto max-w-2xl text-center">
+                    <i className="fas fa-video-slash text-3xl text-[#6c63ff] dark:text-[#9188ff]" />
 
-              dark:bg-[#181a38]
-              dark:shadow-black/30
+                    <h2 className="mt-4 text-xl font-semibold">
+                        No sermons available
+                    </h2>
 
-              lg:grid-cols-[1.25fr_1fr]
-            "
-                    >
-                        {/* IMAGE */}
-                        <div className="relative min-h-[280px] overflow-hidden sm:min-h-[380px] lg:min-h-[430px]">
-                            <img
-                                src={currentSermon.image}
-                                alt={currentSermon.title}
-                                className="
-                  absolute
-                  inset-0
-                  h-full
-                  w-full
-                  object-cover
-                  transition-all
-                  duration-700
-                "
-                            />
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        New sermons will appear here when they are added.
+                    </p>
+                </div>
+            </section>
+        );
+    }
 
-                            {/* IMAGE OVERLAY */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
+    return (
+        <section className="bg-white px-5 py-20 pb-40 text-[#17172b] transition-colors duration-500 dark:bg-[#101112] dark:text-white sm:px-8 lg:px-[7%]">
 
-                            {/* CATEGORY */}
-                            <span
-                                className="
-                  absolute
-                  left-5
-                  top-5
-                  rounded-full
-                  bg-[#f7b731]
-                  px-3
-                  py-1
-                  text-xs
-                  font-bold
-                  uppercase
-                  tracking-wide
-                  text-[#0b0b25]
-                "
-                            >
-                                {currentSermon.category}
-                            </span>
+            <div className="mx-auto max-w-7xl">
 
-                            {/* IMAGE TEXT */}
-                            <div className="absolute bottom-6 left-6 right-6 text-white">
-                                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-white/75">
-                                    Featured Message
-                                </p>
+                {/* SECTION TITLE */}
+                <div className="mx-auto mb-10 max-w-6xl text-center">
+                    <h2 className="text-2xl font-semibold sm:text-3xl lg:text-4xl">
+                        Featured Sermons
+                    </h2>
 
-                                <h3 className="max-w-xl text-2xl font-semibold leading-tight sm:text-3xl">
-                                    {currentSermon.title}
-                                </h3>
-                            </div>
-                        </div>
+                    <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-[#6c63ff] dark:bg-[#7c6cff]" />
 
-                        {/* CONTENT */}
-                        <div className="flex flex-col justify-center p-7 sm:p-9 lg:p-10">
-                            <span className="text-xs font-bold uppercase tracking-widest text-[#bd1717] dark:text-[#f7b731]">
-                                {currentSermon.category}
-                            </span>
+                    <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-600 dark:text-gray-300">
+                        Listen to messages that strengthen your faith, build
+                        your spiritual life and help you fulfill God's purpose.
+                    </p>
+                </div>
 
-                            <h3 className="mt-3 text-2xl font-semibold leading-tight sm:text-3xl">
-                                {currentSermon.title}
-                            </h3>
+                {/* MAIN SERMON PLAYER */}
+                <div
+                    className="relative h-[80vh] max-h-[80vh] min-h-[420px] overflow-hidden rounded-2xl bg-black"
+                    onMouseEnter={() => setShowSermonList(true)}
+                    onMouseLeave={() => setShowSermonList(false)}
+                >
 
-                            <div className="mt-5 space-y-3 text-sm text-gray-600 dark:text-gray-300">
-                                <div className="flex items-center gap-3">
-                                    <i className="fas fa-user text-[#bd1717] dark:text-[#f7b731]"></i>
+                    {/* CURRENT SERMON */}
+                    <div className="absolute inset-0">
 
-                                    <span>{currentSermon.speaker}</span>
-                                </div>
+                        {showPlayer && currentSermon?.mediaUrl ? (
+                            <div className="flex h-full w-full items-center justify-center bg-black">
 
-                                <div className="flex items-center gap-3">
-                                    <i className="far fa-calendar text-[#bd1717] dark:text-[#f7b731]"></i>
+                                {currentSermon.type?.toLowerCase() === "audio" ? (
+                                    <div className="flex w-full max-w-xl flex-col items-center px-6 text-center">
 
-                                    <span>{currentSermon.date}</span>
-                                </div>
-                            </div>
+                                        <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#7c6cff]/10 text-3xl text-[#9188ff]">
+                                            <i className="fas fa-headphones" />
+                                        </div>
 
-                            <p className="mt-6 text-sm leading-7 text-gray-600 dark:text-gray-300">
-                                {currentSermon.description}
-                            </p>
+                                        <h3 className="mt-6 text-xl font-semibold text-white">
+                                            {currentSermon.title}
+                                        </h3>
 
-                            {/* ACTION */}
-                            <button
-                                type="button"
-                                className="
-                  mt-7
-                  flex
-                  w-fit
-                  items-center
-                  gap-2
-                  rounded-md
-                  bg-[#030e5c]
-                  px-5
-                  py-3
-                  text-sm
-                  font-semibold
-                  text-white
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:bg-[#020a43]
+                                        <p className="mt-2 text-sm text-gray-400">
+                                            {currentSermon.speaker}
+                                        </p>
 
-                  dark:bg-[#f7b731]
-                  dark:text-[#0b0b25]
-                  dark:hover:bg-[#e5a91f]
-                "
-                            >
-                                Watch Sermon
-
-                                <i className="far fa-play-circle text-lg"></i>
-                            </button>
-
-                            {/* CONTROLS */}
-                            <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-5 dark:border-white/10">
-                                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                                    {String(currentIndex + 1).padStart(2, "0")} /{" "}
-                                    {String(sermons.length).padStart(2, "0")}
-                                </p>
-
-                                <div className="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={previousSermon}
-                                        aria-label="Previous sermon"
-                                        className="
-                      flex
-                      h-10
-                      w-10
-                      items-center
-                      justify-center
-                      rounded-full
-                      border
-                      border-gray-200
-                      text-[#030e5c]
-                      transition-all
-                      duration-300
-                      hover:bg-[#030e5c]
-                      hover:text-white
-
-                      dark:border-white/10
-                      dark:text-white
-                      dark:hover:bg-[#f7b731]
-                      dark:hover:text-[#0b0b25]
-                    "
+                                        <audio
+                                            className="mt-8 w-full"
+                                            controls
+                                            autoPlay
+                                            src={getMediaUrl(
+                                                currentSermon.mediaUrl
+                                            )}
+                                        >
+                                            Your browser does not support audio
+                                            playback.
+                                        </audio>
+                                    </div>
+                                ) : (
+                                    <video
+                                        key={currentSermon.id}
+                                        className="h-full w-full object-contain"
+                                        controls
+                                        autoPlay
+                                        playsInline
+                                        src={getMediaUrl(
+                                            currentSermon.mediaUrl
+                                        )}
                                     >
-                                        <i className="fas fa-chevron-left"></i>
-                                    </button>
+                                        Your browser does not support video
+                                        playback.
+                                    </video>
+                                )}
 
-                                    <button
-                                        type="button"
-                                        onClick={nextSermon}
-                                        aria-label="Next sermon"
-                                        className="
-                      flex
-                      h-10
-                      w-10
-                      items-center
-                      justify-center
-                      rounded-full
-                      border
-                      border-gray-200
-                      text-[#030e5c]
-                      transition-all
-                      duration-300
-                      hover:bg-[#030e5c]
-                      hover:text-white
-
-                      dark:border-white/10
-                      dark:text-white
-                      dark:hover:bg-[#f7b731]
-                      dark:hover:text-[#0b0b25]
-                    "
-                                    >
-                                        <i className="fas fa-chevron-right"></i>
-                                    </button>
-                                </div>
                             </div>
-                        </div>
-                    </div>
-                </ScrollReveal>
-
-                {/* SERMON PREVIEWS */}
-                <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-                    {sermons.map((sermon, index) => (
-                        <button
-                            key={sermon.id}
-                            type="button"
-                            onClick={() => setCurrentIndex(index)}
-                            className={`
-                group
-                overflow-hidden
-                rounded-xl
-                text-left
-                transition-all
-                duration-300
-                ${currentIndex === index
-                                    ? "ring-2 ring-[#f7b731]"
-                                    : "opacity-75 hover:-translate-y-1 hover:opacity-100"
-                                }
-              `}
-                        >
-                            <div className="relative aspect-video overflow-hidden">
+                        ) : (
+                            <>
+                                {/* THUMBNAIL */}
                                 <img
-                                    src={sermon.image}
-                                    alt={sermon.title}
-                                    className="
-                    h-full
-                    w-full
-                    object-cover
-                    transition-transform
-                    duration-500
-                    group-hover:scale-105
-                  "
+                                    src={getMediaUrl(
+                                        currentSermon.thumbnail
+                                    )}
+                                    alt={currentSermon.title}
+                                    className="absolute inset-0 h-full w-full object-cover"
                                 />
 
-                                <div className="absolute inset-0 bg-black/25"></div>
+                                {/* DARK OVERLAY */}
+                                <div className="absolute inset-0 bg-black/55" />
 
-                                {currentIndex === index && (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#f7b731] text-[#0b0b25]">
-                                            <i className="fas fa-play text-xs"></i>
-                                        </div>
+                                {/* CONTENT */}
+                                <div className="relative z-10 flex h-full flex-col justify-end p-6 text-white sm:p-8 lg:p-10">
+
+                                    <div className="max-w-2xl">
+
+                                        <span className="inline-flex rounded-full bg-[#7c6cff] px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
+                                            {currentSermon.category || "Sermon"}
+                                        </span>
+
+                                        <h3 className="mt-4 text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
+                                            {currentSermon.title}
+                                        </h3>
+
+                                        <p className="mt-3 text-sm text-gray-200 sm:text-base">
+                                            {currentSermon.speaker}
+                                        </p>
+
+                                        {currentSermon.description && (
+                                            <p className="mt-4 max-w-xl text-sm leading-6 text-gray-300">
+                                                {currentSermon.description}
+                                            </p>
+                                        )}
+
+                                        <button
+                                            type="button"
+                                            onClick={handleWatchSermon}
+                                            className="group mt-6 inline-flex items-center gap-3 rounded-lg bg-[#7c6cff] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-black/20 transition-all duration-300 hover:-translate-y-1 hover:bg-[#6d5ff5]"
+                                        >
+                                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/15">
+                                                <i
+                                                    className={`fas ${currentSermon.type?.toLowerCase() ===
+                                                            "audio"
+                                                            ? "fa-headphones"
+                                                            : "fa-play"
+                                                        } text-xs transition-transform duration-300 group-hover:scale-110`}
+                                                />
+                                            </span>
+
+                                            {currentSermon.type?.toLowerCase() ===
+                                                "audio"
+                                                ? "Listen Now"
+                                                : "Watch Sermon"}
+                                        </button>
+
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            </>
+                        )}
 
-                            <div className="bg-white p-3 dark:bg-[#181a38]">
-                                <p className="line-clamp-2 text-xs font-semibold leading-5">
-                                    {sermon.title}
-                                </p>
-                            </div>
-                        </button>
-                    ))}
+                    </div>
+
+                    {/* LEFT NAVIGATION BUTTON */}
+                    <button
+                        type="button"
+                        onClick={handlePrevious}
+                        aria-label="Previous sermon"
+                        className={`absolute left-4 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition-all duration-300 hover:bg-[#7c6cff] ${showSermonList
+                                ? "translate-x-0 opacity-100"
+                                : "-translate-x-3 opacity-0 pointer-events-none"
+                            }`}
+                    >
+                        <i className="fas fa-chevron-left text-sm" />
+                    </button>
+
+                    {/* RIGHT NAVIGATION BUTTON */}
+                    <button
+                        type="button"
+                        onClick={handleNext}
+                        aria-label="Next sermon"
+                        className={`absolute right-4 top-1/2 z-30 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition-all duration-300 hover:bg-[#7c6cff] ${showSermonList
+                                ? "translate-x-0 opacity-100"
+                                : "translate-x-3 opacity-0 pointer-events-none"
+                            }`}
+                    >
+                        <i className="fas fa-chevron-right text-sm" />
+                    </button>
+
+                    {/* HOVER SERMON LIST */}
+                    <div
+                        className={`absolute bottom-0 left-0 right-0 z-20 px-12 pb-5 pt-16 transition-all duration-400 ${showSermonList
+                                ? "translate-y-0 opacity-100"
+                                : "pointer-events-none translate-y-8 opacity-0"
+                            }`}
+                    >
+
+                        {/* BACKGROUND GRADIENT */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#101112] via-[#101112]/90 to-transparent" />
+
+                        {/* SERMON ROW */}
+                        <div className="relative z-10 flex gap-3 overflow-hidden">
+
+                            {sermons.map((sermon, index) => {
+                                const isActive = index === currentIndex;
+
+                                return (
+                                    <button
+                                        key={sermon.id}
+                                        type="button"
+                                        onClick={() =>
+                                            handleSermonClick(index)
+                                        }
+                                        className={`group min-w-0 flex-1 overflow-hidden rounded-lg border text-left transition-all duration-300 ${isActive
+                                                ? "border-[#7c6cff] bg-[#181a1d]"
+                                                : "border-white/10 bg-[#141618]/90 hover:border-white/30 hover:bg-[#181a1d]"
+                                            }`}
+                                    >
+                                        {/* THUMBNAIL */}
+                                        <div className="relative aspect-video overflow-hidden">
+
+                                            <img
+                                                src={getMediaUrl(
+                                                    sermon.thumbnail
+                                                )}
+                                                alt={sermon.title}
+                                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                            />
+
+                                            <div
+                                                className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${isActive
+                                                        ? "bg-[#7c6cff]/70"
+                                                        : "bg-black/30 group-hover:bg-black/50"
+                                                    }`}
+                                            >
+                                                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#7c6cff] shadow-lg">
+                                                    <i
+                                                        className={`fas ${sermon.type?.toLowerCase() ===
+                                                                "audio"
+                                                                ? "fa-headphones"
+                                                                : "fa-play"
+                                                            } text-[10px]`}
+                                                    />
+                                                </span>
+                                            </div>
+
+                                            {/* ACTIVE INDICATOR */}
+                                            {isActive && (
+                                                <div className="absolute left-2 top-2 rounded-full bg-[#7c6cff] px-2 py-1 text-[8px] font-semibold uppercase tracking-wider text-white">
+                                                    Playing
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* SERMON INFO */}
+                                        <div className="p-3">
+
+                                            <p className="truncate text-[8px] font-semibold uppercase tracking-wider text-[#9188ff]">
+                                                {sermon.category ||
+                                                    sermon.type ||
+                                                    "Sermon"}
+                                            </p>
+
+                                            <h4
+                                                className={`mt-1 line-clamp-2 text-xs font-semibold leading-4 ${isActive
+                                                        ? "text-[#9188ff]"
+                                                        : "text-white"
+                                                    }`}
+                                            >
+                                                {sermon.title}
+                                            </h4>
+
+                                            <p className="mt-1 truncate text-[10px] text-gray-400">
+                                                {sermon.speaker}
+                                            </p>
+                                        </div>
+                                    </button>
+                                );
+                            })}
+
+                        </div>
+
+                        {/* CURRENT POSITION */}
+                        <div className="relative z-10 mt-3 text-center">
+                            <span className="text-[10px] font-medium text-gray-400">
+                                {currentIndex + 1} / {sermons.length}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* TOP HOVER INDICATOR */}
+                    <div
+                        className={`absolute left-1/2 top-5 z-20 -translate-x-1/2 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/70 backdrop-blur-md transition-all duration-300 ${showSermonList
+                                ? "translate-y-0 opacity-0"
+                                : "translate-y-0 opacity-100"
+                            }`}
+                    >
+                        Move mouse here to browse sermons
+                    </div>
+
                 </div>
             </div>
         </section>

@@ -10,6 +10,8 @@ function Contact() {
     });
 
     const [submitted, setSubmitted] = useState(false);
+    const [isSending, setIsSending] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,21 +22,52 @@ function Contact() {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        setSubmitted(true);
+        setIsSending(true);
+        setSubmitted(false);
+        setErrorMessage("");
 
-        setFormData({
-            name: "",
-            email: "",
-            subject: "",
-            message: "",
-        });
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/contact`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
 
-        setTimeout(() => {
-            setSubmitted(false);
-        }, 5000);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Unable to send your message."
+                );
+            }
+
+            setSubmitted(true);
+
+            setFormData({
+                name: "",
+                email: "",
+                subject: "",
+                message: "",
+            });
+
+            setTimeout(() => {
+                setSubmitted(false);
+            }, 5000);
+        } catch (error) {
+            console.error("Contact form error:", error);
+
+            setErrorMessage(
+                error.message ||
+                "Unable to send your message. Please try again later."
+            );
+        } finally {
+            setIsSending(false);
+        }
     };
 
     return (
@@ -59,7 +92,7 @@ function Contact() {
                             Contact Us
                         </h1>
 
-                        <p className="mx-auto max-w-2xl text-base leading-7 text-white/80 sm:text-md">
+                        <p className="mx-auto max-w-2xl text-base leading-7 text-white/80 sm:text-lg">
                             We would love to hear from you. Reach out to us for
                             questions, prayers, testimonies, enquiries, or any
                             information about our church.
@@ -190,6 +223,7 @@ function Contact() {
                         <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_15px_40px_#e0e0ff] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_#e0e0ff] sm:p-8 lg:p-10 dark:border-white/10 dark:bg-[#121222] dark:shadow-none dark:hover:shadow-none">
 
                             <div className="mb-8">
+
                                 <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
                                     Send us a message
                                 </h2>
@@ -198,6 +232,7 @@ function Contact() {
                                     Fill out the form below and we will get back to
                                     you.
                                 </p>
+
                             </div>
 
                             {/* SUCCESS MESSAGE */}
@@ -208,7 +243,7 @@ function Contact() {
 
                                     <div>
                                         <p className="font-semibold">
-                                            Message submitted successfully.
+                                            Message sent successfully.
                                         </p>
 
                                         <p className="mt-1 opacity-80">
@@ -219,7 +254,29 @@ function Contact() {
                                 </div>
                             )}
 
-                            <form onSubmit={handleSubmit} className="space-y-5">
+                            {/* ERROR MESSAGE */}
+                            {errorMessage && (
+                                <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 transition-all duration-300 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
+
+                                    <i className="fa-solid fa-circle-exclamation mt-0.5"></i>
+
+                                    <div>
+                                        <p className="font-semibold">
+                                            Message could not be sent.
+                                        </p>
+
+                                        <p className="mt-1 opacity-80">
+                                            {errorMessage}
+                                        </p>
+                                    </div>
+
+                                </div>
+                            )}
+
+                            <form
+                                onSubmit={handleSubmit}
+                                className="space-y-5"
+                            >
 
                                 {/* NAME + EMAIL */}
                                 <div className="grid gap-5 sm:grid-cols-2">
@@ -282,6 +339,7 @@ function Contact() {
 
                                 {/* SUBJECT */}
                                 <div>
+
                                     <label
                                         htmlFor="subject"
                                         className="mb-2 block text-sm font-semibold"
@@ -309,6 +367,7 @@ function Contact() {
 
                                 {/* MESSAGE */}
                                 <div>
+
                                     <label
                                         htmlFor="message"
                                         className="mb-2 block text-sm font-semibold"
@@ -337,11 +396,20 @@ function Contact() {
                                 {/* SUBMIT */}
                                 <button
                                     type="submit"
-                                    className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#6c63ff] px-6 py-3.5 font-semibold text-white shadow-lg shadow-[#6c63ff]/20 transition-all duration-300 hover:-translate-y-1 hover:bg-[#5b52e8] hover:shadow-xl hover:shadow-[#6c63ff]/25 active:translate-y-0 dark:bg-[#7b73ff] dark:hover:bg-[#6c63ff]"
+                                    disabled={isSending}
+                                    className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#6c63ff] px-6 py-3.5 font-semibold text-white shadow-lg shadow-[#6c63ff]/20 transition-all duration-300 hover:-translate-y-1 hover:bg-[#5b52e8] hover:shadow-xl hover:shadow-[#6c63ff]/25 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#7b73ff] dark:hover:bg-[#6c63ff]"
                                 >
-                                    <span>Send Message</span>
-
-                                    <i className="fa-solid fa-paper-plane transition-transform duration-300 group-hover:translate-x-1"></i>
+                                    {isSending ? (
+                                        <>
+                                            <i className="fa-solid fa-spinner fa-spin"></i>
+                                            <span>Sending...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span>Send Message</span>
+                                            <i className="fa-solid fa-paper-plane transition-transform duration-300 group-hover:translate-x-1"></i>
+                                        </>
+                                    )}
                                 </button>
 
                             </form>

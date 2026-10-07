@@ -5,7 +5,7 @@
 
 html {
   scroll-behavior: smooth;
-  scrollbar-color: #2f2f44 #0c0c19;
+  scrollbar-color: #2a2c30 #101112;
 }
 
 body {
@@ -26,6 +26,6 @@ a {
 }
 
 ::selection {
-  background: #f7b731;
-  color: #0b0b25;
+  background: #7c6cff;
+  color: #ffffff;
 }

@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import sermons from "../data/sermons";
-
 function SermonHeader({ onSearchSelect, onMenuClick }) {
     const [searchValue, setSearchValue] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [sermons, setSermons] = useState([])
+
+    const [sermons, setSermons] = useState([]);
 
     const [showNotifications, setShowNotifications] = useState(false);
 
@@ -45,24 +44,35 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
         (notification) => !notification.read
     ).length;
 
+    /* =========================
+       FETCH SERMONS
+    ========================= */
+
     useEffect(() => {
         const fetchSermons = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/sermons");
-                if (!response.ok) {
-                    throw new Error("Failed to fetch Sermons")
-                }
-                const data = await response.json();
-                setSermons(data)
+                const response = await fetch(
+                    `${import.meta.env.VITE_API_URL}/api/sermons`
+                );
 
+                if (!response.ok) {
+                    throw new Error("Failed to fetch sermons");
+                }
+
+                const data = await response.json();
+
+                setSermons(data);
             } catch (error) {
-                console.error(error)
+                console.error("Sermon header error:", error);
             }
-        }
+        };
 
         fetchSermons();
     }, []);
 
+    /* =========================
+       SEARCH
+    ========================= */
 
     const searchCheck = (value) => {
         const searchText = value.trim();
@@ -82,8 +92,8 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
         const normalizedSearch = searchText.toLowerCase();
 
         const results = sermons.filter((sermon) => {
-            const title = sermon.title.toLowerCase();
-            const speaker = sermon.speaker.toLowerCase();
+            const title = sermon.title?.toLowerCase() || "";
+            const speaker = sermon.speaker?.toLowerCase() || "";
 
             return (
                 title.includes(normalizedSearch) ||
@@ -117,6 +127,10 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
         setShowSuggestions(false);
     };
 
+    /* =========================
+       NOTIFICATIONS
+    ========================= */
+
     const handleNotificationClick = (notificationId) => {
         setNotifications((currentNotifications) =>
             currentNotifications.map((notification) =>
@@ -141,7 +155,12 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
 
     const handleToggleNotifications = () => {
         setShowNotifications((current) => !current);
+        setShowSuggestions(false);
     };
+
+    /* =========================
+       OUTSIDE CLICK + ESCAPE
+    ========================= */
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -178,42 +197,62 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
     }, []);
 
     return (
-        <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-md dark:border-[#333344] dark:bg-[#131323]/95">
-            <div className="mx-auto flex h-20 max-w-[1600px] items-center gap-3 px-4 sm:gap-4 sm:px-5 lg:px-8">
+        <header className="sticky top-0 z-50 border-b border-[#27292d]/80 bg-[#101112]/90 text-white shadow-[0_8px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+            <div className="mx-auto flex h-[76px] max-w-[1700px] items-center gap-3 px-4 sm:gap-4 sm:px-6 lg:px-8">
 
-                {/* Back Button */}
+                {/* =========================
+                    HOME BUTTON
+                ========================= */}
+
                 <Link
                     to="/"
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#0d0761] transition hover:bg-gray-100 dark:text-white dark:hover:bg-[#2b2b46]"
                     aria-label="Go to home"
+                    className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#27292d] bg-[#181a1d] text-gray-400 transition-all duration-300 hover:border-[#7c6cff]/40 hover:bg-[#7c6cff]/10 hover:text-[#9188ff] sm:h-11 sm:w-11"
                 >
-                    <i className="fa-solid fa-arrow-left text-lg"></i>
+                    <i className="fa-solid fa-arrow-left text-sm transition-transform duration-300 group-hover:-translate-x-0.5" />
                 </Link>
 
-                {/* Church Logo */}
-                <Link to="/" className="flex shrink-0 items-center gap-3">
-                    <img
-                        src="/media/Big_Winnersogo.png"
-                        alt="Living Faith Church Iguosa"
-                        className="h-11 w-11 rounded-full object-cover"
-                    />
+                {/* =========================
+                    CHURCH BRAND
+                ========================= */}
+
+                <Link
+                    to="/"
+                    className="group flex shrink-0 items-center gap-3"
+                >
+                    <div className="relative">
+                        <div className="absolute -inset-1 rounded-full bg-[#7c6cff]/10 opacity-0 blur-md transition duration-300 group-hover:opacity-100" />
+
+                        <img
+                            src="/media/Big_Winnersogo.png"
+                            alt="Living Faith Church Iguosa"
+                            className="relative h-10 w-10 rounded-full border border-[#27292d] object-cover sm:h-11 sm:w-11"
+                        />
+                    </div>
 
                     <div className="hidden sm:block">
-                        <h1 className="text-sm font-bold text-[#0d0761] dark:text-white">
+                        <h1 className="text-sm font-bold tracking-tight text-white">
                             Living Faith Church
                         </h1>
 
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                        <p className="mt-0.5 text-[11px] font-medium uppercase tracking-[0.16em] text-gray-500">
                             Iguosa
                         </p>
                     </div>
                 </Link>
 
-                {/* Search */}
-                <div className="sermon-search-container relative ml-auto flex max-w-xl flex-1 items-center">
+                {/* =========================
+                    SEARCH
+                ========================= */}
+
+                <div className="sermon-search-container relative ml-auto flex max-w-2xl flex-1 items-center">
                     <div className="relative w-full">
 
-                        <i className="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
+                        {/* Search icon */}
+
+                        <div className="pointer-events-none absolute left-4 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center text-gray-500">
+                            <i className="fa-solid fa-magnifying-glass text-sm" />
+                        </div>
 
                         <input
                             type="text"
@@ -229,123 +268,193 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                 }
                             }}
                             placeholder="Search sermons..."
-                            className="w-full rounded-full border border-gray-200 bg-gray-100 py-3 pl-11 pr-11 text-sm outline-none transition focus:border-[#0d0761] focus:bg-white dark:border-[#333344] dark:bg-[#1f1f26] dark:text-white dark:placeholder:text-gray-500 dark:focus:border-gray-500 dark:focus:bg-[#1f1f26]"
+                            className="h-11 w-full rounded-xl border border-[#27292d] bg-[#181a1d] py-2.5 pl-11 pr-11 text-sm text-white outline-none transition-all duration-300 placeholder:text-gray-600 hover:border-[#34373c] focus:border-[#7c6cff]/60 focus:bg-[#1a1c20] focus:ring-4 focus:ring-[#7c6cff]/10 sm:h-12"
                         />
+
+                        {/* Search keyboard hint */}
+
+                        {!searchValue && (
+                            <span className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 items-center gap-1 rounded-md border border-[#27292d] bg-[#141618] px-2 py-1 text-[10px] font-medium text-gray-600 md:flex">
+                                <span>⌘</span>
+                                <span>K</span>
+                            </span>
+                        )}
+
+                        {/* Clear button */}
 
                         {searchValue && (
                             <button
                                 type="button"
                                 onClick={handleClearSearch}
-                                className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full text-gray-400 transition hover:bg-gray-200 hover:text-gray-700 dark:hover:bg-[#333344] dark:hover:text-white"
+                                className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-gray-500 transition-all duration-200 hover:bg-white/5 hover:text-white"
                                 aria-label="Clear search"
                             >
-                                <i className="fa-solid fa-xmark text-xs"></i>
+                                <i className="fa-solid fa-xmark text-xs" />
                             </button>
                         )}
 
+                        {/* =========================
+                            SEARCH SUGGESTIONS
+                        ========================= */}
+
                         {showSuggestions &&
                             searchValue.trim().length >= 3 && (
-                                <div className="absolute left-0 right-0 top-full z-50 mt-3 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-[#333344] dark:bg-[#131323]">
+                                <div className="absolute left-0 right-0 top-full z-[100] mt-3 overflow-hidden rounded-2xl border border-[#27292d] bg-[#181a1d] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+
+                                    {/* Suggestion header */}
+
+                                    <div className="flex items-center justify-between border-b border-[#27292d] px-4 py-3">
+                                        <div>
+                                            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
+                                                Search results
+                                            </p>
+
+                                            <p className="mt-0.5 text-xs text-gray-600">
+                                                {searchResults.length}{" "}
+                                                {searchResults.length === 1
+                                                    ? "sermon"
+                                                    : "sermons"}{" "}
+                                                found
+                                            </p>
+                                        </div>
+
+                                        <i className="fa-solid fa-arrow-up-right-from-square text-xs text-[#7c6cff]" />
+                                    </div>
 
                                     {searchResults.length > 0 ? (
                                         <div className="max-h-80 overflow-y-auto py-2">
 
-                                            {searchResults.map((sermon) => (
-                                                <button
-                                                    key={sermon.id}
-                                                    type="button"
-                                                    onClick={() =>
-                                                        handleSearchClick(
-                                                            sermon.id
-                                                        )
-                                                    }
-                                                    className="flex w-full items-center gap-4 px-4 py-3 text-left transition hover:bg-gray-100 dark:hover:bg-[#2b2b46]"
-                                                >
-                                                    <div className="h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-gray-200 dark:bg-[#2b2b46]">
-                                                        <img
-                                                            src={
-                                                                sermon.thumbnail
-                                                            }
-                                                            alt={
-                                                                sermon.title
-                                                            }
-                                                            className="h-full w-full object-cover"
-                                                        />
-                                                    </div>
+                                            {searchResults.map(
+                                                (sermon) => (
+                                                    <button
+                                                        key={sermon.id}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleSearchClick(
+                                                                sermon.id
+                                                            )
+                                                        }
+                                                        className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-all duration-200 hover:bg-[#7c6cff]/[0.06]"
+                                                    >
+                                                        {/* Thumbnail */}
 
-                                                    <div className="min-w-0 flex-1">
-                                                        <p className="truncate text-sm font-semibold text-[#0d0761] dark:text-white">
-                                                            {
-                                                                sermon.title
-                                                            }
-                                                        </p>
+                                                        <div className="relative h-12 w-[68px] shrink-0 overflow-hidden rounded-lg border border-[#27292d] bg-[#101112]">
+                                                            <img
+                                                                src={
+                                                                    sermon.thumbnail
+                                                                }
+                                                                alt={
+                                                                    sermon.title
+                                                                }
+                                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                            />
 
-                                                        <p className="mt-1 truncate text-xs text-gray-500 dark:text-gray-400">
-                                                            {
-                                                                sermon.speaker
-                                                            }
-                                                        </p>
-                                                    </div>
+                                                            <div className="absolute inset-0 bg-black/20" />
 
-                                                    <i className="fa-solid fa-chevron-right shrink-0 text-xs text-gray-400"></i>
-                                                </button>
-                                            ))}
+                                                            <div className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#7c6cff] text-[8px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                                                <i className="fa-solid fa-play" />
+                                                            </div>
+                                                        </div>
 
+                                                        {/* Content */}
+
+                                                        <div className="min-w-0 flex-1">
+                                                            <p className="truncate text-sm font-semibold text-white transition-colors group-hover:text-[#9188ff]">
+                                                                {
+                                                                    sermon.title
+                                                                }
+                                                            </p>
+
+                                                            <div className="mt-1 flex items-center gap-2">
+                                                                <span className="truncate text-xs text-gray-500">
+                                                                    {
+                                                                        sermon.speaker
+                                                                    }
+                                                                </span>
+
+                                                                {sermon.category && (
+                                                                    <>
+                                                                        <span className="h-1 w-1 rounded-full bg-[#7c6cff]" />
+
+                                                                        <span className="truncate text-[10px] font-medium uppercase tracking-wide text-gray-600">
+                                                                            {
+                                                                                sermon.category
+                                                                            }
+                                                                        </span>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Arrow */}
+
+                                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-600 transition-all duration-200 group-hover:bg-[#7c6cff]/10 group-hover:text-[#9188ff]">
+                                                            <i className="fa-solid fa-chevron-right text-[10px]" />
+                                                        </div>
+                                                    </button>
+                                                )
+                                            )}
                                         </div>
                                     ) : (
-                                        <div className="px-5 py-8 text-center">
+                                        <div className="px-5 py-10 text-center">
 
-                                            <i className="fa-solid fa-magnifying-glass text-xl text-gray-400"></i>
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#7c6cff]/10 text-[#9188ff]">
+                                                <i className="fa-solid fa-magnifying-glass text-lg" />
+                                            </div>
 
-                                            <p className="mt-3 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                                            <p className="mt-4 text-sm font-semibold text-gray-200">
                                                 No sermons found
                                             </p>
 
-                                            <p className="mt-1 text-xs text-gray-400">
-                                                Try another sermon title or speaker.
+                                            <p className="mt-1 text-xs leading-5 text-gray-600">
+                                                Try another sermon title
+                                                or speaker.
                                             </p>
-
                                         </div>
                                     )}
-
                                 </div>
                             )}
-
                     </div>
                 </div>
 
-                {/* Notifications */}
-                <div className="notification-container relative">
+                {/* =========================
+                    NOTIFICATIONS
+                ========================= */}
 
+                <div className="notification-container relative">
                     <button
                         type="button"
                         onClick={handleToggleNotifications}
-                        className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#0d0761] transition hover:bg-gray-100 dark:text-white dark:hover:bg-[#2b2b46]"
+                        className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-300 sm:h-11 sm:w-11 ${showNotifications
+                                ? "border-[#7c6cff]/40 bg-[#7c6cff]/10 text-[#9188ff]"
+                                : "border-[#27292d] bg-[#181a1d] text-gray-400 hover:border-[#34373c] hover:bg-[#1c1e21] hover:text-white"
+                            }`}
                         aria-label="Notifications"
                         aria-expanded={showNotifications}
                     >
-                        <i className="fa-regular fa-bell text-lg"></i>
+                        <i className="fa-regular fa-bell text-base" />
 
                         {unreadCount > 0 && (
-                            <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
+                            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full border-2 border-[#101112] bg-[#7c6cff] px-1 text-[8px] font-bold text-white">
                                 {unreadCount}
                             </span>
                         )}
                     </button>
 
-                    {/* Notification Dropdown */}
+                    {/* Notification dropdown */}
+
                     {showNotifications && (
-                        <div className="absolute right-0 top-full z-50 mt-3 w-[340px] overflow-hidden rounded-2xl border-none bg-white shadow-2xl shadow-[#e0e0ff] dark:border-[#333344] dark:bg-[#131323] sm:w-[380px]">
+                        <div className="absolute right-0 top-full z-[100] mt-3 w-[calc(100vw-32px)] max-w-[380px] overflow-hidden rounded-2xl border border-[#27292d] bg-[#181a1d] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
 
                             {/* Header */}
-                            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-[#333344]">
 
+                            <div className="flex items-center justify-between border-b border-[#27292d] px-5 py-4">
                                 <div>
-                                    <h2 className="text-sm font-bold text-gray-900 dark:text-white">
+                                    <h2 className="text-sm font-bold text-white">
                                         Notifications
                                     </h2>
 
-                                    <p className="mt-0.5 text-xs text-gray-400">
+                                    <p className="mt-1 text-[11px] text-gray-500">
                                         {unreadCount > 0
                                             ? `${unreadCount} unread notification${unreadCount > 1
                                                 ? "s"
@@ -358,18 +467,19 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                 {unreadCount > 0 && (
                                     <button
                                         type="button"
-                                        onClick={handleMarkAllAsRead}
-                                        className="text-xs font-semibold text-[#0d0761] transition hover:underline dark:text-gray-300"
+                                        onClick={
+                                            handleMarkAllAsRead
+                                        }
+                                        className="rounded-lg px-2 py-1.5 text-[11px] font-semibold text-[#9188ff] transition-colors hover:bg-[#7c6cff]/10"
                                     >
-                                        Mark all as read
+                                        Mark all read
                                     </button>
                                 )}
-
                             </div>
 
                             {/* Notifications */}
-                            <div className="max-h-[380px] overflow-y-auto">
 
+                            <div className="max-h-[380px] overflow-y-auto">
                                 {notifications.length > 0 ? (
                                     notifications.map(
                                         (notification) => (
@@ -381,82 +491,82 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                                         notification.id
                                                     )
                                                 }
-                                                className={`flex w-full gap-3 border-b border-gray-100 px-5 py-4 text-left transition last:border-b-0 dark:border-[#333344] ${notification.read
-                                                    ? "bg-white dark:bg-[#131323]"
-                                                    : "bg-[#0d0761]/[0.03] hover:bg-gray-50 dark:bg-white/[0.03] dark:hover:bg-[#1f1f26]"
+                                                className={`group flex w-full gap-3 border-b border-[#27292d] px-5 py-4 text-left transition-all duration-200 last:border-b-0 ${notification.read
+                                                        ? "bg-transparent hover:bg-white/[0.025]"
+                                                        : "bg-[#7c6cff]/[0.045] hover:bg-[#7c6cff]/[0.08]"
                                                     }`}
                                             >
-
                                                 {/* Icon */}
-                                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0d0761]/10 text-[#0d0761] dark:bg-white/10 dark:text-white">
+
+                                                <div
+                                                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${notification.read
+                                                            ? "bg-[#101112] text-gray-500"
+                                                            : "bg-[#7c6cff]/10 text-[#9188ff]"
+                                                        }`}
+                                                >
                                                     <i
                                                         className={`${notification.icon} text-sm`}
-                                                    ></i>
+                                                    />
                                                 </div>
 
                                                 {/* Content */}
+
                                                 <div className="min-w-0 flex-1">
-
                                                     <div className="flex items-start justify-between gap-2">
-
-                                                        <p className="text-sm font-semibold text-gray-800 dark:text-white">
+                                                        <p className="text-sm font-semibold text-gray-200">
                                                             {
                                                                 notification.title
                                                             }
                                                         </p>
 
                                                         {!notification.read && (
-                                                            <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-red-500"></span>
+                                                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#7c6cff]" />
                                                         )}
-
                                                     </div>
 
-                                                    <p className="mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">
+                                                    <p className="mt-1 text-xs leading-5 text-gray-500">
                                                         {
                                                             notification.message
                                                         }
                                                     </p>
 
-                                                    <p className="mt-2 text-[10px] font-medium text-gray-400">
+                                                    <p className="mt-2 text-[10px] font-medium text-gray-600">
                                                         {
                                                             notification.time
                                                         }
                                                     </p>
-
                                                 </div>
-
                                             </button>
                                         )
                                     )
                                 ) : (
                                     <div className="px-5 py-10 text-center">
+                                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#101112] text-gray-600">
+                                            <i className="fa-regular fa-bell-slash text-lg" />
+                                        </div>
 
-                                        <i className="fa-regular fa-bell-slash text-2xl text-gray-300 dark:text-gray-600"></i>
-
-                                        <p className="mt-3 text-sm font-semibold text-gray-600 dark:text-gray-300">
+                                        <p className="mt-4 text-sm font-semibold text-gray-300">
                                             No notifications
                                         </p>
-
                                     </div>
                                 )}
-
                             </div>
-
                         </div>
                     )}
-
                 </div>
 
-                {/* Mobile Menu */}
+                {/* =========================
+                    MOBILE MENU
+                ========================= */}
+
                 <button
                     type="button"
                     onClick={onMenuClick}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[#0d0761] transition hover:bg-gray-100 dark:text-white dark:hover:bg-[#2b2b46] lg:hidden"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#27292d] bg-[#181a1d] text-gray-400 transition-all duration-300 hover:border-[#7c6cff]/40 hover:bg-[#7c6cff]/10 hover:text-[#9188ff] lg:hidden sm:h-11 sm:w-11"
                     aria-label="Open menu"
                 >
-                    <i className="fa-solid fa-bars text-lg"></i>
+                    <i className="fa-solid fa-bars text-base" />
                 </button>
-
             </div>
         </header>
     );
