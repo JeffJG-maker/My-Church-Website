@@ -1,0 +1,13 @@
+[
+    {
+        "id": 1,
+        "label": "UPCOMING EVENT",
+        "title": "Join Us This Sunday",
+        "date": "2026-10-11",
+        "time": "8:00AM - 12:00PM",
+        "location": "Living Faith Church Iguosa, Edo State, Nigeria.",
+        "description": "Join us for a powerful time of worship, prayer, and the Word of God.",
+        "image": "",
+        "isPublished": true
+    }
+]

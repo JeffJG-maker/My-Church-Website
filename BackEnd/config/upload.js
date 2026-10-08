@@ -2,9 +2,7 @@ const multer = require("multer");
 const path = require("path");
 
 const storage = multer.diskStorage({
-
     destination: (req, file, cb) => {
-
         if (file.fieldname === "thumbnail") {
             cb(null, path.join(__dirname, "../uploads/thumbnails"));
         }
@@ -13,10 +11,16 @@ const storage = multer.diskStorage({
             cb(null, path.join(__dirname, "../uploads/videos"));
         }
 
+        else if (file.fieldname === "audio") {
+            cb(null, path.join(__dirname, "../uploads/audio"));
+        }
+
+        else {
+            cb(new Error("Invalid file field"));
+        }
     },
 
     filename: (req, file, cb) => {
-
         const uniqueName =
             Date.now() +
             "-" +
@@ -25,7 +29,6 @@ const storage = multer.diskStorage({
 
         cb(null, uniqueName);
     }
-
 });
 
 const upload = multer({

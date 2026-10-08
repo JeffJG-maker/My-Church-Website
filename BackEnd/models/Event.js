@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const sermonSchema = new mongoose.Schema(
+const eventSchema = new mongoose.Schema(
     {
         id: {
             type: Number,
@@ -8,32 +8,13 @@ const sermonSchema = new mongoose.Schema(
             unique: true,
         },
 
+        label: {
+            type: String,
+            required: true,
+            default: "UPCOMING EVENT",
+        },
+
         title: {
-            type: String,
-            required: true,
-        },
-
-        speaker: {
-            type: String,
-            required: true,
-        },
-
-        category: {
-            type: String,
-            required: true,
-        },
-
-        description: {
-            type: String,
-            required: true,
-        },
-
-        thumbnail: {
-            type: String,
-            required: true,
-        },
-
-        mediaUrl: {
             type: String,
             required: true,
         },
@@ -43,10 +24,29 @@ const sermonSchema = new mongoose.Schema(
             required: true,
         },
 
-        type: {
+        time: {
             type: String,
             required: true,
-            enum: ["video", "audio"],
+        },
+
+        location: {
+            type: String,
+            required: true,
+        },
+
+        description: {
+            type: String,
+            default: "",
+        },
+
+        image: {
+            type: String,
+            default: "",
+        },
+
+        isPublished: {
+            type: Boolean,
+            default: true,
         },
     },
     {
@@ -54,6 +54,6 @@ const sermonSchema = new mongoose.Schema(
     }
 );
 
-const Sermon = mongoose.model("Sermon", sermonSchema);
+const Event = mongoose.model("Event", eventSchema);
 
-module.exports = Sermon;
+module.exports = Event;
