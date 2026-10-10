@@ -47,16 +47,7 @@ function HomeHero() {
     };
 
     return (
-        <section
-            className="
-                relative
-                h-[90vh]
-                min-h-[600px]
-                w-full
-                overflow-hidden
-                bg-[#101112]
-            "
-        >
+        <section className="relative h-full min-h-[600px] w-full overflow-hidden bg-[#101112]">
             {/* IMAGE SLIDER */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <div
@@ -87,7 +78,7 @@ function HomeHero() {
                 </div>
             </div>
 
-            {/* DARK GRADIENT */}
+            {/* DARK / RED-ORANGE GRADIENT */}
             <div
                 className="
                     pointer-events-none
@@ -95,9 +86,9 @@ function HomeHero() {
                     inset-0
                     z-10
                     bg-gradient-to-r
-                    from-[#101112]/80
-                    via-[#101112]/20
-                    to-[#101112]/60
+                    from-[#101112]/90
+                    via-[#101112]/30
+                    to-[#9B111E]/40
                 "
             />
 
@@ -125,8 +116,8 @@ function HomeHero() {
                     backdrop-blur-sm
                     transition-all
                     duration-300
-                    hover:border-[#9188ff]
-                    hover:bg-[#7c6cff]/20
+                    hover:border-[#F7941D]
+                    hover:bg-[#E31B23]/30
                     sm:left-6
                 "
             >
@@ -157,8 +148,8 @@ function HomeHero() {
                     backdrop-blur-sm
                     transition-all
                     duration-300
-                    hover:border-[#9188ff]
-                    hover:bg-[#7c6cff]/20
+                    hover:border-[#F7941D]
+                    hover:bg-[#E31B23]/30
                     sm:right-6
                 "
             >
@@ -197,7 +188,7 @@ function HomeHero() {
                     {heroContent.titleFirst}
                     <br />
 
-                    <span className="text-[#9188ff]">
+                    <span className="text-[#F7941D]">
                         {heroContent.titleSecond}
                     </span>
                 </h1>
@@ -222,19 +213,18 @@ function HomeHero() {
                         onClick={() => setShowJoinModal(true)}
                         className="
                             rounded-md
-                            bg-black
-                            opacity-[0.6]
+                            bg-[#E31B23]
                             px-5
                             py-3
                             text-sm
                             font-semibold
                             text-white
                             shadow-lg
-                            shadow-[#7c6cff]/20
+                            shadow-[#E31B23]/20
                             transition-all
                             duration-300
                             hover:-translate-y-1
-                            hover:bg-[#6d5ff5]
+                            hover:bg-[#C9151C]
                         "
                     >
                         {heroContent.joinButton}
@@ -260,8 +250,9 @@ function HomeHero() {
                             text-white
                             transition-all
                             duration-300
-                            hover:bg-white
-                            hover:text-[#101112]
+                            hover:border-[#F7941D]
+                            hover:bg-[#F7941D]
+                            hover:text-white
                         "
                     >
                         <span>{heroContent.watchButton}</span>
@@ -296,7 +287,7 @@ function HomeHero() {
                             transition-all
                             duration-300
                             ${currentSlide === index
-                                ? "w-7 bg-[#9188ff]"
+                                ? "w-7 bg-[#F7941D]"
                                 : "w-2 bg-white/60 hover:bg-white"
                             }
                         `}
@@ -327,7 +318,7 @@ function HomeHero() {
                             rounded-xl
                             bg-white
                             p-7
-                            text-[#17172b]
+                            text-[#171717]
                             shadow-2xl
                             dark:bg-[#181a1d]
                             dark:text-white
@@ -336,7 +327,7 @@ function HomeHero() {
                     >
                         <div className="flex items-start justify-between gap-4">
                             <div>
-                                <span className="text-xs font-bold uppercase tracking-widest text-[#6c63ff] dark:text-[#9188ff]">
+                                <span className="text-xs font-bold uppercase tracking-widest text-[#E31B23] dark:text-[#F7941D]">
                                     You're Welcome
                                 </span>
 
@@ -357,10 +348,10 @@ function HomeHero() {
                                     rounded-full
                                     text-gray-500
                                     transition
-                                    hover:bg-gray-100
-                                    hover:text-gray-900
+                                    hover:bg-[#FFF1E6]
+                                    hover:text-[#E31B23]
                                     dark:hover:bg-white/10
-                                    dark:hover:text-white
+                                    dark:hover:text-[#F7941D]
                                 "
                             >
                                 <i className="fas fa-times" />
@@ -369,7 +360,7 @@ function HomeHero() {
 
                         <div className="mt-6 space-y-4 text-sm">
                             <div className="flex items-start gap-3">
-                                <i className="far fa-calendar-check mt-1 text-[#6c63ff] dark:text-[#9188ff]" />
+                                <i className="far fa-calendar-check mt-1 text-[#E31B23] dark:text-[#F7941D]" />
 
                                 <div>
                                     <p className="font-semibold">
@@ -383,7 +374,7 @@ function HomeHero() {
                             </div>
 
                             <div className="flex items-start gap-3">
-                                <i className="fas fa-location-dot mt-1 text-[#6c63ff] dark:text-[#9188ff]" />
+                                <i className="fas fa-location-dot mt-1 text-[#E31B23] dark:text-[#F7941D]" />
 
                                 <div>
                                     <p className="font-semibold">
@@ -405,14 +396,14 @@ function HomeHero() {
                                 mt-7
                                 w-full
                                 rounded-md
-                                bg-[#7c6cff]
+                                bg-[#E31B23]
                                 px-5
                                 py-3
                                 text-sm
                                 font-semibold
                                 text-white
                                 transition
-                                hover:bg-[#6d5ff5]
+                                hover:bg-[#C9151C]
                             "
                         >
                             See You Sunday

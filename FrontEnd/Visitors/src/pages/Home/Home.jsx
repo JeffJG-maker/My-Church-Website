@@ -5,9 +5,9 @@ import Footer from "../../components/Footer/Footer";
 
 function Home() {
     return (
-        <main className="bg-white text-[#17172b] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
+        <main className="bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
             {/* Hero */}
-            <div className="sticky top-0 z-0 h-screen w-full">
+            <div className="sticky top-0 z-0 w-full">
                 <HomeHero />
             </div>
 

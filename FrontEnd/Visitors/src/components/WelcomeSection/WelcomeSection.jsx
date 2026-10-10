@@ -76,30 +76,47 @@ function WelcomeSection() {
     return (
         <section
             ref={sectionRef}
-            className={`relative overflow-hidden bg-[#f8f8ff] px-5 py-14 text-[#17172b] transition-all duration-700 dark:bg-[#101112] dark:text-white sm:px-8 lg:flex lg:h-[85vh] lg:min-h-[680px] lg:items-center lg:px-[7%] lg:py-10 ${isVisible
+            className={`
+                relative
+                overflow-hidden
+                bg-[#FFF7F2]
+                px-5
+                py-14
+                text-[#171717]
+                transition-all
+                duration-700
+                dark:bg-[#101112]
+                dark:text-white
+                sm:px-8
+                lg:flex
+                lg:h-[85vh]
+                lg:min-h-[680px]
+                lg:items-center
+                lg:px-[7%]
+                lg:py-10
+                ${isVisible
                     ? "translate-y-0 opacity-100"
                     : "translate-y-6 opacity-0"
-                }`}
+                }
+            `}
         >
             {/* Background accents */}
-            <div className="pointer-events-none absolute -right-40 -top-40 h-96 w-96 rounded-full bg-[#6c63ff]/5 blur-3xl dark:bg-[#7c6cff]/5" />
+            <div className="pointer-events-none absolute -right-40 -top-40 h-96 w-96 rounded-full bg-[#E31B23]/5 blur-3xl dark:bg-[#E31B23]/10" />
 
-            <div className="pointer-events-none absolute -bottom-40 left-1/4 h-96 w-96 rounded-full bg-[#6c63ff]/5 blur-3xl dark:bg-[#9188ff]/5" />
+            <div className="pointer-events-none absolute -bottom-40 left-1/4 h-96 w-96 rounded-full bg-[#F7941D]/5 blur-3xl dark:bg-[#F7941D]/10" />
 
             <div className="relative mx-auto w-full max-w-7xl">
-
                 {/* Small heading */}
                 <div className="flex items-center gap-3">
-                    <span className="h-px w-8 bg-[#6c63ff] dark:bg-[#7c6cff]" />
+                    <span className="h-px w-8 bg-[#E31B23]" />
 
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#6c63ff] dark:text-[#9188ff]">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#E31B23] dark:text-[#F7941D]">
                         You Are Welcome
                     </p>
                 </div>
 
                 {/* Main heading + View All Events */}
                 <div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
-
                     <h2 className="max-w-4xl text-3xl font-bold leading-[1.08] tracking-tight sm:text-4xl lg:text-[3.5rem]">
                         Come and experience the presence of God with us.
                     </h2>
@@ -107,7 +124,28 @@ function WelcomeSection() {
                     <button
                         type="button"
                         onClick={() => navigate("/events")}
-                        className="group inline-flex w-fit shrink-0 items-center gap-3 rounded-lg bg-[#6c63ff] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#6c63ff]/20 transition-all duration-300 hover:-translate-y-1 hover:bg-[#5b52e8] hover:shadow-[#6c63ff]/30 dark:bg-[#7c6cff] dark:hover:bg-[#6d5ff5]"
+                        className="
+                            group
+                            inline-flex
+                            w-fit
+                            shrink-0
+                            items-center
+                            gap-3
+                            rounded-lg
+                            bg-[#E31B23]
+                            px-6
+                            py-3.5
+                            text-sm
+                            font-semibold
+                            text-white
+                            shadow-lg
+                            shadow-[#E31B23]/20
+                            transition-all
+                            duration-300
+                            hover:-translate-y-1
+                            hover:bg-[#C9151C]
+                            hover:shadow-[#E31B23]/30
+                        "
                     >
                         View All Events
 
@@ -117,7 +155,6 @@ function WelcomeSection() {
 
                 {/* Content underneath heading */}
                 <div className="mt-10 grid grid-cols-1 gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-
                     {/* Welcome text */}
                     <div className="max-w-2xl">
                         <p className="text-base leading-7 text-gray-600 dark:text-gray-300 sm:text-lg sm:leading-8">
@@ -136,8 +173,7 @@ function WelcomeSection() {
 
                     {/* Upcoming Event */}
                     <div className="border-t border-gray-200 pt-6 dark:border-[#27292d] lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
-
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#6c63ff] dark:text-[#9188ff]">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#E31B23] dark:text-[#F7941D]">
                             Upcoming Event
                         </p>
 
@@ -153,15 +189,14 @@ function WelcomeSection() {
                             </div>
                         ) : event ? (
                             <>
-                                <h3 className="mt-3 text-2xl font-bold leading-tight text-[#17172b] dark:text-white">
+                                <h3 className="mt-3 text-2xl font-bold leading-tight text-[#171717] dark:text-white">
                                     {event.title}
                                 </h3>
 
                                 <div className="mt-5 space-y-4">
-
                                     {/* DATE */}
                                     <div className="flex items-start gap-3">
-                                        <i className="fas fa-calendar-day mt-1 w-4 text-[#6c63ff] dark:text-[#9188ff]" />
+                                        <i className="fas fa-calendar-day mt-1 w-4 text-[#E31B23] dark:text-[#F7941D]" />
 
                                         <div>
                                             <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
@@ -176,7 +211,7 @@ function WelcomeSection() {
 
                                     {/* TIME */}
                                     <div className="flex items-start gap-3">
-                                        <i className="fas fa-clock mt-1 w-4 text-[#6c63ff] dark:text-[#9188ff]" />
+                                        <i className="fas fa-clock mt-1 w-4 text-[#E31B23] dark:text-[#F7941D]" />
 
                                         <div>
                                             <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
@@ -192,7 +227,7 @@ function WelcomeSection() {
 
                                     {/* LOCATION */}
                                     <div className="flex items-start gap-3">
-                                        <i className="fas fa-location-dot mt-1 w-4 text-[#6c63ff] dark:text-[#9188ff]" />
+                                        <i className="fas fa-location-dot mt-1 w-4 text-[#E31B23] dark:text-[#F7941D]" />
 
                                         <div>
                                             <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
@@ -205,7 +240,6 @@ function WelcomeSection() {
                                             </p>
                                         </div>
                                     </div>
-
                                 </div>
                             </>
                         ) : (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTheme } from "../../../context/ThemeContext";
 
 function SermonHeader({ onSearchSelect, onMenuClick }) {
     const [searchValue, setSearchValue] = useState("");
@@ -9,6 +10,8 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
     const [sermons, setSermons] = useState([]);
 
     const [showNotifications, setShowNotifications] = useState(false);
+
+    const { theme } = useTheme();
 
     const [notifications, setNotifications] = useState([
         {
@@ -60,7 +63,6 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                 }
 
                 const data = await response.json();
-
                 setSermons(data);
             } catch (error) {
                 console.error("Sermon header error:", error);
@@ -197,9 +199,19 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
     }, []);
 
     return (
-        <header className="sticky top-0 z-50 border-b border-[#27292d]/80 bg-[#101112]/90 text-white shadow-[0_8px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+        <header
+            className={`
+                sticky top-0 z-50 border-b
+                backdrop-blur-xl
+                shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+                transition-all duration-500
+                ${theme === "dark"
+                    ? "border-[#27292d]/70 bg-[#101112]/75 text-white"
+                    : "border-black/5 bg-white/70 text-[#171717]"
+                }
+            `}
+        >
             <div className="mx-auto flex h-[76px] max-w-[1700px] items-center gap-3 px-4 sm:gap-4 sm:px-6 lg:px-8">
-
                 {/* =========================
                     HOME BUTTON
                 ========================= */}
@@ -207,7 +219,16 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                 <Link
                     to="/"
                     aria-label="Go to home"
-                    className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#27292d] bg-[#181a1d] text-gray-400 transition-all duration-300 hover:border-[#7c6cff]/40 hover:bg-[#7c6cff]/10 hover:text-[#9188ff] sm:h-11 sm:w-11"
+                    className={`
+                        group flex h-10 w-10 shrink-0 items-center
+                        justify-center rounded-xl border
+                        transition-all duration-300
+                        sm:h-11 sm:w-11
+                        ${theme === "dark"
+                            ? "border-[#27292d]/80 bg-white/[0.03] text-gray-400 hover:border-[#E31B23]/50 hover:bg-[#E31B23]/10 hover:text-[#F7941D]"
+                            : "border-black/[0.06] bg-black/[0.025] text-gray-500 hover:border-[#E31B23]/30 hover:bg-[#E31B23]/[0.06] hover:text-[#E31B23]"
+                        }
+                    `}
                 >
                     <i className="fa-solid fa-arrow-left text-sm transition-transform duration-300 group-hover:-translate-x-0.5" />
                 </Link>
@@ -221,17 +242,39 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                     className="group flex shrink-0 items-center gap-3"
                 >
                     <div className="relative">
-                        <div className="absolute -inset-1 rounded-full bg-[#7c6cff]/10 opacity-0 blur-md transition duration-300 group-hover:opacity-100" />
+                        <div
+                            className={`
+                                absolute -inset-1 rounded-full
+                                opacity-0 blur-md transition duration-300
+                                group-hover:opacity-100
+                                ${theme === "dark"
+                                    ? "bg-[#E31B23]/15"
+                                    : "bg-[#E31B23]/10"
+                                }
+                            `}
+                        />
 
                         <img
                             src="/media/Big_Winnersogo.png"
                             alt="Living Faith Church Iguosa"
-                            className="relative h-10 w-10 rounded-full border border-[#27292d] object-cover sm:h-11 sm:w-11"
+                            className={`
+                                relative h-10 w-10 rounded-full border
+                                object-cover sm:h-11 sm:w-11
+                                ${theme === "dark"
+                                    ? "border-[#27292d]"
+                                    : "border-black/[0.08]"
+                                }
+                            `}
                         />
                     </div>
 
                     <div className="hidden sm:block">
-                        <h1 className="text-sm font-bold tracking-tight text-white">
+                        <h1
+                            className={`text-sm font-bold tracking-tight ${theme === "dark"
+                                    ? "text-white"
+                                    : "text-[#171717]"
+                                }`}
+                        >
                             Living Faith Church
                         </h1>
 
@@ -247,10 +290,19 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
 
                 <div className="sermon-search-container relative ml-auto flex max-w-2xl flex-1 items-center">
                     <div className="relative w-full">
-
                         {/* Search icon */}
 
-                        <div className="pointer-events-none absolute left-4 top-1/2 z-10 flex -translate-y-1/2 items-center justify-center text-gray-500">
+                        <div
+                            className={`
+                                pointer-events-none absolute left-4 top-1/2
+                                z-10 flex -translate-y-1/2 items-center
+                                justify-center
+                                ${theme === "dark"
+                                    ? "text-gray-500"
+                                    : "text-gray-400"
+                                }
+                            `}
+                        >
                             <i className="fa-solid fa-magnifying-glass text-sm" />
                         </div>
 
@@ -268,13 +320,33 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                 }
                             }}
                             placeholder="Search sermons..."
-                            className="h-11 w-full rounded-xl border border-[#27292d] bg-[#181a1d] py-2.5 pl-11 pr-11 text-sm text-white outline-none transition-all duration-300 placeholder:text-gray-600 hover:border-[#34373c] focus:border-[#7c6cff]/60 focus:bg-[#1a1c20] focus:ring-4 focus:ring-[#7c6cff]/10 sm:h-12"
+                            className={`
+                                h-11 w-full rounded-xl border py-2.5
+                                pl-11 pr-11 text-sm outline-none
+                                transition-all duration-300
+                                sm:h-12
+                                ${theme === "dark"
+                                    ? "border-[#27292d]/80 bg-[#181a1d]/70 text-white placeholder:text-gray-600 hover:border-[#34373c] focus:border-[#E31B23]/60 focus:bg-[#1a1c20]/80 focus:ring-4 focus:ring-[#E31B23]/10"
+                                    : "border-black/[0.06] bg-black/[0.025] text-[#171717] placeholder:text-gray-400 hover:border-black/[0.1] focus:border-[#E31B23]/50 focus:bg-white/60 focus:ring-4 focus:ring-[#E31B23]/10"
+                                }
+                            `}
                         />
 
                         {/* Search keyboard hint */}
 
                         {!searchValue && (
-                            <span className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 items-center gap-1 rounded-md border border-[#27292d] bg-[#141618] px-2 py-1 text-[10px] font-medium text-gray-600 md:flex">
+                            <span
+                                className={`
+                                    pointer-events-none absolute right-4 top-1/2
+                                    hidden -translate-y-1/2 items-center gap-1
+                                    rounded-md border px-2 py-1 text-[10px]
+                                    font-medium md:flex
+                                    ${theme === "dark"
+                                        ? "border-[#27292d]/80 bg-white/[0.03] text-gray-600"
+                                        : "border-black/[0.06] bg-black/[0.025] text-gray-400"
+                                    }
+                                `}
+                            >
                                 <span>⌘</span>
                                 <span>K</span>
                             </span>
@@ -286,7 +358,15 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                             <button
                                 type="button"
                                 onClick={handleClearSearch}
-                                className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-gray-500 transition-all duration-200 hover:bg-white/5 hover:text-white"
+                                className={`
+                                    absolute right-3 top-1/2 flex h-7 w-7
+                                    -translate-y-1/2 items-center justify-center
+                                    rounded-lg transition-all duration-200
+                                    ${theme === "dark"
+                                        ? "text-gray-500 hover:bg-white/5 hover:text-white"
+                                        : "text-gray-400 hover:bg-black/[0.04] hover:text-[#E31B23]"
+                                    }
+                                `}
                                 aria-label="Clear search"
                             >
                                 <i className="fa-solid fa-xmark text-xs" />
@@ -299,17 +379,40 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
 
                         {showSuggestions &&
                             searchValue.trim().length >= 3 && (
-                                <div className="absolute left-0 right-0 top-full z-[100] mt-3 overflow-hidden rounded-2xl border border-[#27292d] bg-[#181a1d] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
-
+                                <div
+                                    className={`
+                                        absolute left-0 right-0 top-full z-[100]
+                                        mt-3 overflow-hidden rounded-2xl border
+                                        shadow-[0_20px_60px_rgba(0,0,0,0.16)]
+                                        ${theme === "dark"
+                                            ? "border-[#27292d] bg-[#181a1d]"
+                                            : "border-black/[0.06] bg-white/90 backdrop-blur-xl"
+                                        }
+                                    `}
+                                >
                                     {/* Suggestion header */}
 
-                                    <div className="flex items-center justify-between border-b border-[#27292d] px-4 py-3">
+                                    <div
+                                        className={`
+                                            flex items-center justify-between
+                                            border-b px-4 py-3
+                                            ${theme === "dark"
+                                                ? "border-[#27292d]"
+                                                : "border-black/[0.05]"
+                                            }
+                                        `}
+                                    >
                                         <div>
                                             <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-500">
                                                 Search results
                                             </p>
 
-                                            <p className="mt-0.5 text-xs text-gray-600">
+                                            <p
+                                                className={`mt-0.5 text-xs ${theme === "dark"
+                                                        ? "text-gray-600"
+                                                        : "text-gray-400"
+                                                    }`}
+                                            >
                                                 {searchResults.length}{" "}
                                                 {searchResults.length === 1
                                                     ? "sermon"
@@ -318,12 +421,11 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                             </p>
                                         </div>
 
-                                        <i className="fa-solid fa-arrow-up-right-from-square text-xs text-[#7c6cff]" />
+                                        <i className="fa-solid fa-arrow-up-right-from-square text-xs text-[#E31B23] dark:text-[#F7941D]" />
                                     </div>
 
                                     {searchResults.length > 0 ? (
                                         <div className="max-h-80 overflow-y-auto py-2">
-
                                             {searchResults.map(
                                                 (sermon) => (
                                                     <button
@@ -334,11 +436,30 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                                                 sermon.id
                                                             )
                                                         }
-                                                        className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-all duration-200 hover:bg-[#7c6cff]/[0.06]"
+                                                        className={`
+                                                            group flex w-full
+                                                            items-center gap-3 px-4
+                                                            py-3 text-left
+                                                            transition-all duration-200
+                                                            ${theme === "dark"
+                                                                ? "hover:bg-[#E31B23]/[0.06]"
+                                                                : "hover:bg-[#E31B23]/[0.045]"
+                                                            }
+                                                        `}
                                                     >
                                                         {/* Thumbnail */}
 
-                                                        <div className="relative h-12 w-[68px] shrink-0 overflow-hidden rounded-lg border border-[#27292d] bg-[#101112]">
+                                                        <div
+                                                            className={`
+                                                                relative h-12 w-[68px]
+                                                                shrink-0 overflow-hidden
+                                                                rounded-lg border
+                                                                ${theme === "dark"
+                                                                    ? "border-[#27292d] bg-[#101112]"
+                                                                    : "border-black/[0.06] bg-gray-100"
+                                                                }
+                                                            `}
+                                                        >
                                                             <img
                                                                 src={
                                                                     sermon.thumbnail
@@ -351,7 +472,7 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
 
                                                             <div className="absolute inset-0 bg-black/20" />
 
-                                                            <div className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#7c6cff] text-[8px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                                            <div className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#E31B23] text-[8px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                                                                 <i className="fa-solid fa-play" />
                                                             </div>
                                                         </div>
@@ -359,10 +480,17 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                                         {/* Content */}
 
                                                         <div className="min-w-0 flex-1">
-                                                            <p className="truncate text-sm font-semibold text-white transition-colors group-hover:text-[#9188ff]">
-                                                                {
-                                                                    sermon.title
-                                                                }
+                                                            <p
+                                                                className={`
+                                                                    truncate text-sm
+                                                                    font-semibold transition-colors
+                                                                    ${theme === "dark"
+                                                                        ? "text-white group-hover:text-[#F7941D]"
+                                                                        : "text-[#171717] group-hover:text-[#E31B23]"
+                                                                    }
+                                                                `}
+                                                            >
+                                                                {sermon.title}
                                                             </p>
 
                                                             <div className="mt-1 flex items-center gap-2">
@@ -374,9 +502,14 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
 
                                                                 {sermon.category && (
                                                                     <>
-                                                                        <span className="h-1 w-1 rounded-full bg-[#7c6cff]" />
+                                                                        <span className="h-1 w-1 rounded-full bg-[#E31B23] dark:bg-[#F7941D]" />
 
-                                                                        <span className="truncate text-[10px] font-medium uppercase tracking-wide text-gray-600">
+                                                                        <span
+                                                                            className={`truncate text-[10px] font-medium uppercase tracking-wide ${theme === "dark"
+                                                                                    ? "text-gray-600"
+                                                                                    : "text-gray-400"
+                                                                                }`}
+                                                                        >
                                                                             {
                                                                                 sermon.category
                                                                             }
@@ -388,7 +521,18 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
 
                                                         {/* Arrow */}
 
-                                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-600 transition-all duration-200 group-hover:bg-[#7c6cff]/10 group-hover:text-[#9188ff]">
+                                                        <div
+                                                            className={`
+                                                                flex h-8 w-8 shrink-0
+                                                                items-center justify-center
+                                                                rounded-lg transition-all
+                                                                duration-200
+                                                                ${theme === "dark"
+                                                                    ? "text-gray-600 group-hover:bg-[#E31B23]/10 group-hover:text-[#F7941D]"
+                                                                    : "text-gray-400 group-hover:bg-[#E31B23]/[0.06] group-hover:text-[#E31B23]"
+                                                                }
+                                                            `}
+                                                        >
                                                             <i className="fa-solid fa-chevron-right text-[10px]" />
                                                         </div>
                                                     </button>
@@ -397,16 +541,25 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                         </div>
                                     ) : (
                                         <div className="px-5 py-10 text-center">
-
-                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#7c6cff]/10 text-[#9188ff]">
+                                            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#E31B23]/10 text-[#E31B23] dark:bg-[#F7941D]/10 dark:text-[#F7941D]">
                                                 <i className="fa-solid fa-magnifying-glass text-lg" />
                                             </div>
 
-                                            <p className="mt-4 text-sm font-semibold text-gray-200">
+                                            <p
+                                                className={`mt-4 text-sm font-semibold ${theme === "dark"
+                                                        ? "text-gray-200"
+                                                        : "text-[#171717]"
+                                                    }`}
+                                            >
                                                 No sermons found
                                             </p>
 
-                                            <p className="mt-1 text-xs leading-5 text-gray-600">
+                                            <p
+                                                className={`mt-1 text-xs leading-5 ${theme === "dark"
+                                                        ? "text-gray-600"
+                                                        : "text-gray-400"
+                                                    }`}
+                                            >
                                                 Try another sermon title
                                                 or speaker.
                                             </p>
@@ -425,17 +578,26 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                     <button
                         type="button"
                         onClick={handleToggleNotifications}
-                        className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-all duration-300 sm:h-11 sm:w-11 ${showNotifications
-                                ? "border-[#7c6cff]/40 bg-[#7c6cff]/10 text-[#9188ff]"
-                                : "border-[#27292d] bg-[#181a1d] text-gray-400 hover:border-[#34373c] hover:bg-[#1c1e21] hover:text-white"
-                            }`}
+                        className={`
+                            relative flex h-10 w-10 shrink-0
+                            items-center justify-center rounded-xl border
+                            transition-all duration-300 sm:h-11 sm:w-11
+                            ${showNotifications
+                                ? theme === "dark"
+                                    ? "border-[#E31B23]/40 bg-[#E31B23]/10 text-[#F7941D]"
+                                    : "border-[#E31B23]/25 bg-[#E31B23]/[0.06] text-[#E31B23]"
+                                : theme === "dark"
+                                    ? "border-[#27292d]/80 bg-white/[0.03] text-gray-400 hover:border-[#34373c] hover:bg-white/[0.05] hover:text-white"
+                                    : "border-black/[0.06] bg-black/[0.025] text-gray-500 hover:border-[#E31B23]/25 hover:bg-[#E31B23]/[0.05] hover:text-[#E31B23]"
+                            }
+                        `}
                         aria-label="Notifications"
                         aria-expanded={showNotifications}
                     >
                         <i className="fa-regular fa-bell text-base" />
 
                         {unreadCount > 0 && (
-                            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full border-2 border-[#101112] bg-[#7c6cff] px-1 text-[8px] font-bold text-white">
+                            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full border-2 border-white/80 bg-[#E31B23] px-1 text-[8px] font-bold text-white dark:border-[#101112]">
                                 {unreadCount}
                             </span>
                         )}
@@ -444,17 +606,46 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                     {/* Notification dropdown */}
 
                     {showNotifications && (
-                        <div className="absolute right-0 top-full z-[100] mt-3 w-[calc(100vw-32px)] max-w-[380px] overflow-hidden rounded-2xl border border-[#27292d] bg-[#181a1d] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
-
+                        <div
+                            className={`
+                                absolute right-0 top-full z-[100] mt-3
+                                w-[calc(100vw-32px)] max-w-[380px]
+                                overflow-hidden rounded-2xl border
+                                shadow-[0_20px_60px_rgba(0,0,0,0.16)]
+                                ${theme === "dark"
+                                    ? "border-[#27292d] bg-[#181a1d]"
+                                    : "border-black/[0.06] bg-white/90 backdrop-blur-xl"
+                                }
+                            `}
+                        >
                             {/* Header */}
 
-                            <div className="flex items-center justify-between border-b border-[#27292d] px-5 py-4">
+                            <div
+                                className={`
+                                    flex items-center justify-between
+                                    border-b px-5 py-4
+                                    ${theme === "dark"
+                                        ? "border-[#27292d]"
+                                        : "border-black/[0.05]"
+                                    }
+                                `}
+                            >
                                 <div>
-                                    <h2 className="text-sm font-bold text-white">
+                                    <h2
+                                        className={`text-sm font-bold ${theme === "dark"
+                                                ? "text-white"
+                                                : "text-[#171717]"
+                                            }`}
+                                    >
                                         Notifications
                                     </h2>
 
-                                    <p className="mt-1 text-[11px] text-gray-500">
+                                    <p
+                                        className={`mt-1 text-[11px] ${theme === "dark"
+                                                ? "text-gray-500"
+                                                : "text-gray-400"
+                                            }`}
+                                    >
                                         {unreadCount > 0
                                             ? `${unreadCount} unread notification${unreadCount > 1
                                                 ? "s"
@@ -467,10 +658,8 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                 {unreadCount > 0 && (
                                     <button
                                         type="button"
-                                        onClick={
-                                            handleMarkAllAsRead
-                                        }
-                                        className="rounded-lg px-2 py-1.5 text-[11px] font-semibold text-[#9188ff] transition-colors hover:bg-[#7c6cff]/10"
+                                        onClick={handleMarkAllAsRead}
+                                        className="rounded-lg px-2 py-1.5 text-[11px] font-semibold text-[#E31B23] transition-colors hover:bg-[#E31B23]/[0.06] dark:text-[#F7941D] dark:hover:bg-[#F7941D]/10"
                                     >
                                         Mark all read
                                     </button>
@@ -491,18 +680,35 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                                         notification.id
                                                     )
                                                 }
-                                                className={`group flex w-full gap-3 border-b border-[#27292d] px-5 py-4 text-left transition-all duration-200 last:border-b-0 ${notification.read
-                                                        ? "bg-transparent hover:bg-white/[0.025]"
-                                                        : "bg-[#7c6cff]/[0.045] hover:bg-[#7c6cff]/[0.08]"
-                                                    }`}
+                                                className={`
+                                                    group flex w-full gap-3
+                                                    border-b px-5 py-4 text-left
+                                                    transition-all duration-200
+                                                    last:border-b-0
+                                                    ${notification.read
+                                                        ? theme === "dark"
+                                                            ? "border-[#27292d] bg-transparent hover:bg-white/[0.025]"
+                                                            : "border-black/[0.05] bg-transparent hover:bg-black/[0.015]"
+                                                        : theme === "dark"
+                                                            ? "border-[#27292d] bg-[#E31B23]/[0.045] hover:bg-[#E31B23]/[0.08]"
+                                                            : "border-black/[0.05] bg-[#E31B23]/[0.025] hover:bg-[#E31B23]/[0.05]"
+                                                    }
+                                                `}
                                             >
                                                 {/* Icon */}
 
                                                 <div
-                                                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${notification.read
-                                                            ? "bg-[#101112] text-gray-500"
-                                                            : "bg-[#7c6cff]/10 text-[#9188ff]"
-                                                        }`}
+                                                    className={`
+                                                        flex h-10 w-10 shrink-0
+                                                        items-center justify-center
+                                                        rounded-xl transition-colors
+                                                        ${notification.read
+                                                            ? theme === "dark"
+                                                                ? "bg-[#101112] text-gray-500"
+                                                                : "bg-black/[0.03] text-gray-400"
+                                                            : "bg-[#E31B23]/10 text-[#E31B23] dark:bg-[#F7941D]/10 dark:text-[#F7941D]"
+                                                        }
+                                                    `}
                                                 >
                                                     <i
                                                         className={`${notification.icon} text-sm`}
@@ -513,27 +719,40 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
 
                                                 <div className="min-w-0 flex-1">
                                                     <div className="flex items-start justify-between gap-2">
-                                                        <p className="text-sm font-semibold text-gray-200">
+                                                        <p
+                                                            className={`text-sm font-semibold ${theme === "dark"
+                                                                    ? "text-gray-200"
+                                                                    : "text-[#171717]"
+                                                                }`}
+                                                        >
                                                             {
                                                                 notification.title
                                                             }
                                                         </p>
 
                                                         {!notification.read && (
-                                                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#7c6cff]" />
+                                                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#E31B23] dark:bg-[#F7941D]" />
                                                         )}
                                                     </div>
 
-                                                    <p className="mt-1 text-xs leading-5 text-gray-500">
+                                                    <p
+                                                        className={`mt-1 text-xs leading-5 ${theme === "dark"
+                                                                ? "text-gray-500"
+                                                                : "text-gray-500"
+                                                            }`}
+                                                    >
                                                         {
                                                             notification.message
                                                         }
                                                     </p>
 
-                                                    <p className="mt-2 text-[10px] font-medium text-gray-600">
-                                                        {
-                                                            notification.time
-                                                        }
+                                                    <p
+                                                        className={`mt-2 text-[10px] font-medium ${theme === "dark"
+                                                                ? "text-gray-600"
+                                                                : "text-gray-400"
+                                                            }`}
+                                                    >
+                                                        {notification.time}
                                                     </p>
                                                 </div>
                                             </button>
@@ -541,11 +760,21 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                                     )
                                 ) : (
                                     <div className="px-5 py-10 text-center">
-                                        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#101112] text-gray-600">
+                                        <div
+                                            className={`mx-auto flex h-12 w-12 items-center justify-center rounded-xl ${theme === "dark"
+                                                    ? "bg-[#101112] text-gray-600"
+                                                    : "bg-black/[0.03] text-gray-400"
+                                                }`}
+                                        >
                                             <i className="fa-regular fa-bell-slash text-lg" />
                                         </div>
 
-                                        <p className="mt-4 text-sm font-semibold text-gray-300">
+                                        <p
+                                            className={`mt-4 text-sm font-semibold ${theme === "dark"
+                                                    ? "text-gray-300"
+                                                    : "text-gray-600"
+                                                }`}
+                                        >
                                             No notifications
                                         </p>
                                     </div>
@@ -562,7 +791,16 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                 <button
                     type="button"
                     onClick={onMenuClick}
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#27292d] bg-[#181a1d] text-gray-400 transition-all duration-300 hover:border-[#7c6cff]/40 hover:bg-[#7c6cff]/10 hover:text-[#9188ff] lg:hidden sm:h-11 sm:w-11"
+                    className={`
+                        flex h-10 w-10 shrink-0 items-center
+                        justify-center rounded-xl border
+                        transition-all duration-300
+                        lg:hidden sm:h-11 sm:w-11
+                        ${theme === "dark"
+                            ? "border-[#27292d]/80 bg-white/[0.03] text-gray-400 hover:border-[#E31B23]/40 hover:bg-[#E31B23]/10 hover:text-[#F7941D]"
+                            : "border-black/[0.06] bg-black/[0.025] text-gray-500 hover:border-[#E31B23]/25 hover:bg-[#E31B23]/[0.06] hover:text-[#E31B23]"
+                        }
+                    `}
                     aria-label="Open menu"
                 >
                     <i className="fa-solid fa-bars text-base" />

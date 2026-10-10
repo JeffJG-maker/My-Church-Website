@@ -36,14 +36,10 @@ function Footer() {
 
     return (
         <footer className="border-t border-[#27292d] bg-gradient-to-b from-[#101112] via-[#141618] to-[#101112] text-white transition-colors duration-500">
-
             <div className="mx-auto max-w-7xl px-6 py-14 sm:px-10 lg:px-[7%]">
-
                 <ScrollReveal>
-
                     {/* TOP FOOTER AREA */}
                     <div className="mb-16 flex flex-col gap-8">
-
                         <div>
                             <h2 className="text-xl font-semibold tracking-tight">
                                 Living Faith Church
@@ -57,17 +53,31 @@ function Footer() {
                         {/* LEARN MORE */}
                         <Link
                             to="/about"
-                            className="group flex w-fit items-center gap-3 border-b border-white/20 pb-2 text-sm text-gray-300 transition-colors duration-300 hover:border-[#9188ff] hover:text-[#9188ff]"
+                            className="
+                                group
+                                flex
+                                w-fit
+                                items-center
+                                gap-3
+                                border-b
+                                border-white/20
+                                pb-2
+                                text-sm
+                                text-gray-300
+                                transition-colors
+                                duration-300
+                                hover:border-[#F7941D]
+                                hover:text-[#F7941D]
+                            "
                         >
                             Learn More About Us
 
-                            <i className="fas fa-arrow-right text-xs text-gray-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#9188ff]" />
+                            <i className="fas fa-arrow-right text-xs text-gray-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#F7941D]" />
                         </Link>
                     </div>
 
                     {/* MAIN LINKS */}
                     <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 lg:grid-cols-3">
-
                         {/* CHURCH */}
                         <div>
                             <h3 className="mb-6 text-sm font-semibold text-white">
@@ -79,7 +89,13 @@ function Footer() {
                                     <Link
                                         key={link.name}
                                         to={link.path}
-                                        className="text-sm text-gray-400 transition-colors duration-300 hover:text-[#9188ff]"
+                                        className="
+                                            text-sm
+                                            text-gray-400
+                                            transition-colors
+                                            duration-300
+                                            hover:text-[#F7941D]
+                                        "
                                     >
                                         {link.name}
                                     </Link>
@@ -96,28 +112,52 @@ function Footer() {
                             <nav className="flex flex-col items-start gap-4">
                                 <Link
                                     to="/sermons"
-                                    className="text-sm text-gray-400 transition-colors duration-300 hover:text-[#9188ff]"
+                                    className="
+                                        text-sm
+                                        text-gray-400
+                                        transition-colors
+                                        duration-300
+                                        hover:text-[#F7941D]
+                                    "
                                 >
                                     Listen to Sermons
                                 </Link>
 
                                 <Link
                                     to="/events"
-                                    className="text-sm text-gray-400 transition-colors duration-300 hover:text-[#9188ff]"
+                                    className="
+                                        text-sm
+                                        text-gray-400
+                                        transition-colors
+                                        duration-300
+                                        hover:text-[#F7941D]
+                                    "
                                 >
                                     Upcoming Events
                                 </Link>
 
                                 <Link
                                     to="/about"
-                                    className="text-sm text-gray-400 transition-colors duration-300 hover:text-[#9188ff]"
+                                    className="
+                                        text-sm
+                                        text-gray-400
+                                        transition-colors
+                                        duration-300
+                                        hover:text-[#F7941D]
+                                    "
                                 >
                                     Our Vision
                                 </Link>
 
                                 <Link
                                     to="/about"
-                                    className="text-sm text-gray-400 transition-colors duration-300 hover:text-[#9188ff]"
+                                    className="
+                                        text-sm
+                                        text-gray-400
+                                        transition-colors
+                                        duration-300
+                                        hover:text-[#F7941D]
+                                    "
                                 >
                                     Our Mission
                                 </Link>
@@ -135,7 +175,13 @@ function Footer() {
                                     <Link
                                         key={link.name}
                                         to={link.path}
-                                        className="text-sm text-gray-400 transition-colors duration-300 hover:text-[#9188ff]"
+                                        className="
+                                            text-sm
+                                            text-gray-400
+                                            transition-colors
+                                            duration-300
+                                            hover:text-[#F7941D]
+                                        "
                                     >
                                         {link.name}
                                     </Link>
@@ -146,9 +192,7 @@ function Footer() {
 
                     {/* BOTTOM SOCIAL AREA */}
                     <div className="mt-16 border-t border-[#27292d] pt-8">
-
                         <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-
                             {/* SOCIAL ICONS */}
                             <div className="flex items-center gap-5">
                                 {socialLinks.map((social) => (
@@ -156,7 +200,12 @@ function Footer() {
                                         key={social.name}
                                         href={social.href}
                                         aria-label={social.name}
-                                        className="text-gray-400 transition-colors duration-300 hover:text-[#9188ff]"
+                                        className="
+                                            text-gray-400
+                                            transition-colors
+                                            duration-300
+                                            hover:text-[#E31B23]
+                                        "
                                     >
                                         <i className={social.icon} />
                                     </a>
@@ -165,7 +214,7 @@ function Footer() {
 
                             {/* LOCATION */}
                             <div className="flex items-center gap-2 text-xs text-gray-500">
-                                <i className="fas fa-location-dot text-[#9188ff]" />
+                                <i className="fas fa-location-dot text-[#E31B23]" />
                                 <span>Edo State, Nigeria</span>
                             </div>
                         </div>
@@ -182,7 +231,6 @@ function Footer() {
                             </p>
                         </div>
                     </div>
-
                 </ScrollReveal>
             </div>
         </footer>

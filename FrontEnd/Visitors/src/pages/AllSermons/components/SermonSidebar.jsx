@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTheme } from "../../../context/ThemeContext";
 
 function SermonSidebar({
     mobile = false,
@@ -11,7 +12,11 @@ function SermonSidebar({
     onLatestClick,
     onPopularClick,
 }) {
+    const { theme } = useTheme();
+
     const [showCategories, setShowCategories] = useState(true);
+
+    const isDark = theme === "dark";
 
     const handleCategoryClick = (category) => {
         setSelectedCategory(category);
@@ -69,12 +74,15 @@ function SermonSidebar({
                 h-[calc(100vh-76px)]
                 flex-col
                 border-r
-                border-[#27292d]
-                bg-[#141618]
                 shadow-2xl
                 transition-transform
                 duration-500
                 ease-[cubic-bezier(0.22,1,0.36,1)]
+                backdrop-blur-xl
+                ${isDark
+                    ? "border-[#27292d] bg-[#141618]/95 text-white"
+                    : "border-black/5 bg-white/75 text-[#171717]"
+                }
                 ${mobile ? "w-72" : "w-64"}
                 ${isOpen
                     ? "translate-x-0"
@@ -84,13 +92,39 @@ function SermonSidebar({
             `}
         >
             {/* HEADER */}
-            <div className="flex items-center justify-between border-b border-[#27292d] px-4 py-4">
+
+            <div
+                className={`
+                    flex items-center justify-between
+                    border-b px-4 py-4
+                    ${isDark
+                        ? "border-[#27292d]"
+                        : "border-black/5"
+                    }
+                `}
+            >
                 <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#9188ff]">
+                    <p
+                        className="
+                            text-[10px]
+                            font-semibold
+                            uppercase
+                            tracking-[0.2em]
+                            text-[#E31B23]
+                        "
+                    >
                         Sermon Library
                     </p>
 
-                    <h2 className="mt-1 text-sm font-semibold text-white">
+                    <h2
+                        className={`
+                            mt-1 text-sm font-semibold
+                            ${isDark
+                                ? "text-white"
+                                : "text-[#171717]"
+                            }
+                        `}
+                    >
                         Navigation
                     </h2>
                 </div>
@@ -99,7 +133,16 @@ function SermonSidebar({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#27292d] bg-[#181a1d] text-[#9ca3af] transition-all duration-300 hover:bg-[#202226] hover:text-[#9188ff]"
+                        className={`
+                            flex h-8 w-8
+                            items-center justify-center
+                            rounded-lg border
+                            transition-all duration-300
+                            ${isDark
+                                ? "border-[#27292d] bg-[#181a1d] text-[#9ca3af] hover:border-[#E31B23]/30 hover:bg-[#E31B23]/10 hover:text-[#F7941D]"
+                                : "border-black/10 bg-black/[0.025] text-gray-500 hover:border-[#E31B23]/20 hover:bg-[#E31B23]/8 hover:text-[#E31B23]"
+                            }
+                        `}
                         aria-label="Close sidebar"
                     >
                         <i
@@ -113,31 +156,63 @@ function SermonSidebar({
             </div>
 
             {/* NAVIGATION */}
+
             <div className="flex-1 overflow-y-auto px-3 py-4">
 
                 {/* MAIN LINKS */}
+
                 <div className="space-y-1">
 
                     {/* ALL SERMONS */}
+
                     <button
                         type="button"
                         onClick={handleAllSermons}
-                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all duration-300 ${selectedCategory === "All" &&
+                        className={`
+                            flex w-full items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-left text-sm
+                            transition-all duration-300
+                            ${selectedCategory === "All" &&
                                 selectedType === "All"
-                                ? "bg-[#7c6cff]/10 text-[#9188ff]"
-                                : "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
-                            }`}
+                                ? isDark
+                                    ? "bg-[#E31B23]/10 text-[#F7941D]"
+                                    : "bg-[#E31B23]/8 text-[#C9151C]"
+                                : isDark
+                                    ? "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
+                                    : "text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
+                            }
+                        `}
                     >
-                        <i className="fa-solid fa-house w-4 text-xs" />
+                        <i
+                            className={`
+                                fa-solid fa-house w-4 text-xs
+                                ${selectedCategory === "All" &&
+                                    selectedType === "All"
+                                    ? "text-[#E31B23]"
+                                    : ""
+                                }
+                            `}
+                        />
 
                         <span>All Sermons</span>
                     </button>
 
                     {/* LATEST SERMONS */}
+
                     <button
                         type="button"
                         onClick={handleLatest}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#9ca3af] transition-all duration-300 hover:bg-[#181a1d] hover:text-white"
+                        className={`
+                            flex w-full items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-left text-sm
+                            transition-all duration-300
+                            ${isDark
+                                ? "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
+                                : "text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
+                            }
+                        `}
                     >
                         <i className="fa-solid fa-clock w-4 text-xs" />
 
@@ -145,10 +220,20 @@ function SermonSidebar({
                     </button>
 
                     {/* POPULAR SERMONS */}
+
                     <button
                         type="button"
                         onClick={handlePopular}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#9ca3af] transition-all duration-300 hover:bg-[#181a1d] hover:text-white"
+                        className={`
+                            flex w-full items-center gap-3
+                            rounded-lg px-3 py-2.5
+                            text-left text-sm
+                            transition-all duration-300
+                            ${isDark
+                                ? "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
+                                : "text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
+                            }
+                        `}
                     >
                         <i className="fa-solid fa-fire w-4 text-xs" />
 
@@ -157,34 +242,73 @@ function SermonSidebar({
                 </div>
 
                 {/* DIVIDER */}
-                <div className="my-4 border-t border-[#27292d]" />
+
+                <div
+                    className={`
+                        my-4 border-t
+                        ${isDark
+                            ? "border-[#27292d]"
+                            : "border-black/5"
+                        }
+                    `}
+                />
 
                 {/* CATEGORIES */}
+
                 <div>
                     <button
                         type="button"
                         onClick={() =>
-                            setShowCategories((current) => !current)
+                            setShowCategories(
+                                (current) => !current
+                            )
                         }
                         className="flex w-full items-center justify-between px-3 py-2"
                     >
-                        <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9ca3af]">
+                        <span
+                            className={`
+                                text-[10px]
+                                font-semibold
+                                uppercase
+                                tracking-[0.18em]
+                                ${isDark
+                                    ? "text-[#9ca3af]"
+                                    : "text-gray-500"
+                                }
+                            `}
+                        >
                             Categories
                         </span>
 
                         <i
-                            className={`fa-solid fa-chevron-down text-[10px] text-[#9ca3af] transition-transform duration-300 ${showCategories
+                            className={`
+                                fa-solid
+                                fa-chevron-down
+                                text-[10px]
+                                transition-transform
+                                duration-300
+                                ${isDark
+                                    ? "text-[#9ca3af]"
+                                    : "text-gray-500"
+                                }
+                                ${showCategories
                                     ? "rotate-0"
                                     : "-rotate-90"
-                                }`}
+                                }
+                            `}
                         />
                     </button>
 
                     <div
-                        className={`overflow-hidden transition-all duration-300 ${showCategories
+                        className={`
+                            overflow-hidden
+                            transition-all
+                            duration-300
+                            ${showCategories
                                 ? "max-h-96 opacity-100"
                                 : "max-h-0 opacity-0"
-                            }`}
+                            }
+                        `}
                     >
                         <div className="mt-1 space-y-1">
                             {categories.map((category) => {
@@ -196,18 +320,38 @@ function SermonSidebar({
                                         key={category}
                                         type="button"
                                         onClick={() =>
-                                            handleCategoryClick(category)
+                                            handleCategoryClick(
+                                                category
+                                            )
                                         }
-                                        className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all duration-300 ${isActive
-                                                ? "bg-[#7c6cff]/10 text-[#9188ff]"
-                                                : "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
-                                            }`}
+                                        className={`
+                                            flex w-full
+                                            items-center gap-3
+                                            rounded-lg px-3 py-2.5
+                                            text-left text-sm
+                                            transition-all duration-300
+                                            ${isActive
+                                                ? isDark
+                                                    ? "bg-[#E31B23]/10 text-[#F7941D]"
+                                                    : "bg-[#E31B23]/8 text-[#C9151C]"
+                                                : isDark
+                                                    ? "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
+                                                    : "text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
+                                            }
+                                        `}
                                     >
                                         <span
-                                            className={`h-1.5 w-1.5 rounded-full ${isActive
-                                                    ? "bg-[#7c6cff]"
-                                                    : "bg-[#4b4e54]"
-                                                }`}
+                                            className={`
+                                                h-1.5
+                                                w-1.5
+                                                rounded-full
+                                                ${isActive
+                                                    ? "bg-[#E31B23]"
+                                                    : isDark
+                                                        ? "bg-[#4b4e54]"
+                                                        : "bg-gray-300"
+                                                }
+                                            `}
                                         />
 
                                         <span>{category}</span>
@@ -219,17 +363,40 @@ function SermonSidebar({
                 </div>
 
                 {/* DIVIDER */}
-                <div className="my-4 border-t border-[#27292d]" />
+
+                <div
+                    className={`
+                        my-4 border-t
+                        ${isDark
+                            ? "border-[#27292d]"
+                            : "border-black/5"
+                        }
+                    `}
+                />
 
                 {/* MEDIA TYPE */}
+
                 <div>
-                    <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9ca3af]">
+                    <p
+                        className={`
+                            px-3 py-2
+                            text-[10px]
+                            font-semibold
+                            uppercase
+                            tracking-[0.18em]
+                            ${isDark
+                                ? "text-[#9ca3af]"
+                                : "text-gray-500"
+                            }
+                        `}
+                    >
                         Media Type
                     </p>
 
                     <div className="mt-1 space-y-1">
                         {["All", "Video", "Audio"].map((type) => {
-                            const isActive = selectedType === type;
+                            const isActive =
+                                selectedType === type;
 
                             return (
                                 <button
@@ -238,22 +405,41 @@ function SermonSidebar({
                                     onClick={() => {
                                         setSelectedType(type);
 
-                                        if (mobile && onClose) {
+                                        if (
+                                            mobile &&
+                                            onClose
+                                        ) {
                                             onClose();
                                         }
                                     }}
-                                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition-all duration-300 ${isActive
-                                            ? "bg-[#7c6cff]/10 text-[#9188ff]"
-                                            : "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
-                                        }`}
+                                    className={`
+                                        flex w-full
+                                        items-center gap-3
+                                        rounded-lg px-3 py-2.5
+                                        text-left text-sm
+                                        transition-all duration-300
+                                        ${isActive
+                                            ? isDark
+                                                ? "bg-[#E31B23]/10 text-[#F7941D]"
+                                                : "bg-[#E31B23]/8 text-[#C9151C]"
+                                            : isDark
+                                                ? "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
+                                                : "text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
+                                        }
+                                    `}
                                 >
                                     <i
-                                        className={`fa-solid ${type === "Video"
+                                        className={`
+                                            fa-solid
+                                            ${type === "Video"
                                                 ? "fa-video"
-                                                : type === "Audio"
+                                                : type ===
+                                                    "Audio"
                                                     ? "fa-headphones"
                                                     : "fa-layer-group"
-                                            } w-4 text-xs`}
+                                            }
+                                            w-4 text-xs
+                                        `}
                                     />
 
                                     <span>{type}</span>
@@ -265,7 +451,16 @@ function SermonSidebar({
             </div>
 
             {/* FOOTER */}
-            <div className="border-t border-[#27292d] p-3">
+
+            <div
+                className={`
+                    border-t p-3
+                    ${isDark
+                        ? "border-[#27292d]"
+                        : "border-black/5"
+                    }
+                `}
+            >
                 <button
                     type="button"
                     onClick={() => {
@@ -273,7 +468,16 @@ function SermonSidebar({
                             onClose();
                         }
                     }}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[#9ca3af] transition-all duration-300 hover:bg-[#181a1d] hover:text-white"
+                    className={`
+                        flex w-full items-center gap-3
+                        rounded-lg px-3 py-2.5
+                        text-sm
+                        transition-all duration-300
+                        ${isDark
+                            ? "text-[#9ca3af] hover:bg-[#E31B23]/8 hover:text-[#F7941D]"
+                            : "text-gray-600 hover:bg-[#E31B23]/6 hover:text-[#E31B23]"
+                        }
+                    `}
                 >
                     <i className="fa-solid fa-arrow-right-from-bracket w-4 text-xs" />
 

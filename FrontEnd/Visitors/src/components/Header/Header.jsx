@@ -30,34 +30,46 @@ function Header() {
         after:-bottom-2
         after:left-0
         after:h-[2px]
-        after:bg-[#7c6cff]
+        after:bg-[#E31B23]
         after:transition-all
         after:duration-300
 
         ${isActive
-            ? "font-bold tracking-wide after:w-full text-[#9188ff]"
-            : "after:w-0 hover:after:w-full hover:text-[#9188ff]"
+            ? "font-bold tracking-wide after:w-full text-[#E31B23]"
+            : `after:w-0 hover:after:w-full ${theme === "dark"
+                ? "text-white hover:text-[#F7941D]"
+                : "text-[#171717] hover:text-[#E31B23]"
+            }`
         }
-
-        text-white
+        ${isActive
+            ? ""
+            : ""
+        }
+        ${theme === "dark"
+            ? isActive
+                ? "text-[#F7941D]"
+                : ""
+            : ""
+        }
     `;
 
     return (
         <header
-            className="
+            className={`
                 fixed
                 left-0
                 top-0
                 z-50
                 w-full
                 border-b
-                border-white/10
-                bg-[#101112]/70
                 backdrop-blur-md
-                text-white
                 transition-all
                 duration-500
-            "
+                ${theme === "dark"
+                    ? "border-white/10 bg-[#101112]/70 text-white"
+                    : "border-gray-200/80 bg-white/90 text-[#171717]"
+                }
+            `}
         >
             <div
                 className="
@@ -94,24 +106,31 @@ function Header() {
 
                     <div className="hidden sm:block">
                         <h2
-                            className="
+                            className={`
                                 text-sm
                                 font-bold
                                 leading-tight
                                 sm:text-base
                                 md:text-lg
-                            "
+                                ${theme === "dark"
+                                    ? "text-white"
+                                    : "text-[#171717]"
+                                }
+                            `}
                         >
                             LIVING FAITH CHURCH IGUOSA
                         </h2>
 
                         <p
-                            className="
+                            className={`
                                 mt-0.5
                                 text-[10px]
-                                text-white/60
                                 sm:text-xs
-                            "
+                                ${theme === "dark"
+                                    ? "text-white/60"
+                                    : "text-gray-500"
+                                }
+                            `}
                         >
                             Building Lives, Raising Champions
                         </p>
@@ -120,32 +139,19 @@ function Header() {
 
                 {/* DESKTOP NAVIGATION */}
                 <nav className="hidden items-center gap-7 md:flex">
-
-                    <NavLink
-                        to="/"
-                        className={navLinkClass}
-                    >
+                    <NavLink to="/" className={navLinkClass}>
                         Home
                     </NavLink>
 
-                    <NavLink
-                        to="/login"
-                        className={navLinkClass}
-                    >
+                    <NavLink to="/login" className={navLinkClass}>
                         Login
                     </NavLink>
 
-                    <NavLink
-                        to="/about"
-                        className={navLinkClass}
-                    >
+                    <NavLink to="/about" className={navLinkClass}>
                         About
                     </NavLink>
 
-                    <NavLink
-                        to="/contact"
-                        className={navLinkClass}
-                    >
+                    <NavLink to="/contact" className={navLinkClass}>
                         Contact
                     </NavLink>
 
@@ -159,7 +165,7 @@ function Header() {
                                 items-center
                                 gap-2
                                 rounded-md
-                                bg-[#7c6cff]
+                                bg-[#E31B23]
                                 px-4
                                 py-2
                                 text-xs
@@ -168,7 +174,7 @@ function Header() {
                                 transition-all
                                 duration-300
                                 hover:-translate-y-0.5
-                                hover:bg-[#6d5ff5]
+                                hover:bg-[#C9151C]
                             "
                         >
                             <span>
@@ -185,7 +191,7 @@ function Header() {
 
                         {themeOpen && (
                             <div
-                                className="
+                                className={`
                                     absolute
                                     right-0
                                     top-[calc(100%+10px)]
@@ -193,26 +199,30 @@ function Header() {
                                     overflow-hidden
                                     rounded-lg
                                     border
-                                    border-[#27292d]
-                                    bg-[#181a1d]
                                     py-1
                                     text-sm
-                                    text-white
                                     shadow-xl
-                                "
+                                    ${theme === "dark"
+                                        ? "border-[#27292d] bg-[#181a1d] text-white"
+                                        : "border-gray-200 bg-white text-[#171717]"
+                                    }
+                                `}
                             >
                                 <button
                                     type="button"
                                     onClick={() => changeTheme("light")}
-                                    className="
+                                    className={`
                                         block
                                         w-full
                                         px-4
                                         py-2.5
                                         text-left
                                         transition
-                                        hover:bg-[#27292d]
-                                    "
+                                        ${theme === "dark"
+                                            ? "hover:bg-[#27292d]"
+                                            : "hover:bg-[#FFF1E6]"
+                                        }
+                                    `}
                                 >
                                     Light
                                 </button>
@@ -220,15 +230,18 @@ function Header() {
                                 <button
                                     type="button"
                                     onClick={() => changeTheme("dark")}
-                                    className="
+                                    className={`
                                         block
                                         w-full
                                         px-4
                                         py-2.5
                                         text-left
                                         transition
-                                        hover:bg-[#27292d]
-                                    "
+                                        ${theme === "dark"
+                                            ? "hover:bg-[#27292d]"
+                                            : "hover:bg-[#FFF1E6]"
+                                        }
+                                    `}
                                 >
                                     Dark
                                 </button>
@@ -261,9 +274,12 @@ function Header() {
                             h-[3px]
                             w-7
                             rounded-full
-                            bg-white
                             transition-all
                             duration-300
+                            ${theme === "dark"
+                                ? "bg-white"
+                                : "bg-[#171717]"
+                            }
                             ${menuOpen
                                 ? "translate-y-[9px] rotate-45"
                                 : ""
@@ -276,9 +292,12 @@ function Header() {
                             h-[3px]
                             w-7
                             rounded-full
-                            bg-white
                             transition-all
                             duration-300
+                            ${theme === "dark"
+                                ? "bg-white"
+                                : "bg-[#171717]"
+                            }
                             ${menuOpen
                                 ? "opacity-0"
                                 : "opacity-100"
@@ -291,9 +310,12 @@ function Header() {
                             h-[3px]
                             w-7
                             rounded-full
-                            bg-white
                             transition-all
                             duration-300
+                            ${theme === "dark"
+                                ? "bg-white"
+                                : "bg-[#171717]"
+                            }
                             ${menuOpen
                                 ? "-translate-y-[9px] -rotate-45"
                                 : ""
@@ -312,12 +334,14 @@ function Header() {
                     w-full
                     overflow-hidden
                     border-t
-                    border-[#27292d]
-                    bg-[#141618]
                     shadow-2xl
                     transition-all
                     duration-500
                     md:hidden
+                    ${theme === "dark"
+                        ? "border-[#27292d] bg-[#141618]"
+                        : "border-gray-200 bg-white"
+                    }
 
                     ${menuOpen
                         ? "max-h-[500px] translate-x-0 opacity-100"
@@ -326,23 +350,22 @@ function Header() {
                 `}
             >
                 <nav className="flex flex-col px-6 py-5">
-
                     <NavLink
                         to="/"
                         onClick={closeMenu}
                         className={({ isActive }) => `
                             border-b
-                            border-[#27292d]
                             px-2
                             py-4
                             text-sm
                             font-medium
-                            text-gray-300
                             transition
-                            hover:text-[#9188ff]
-
+                            ${theme === "dark"
+                                ? "border-[#27292d] text-gray-300 hover:text-[#F7941D]"
+                                : "border-gray-200 text-gray-700 hover:text-[#E31B23]"
+                            }
                             ${isActive
-                                ? "font-bold text-[#9188ff]"
+                                ? "font-bold !text-[#E31B23]"
                                 : ""
                             }
                         `}
@@ -355,17 +378,17 @@ function Header() {
                         onClick={closeMenu}
                         className={({ isActive }) => `
                             border-b
-                            border-[#27292d]
                             px-2
                             py-4
                             text-sm
                             font-medium
-                            text-gray-300
                             transition
-                            hover:text-[#9188ff]
-
+                            ${theme === "dark"
+                                ? "border-[#27292d] text-gray-300 hover:text-[#F7941D]"
+                                : "border-gray-200 text-gray-700 hover:text-[#E31B23]"
+                            }
                             ${isActive
-                                ? "font-bold text-[#9188ff]"
+                                ? "font-bold !text-[#E31B23]"
                                 : ""
                             }
                         `}
@@ -378,17 +401,17 @@ function Header() {
                         onClick={closeMenu}
                         className={({ isActive }) => `
                             border-b
-                            border-[#27292d]
                             px-2
                             py-4
                             text-sm
                             font-medium
-                            text-gray-300
                             transition
-                            hover:text-[#9188ff]
-
+                            ${theme === "dark"
+                                ? "border-[#27292d] text-gray-300 hover:text-[#F7941D]"
+                                : "border-gray-200 text-gray-700 hover:text-[#E31B23]"
+                            }
                             ${isActive
-                                ? "font-bold text-[#9188ff]"
+                                ? "font-bold !text-[#E31B23]"
                                 : ""
                             }
                         `}
@@ -401,17 +424,17 @@ function Header() {
                         onClick={closeMenu}
                         className={({ isActive }) => `
                             border-b
-                            border-[#27292d]
                             px-2
                             py-4
                             text-sm
                             font-medium
-                            text-gray-300
                             transition
-                            hover:text-[#9188ff]
-
+                            ${theme === "dark"
+                                ? "border-[#27292d] text-gray-300 hover:text-[#F7941D]"
+                                : "border-gray-200 text-gray-700 hover:text-[#E31B23]"
+                            }
                             ${isActive
-                                ? "font-bold text-[#9188ff]"
+                                ? "font-bold !text-[#E31B23]"
                                 : ""
                             }
                         `}
@@ -421,25 +444,23 @@ function Header() {
 
                     {/* MOBILE THEME */}
                     <div className="flex gap-3 px-2 py-5">
-
                         <button
                             type="button"
                             onClick={() => changeTheme("light")}
-                            className="
+                            className={`
                                 flex-1
                                 rounded-md
                                 border
-                                border-[#27292d]
-                                bg-[#181a1d]
                                 px-4
                                 py-2.5
                                 text-sm
                                 font-semibold
-                                text-gray-300
                                 transition
-                                hover:bg-[#27292d]
-                                hover:text-white
-                            "
+                                ${theme === "dark"
+                                    ? "border-[#27292d] bg-[#181a1d] text-gray-300 hover:bg-[#27292d] hover:text-white"
+                                    : "border-[#E31B23] bg-[#FFF1E6] text-[#E31B23] hover:bg-[#E31B23] hover:text-white"
+                                }
+                            `}
                         >
                             Light
                         </button>
@@ -450,19 +471,18 @@ function Header() {
                             className="
                                 flex-1
                                 rounded-md
-                                bg-[#7c6cff]
+                                bg-[#E31B23]
                                 px-4
                                 py-2.5
                                 text-sm
                                 font-semibold
                                 text-white
                                 transition
-                                hover:bg-[#6d5ff5]
+                                hover:bg-[#C9151C]
                             "
                         >
                             Dark
                         </button>
-
                     </div>
                 </nav>
             </div>

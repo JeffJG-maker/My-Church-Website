@@ -6,7 +6,7 @@ function About() {
             className="
                 min-h-screen
                 bg-white
-                text-[#17172b]
+                text-[#171717]
                 transition-colors
                 duration-500
                 dark:bg-[#101112]
@@ -20,7 +20,7 @@ function About() {
                     min-h-[55vh]
                     items-center
                     justify-center
-                    bg-[#f8f8ff]
+                    bg-[#FFF7F2]
                     px-[6%]
                     pb-16
                     pt-32
@@ -30,15 +30,14 @@ function About() {
             >
                 <ScrollReveal>
                     <div className="mx-auto max-w-3xl">
-
                         <span
                             className="
                                 text-sm
                                 font-bold
                                 uppercase
                                 tracking-[0.2em]
-                                text-[#6c63ff]
-                                dark:text-[#9188ff]
+                                text-[#E31B23]
+                                dark:text-[#F7941D]
                             "
                         >
                             About Our Church
@@ -73,7 +72,6 @@ function About() {
                             building leaders and impacting our world with the
                             love of Christ.
                         </p>
-
                     </div>
                 </ScrollReveal>
             </section>
@@ -81,19 +79,17 @@ function About() {
             {/* MAIN STORY */}
             <section className="px-[6%] py-20 sm:py-24">
                 <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-2 lg:items-center lg:gap-20">
-
                     {/* TEXT */}
                     <ScrollReveal>
                         <div>
-
                             <span
                                 className="
                                     text-sm
                                     font-bold
                                     uppercase
                                     tracking-widest
-                                    text-[#6c63ff]
-                                    dark:text-[#9188ff]
+                                    text-[#E31B23]
+                                    dark:text-[#F7941D]
                                 "
                             >
                                 Our Story
@@ -151,11 +147,12 @@ function About() {
                                 className="
                                     mt-8
                                     border-l-4
-                                    border-[#7c6cff]
+                                    border-[#E31B23]
                                     pl-5
+                                    dark:border-[#F7941D]
                                 "
                             >
-                                <p className="text-sm font-semibold text-[#17172b] dark:text-white">
+                                <p className="text-sm font-semibold text-[#171717] dark:text-white">
                                     Winners Iguosa
                                 </p>
 
@@ -163,7 +160,6 @@ function About() {
                                     A people committed to God's purpose.
                                 </p>
                             </div>
-
                         </div>
                     </ScrollReveal>
 
@@ -197,21 +193,20 @@ function About() {
                                     absolute
                                     inset-0
                                     bg-gradient-to-t
-                                    from-[#101112]/50
+                                    from-[#9B111E]/50
                                     via-transparent
                                     to-transparent
                                 "
                             />
                         </div>
                     </ScrollReveal>
-
                 </div>
             </section>
 
             {/* FAITH SECTION */}
             <section
                 className="
-                    bg-[#f8f8ff]
+                    bg-[#FFF7F2]
                     px-[6%]
                     py-20
                     dark:bg-[#141618]
@@ -219,18 +214,16 @@ function About() {
                 "
             >
                 <div className="mx-auto max-w-5xl">
-
                     <ScrollReveal>
                         <div className="text-center">
-
                             <span
                                 className="
                                     text-sm
                                     font-bold
                                     uppercase
                                     tracking-widest
-                                    text-[#6c63ff]
-                                    dark:text-[#9188ff]
+                                    text-[#E31B23]
+                                    dark:text-[#F7941D]
                                 "
                             >
                                 What Drives Us
@@ -246,7 +239,6 @@ function About() {
                             >
                                 The Faith That Brought Us This Far
                             </h2>
-
                         </div>
                     </ScrollReveal>
 
@@ -264,7 +256,6 @@ function About() {
                             "
                         >
                             <div className="space-y-6 text-sm leading-8 text-gray-600 dark:text-gray-300 sm:text-base">
-
                                 <p>
                                     Our journey has been sustained by an unwavering
                                     confidence in God's Word. We believe that faith
@@ -286,30 +277,25 @@ function About() {
                                     serving people with love and making Jesus known
                                     through everything we do.
                                 </p>
-
                             </div>
                         </div>
                     </ScrollReveal>
-
                 </div>
             </section>
 
             {/* MINISTRY VALUES */}
             <section className="px-[6%] py-20 sm:py-24">
-
                 <ScrollReveal>
                     <div className="mx-auto max-w-7xl">
-
                         <div className="text-center">
-
                             <span
                                 className="
                                     text-sm
                                     font-bold
                                     uppercase
                                     tracking-widest
-                                    text-[#6c63ff]
-                                    dark:text-[#9188ff]
+                                    text-[#E31B23]
+                                    dark:text-[#F7941D]
                                 "
                             >
                                 Our Values
@@ -318,11 +304,9 @@ function About() {
                             <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
                                 What We Stand For
                             </h2>
-
                         </div>
 
                         <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-
                             {[
                                 {
                                     icon: "fas fa-book-open",
@@ -375,11 +359,11 @@ function About() {
                                                 items-center
                                                 justify-center
                                                 rounded-lg
-                                                bg-[#7c6cff]/10
+                                                bg-[#E31B23]/10
                                                 text-lg
-                                                text-[#6c63ff]
-                                                dark:bg-[#7c6cff]/10
-                                                dark:text-[#9188ff]
+                                                text-[#E31B23]
+                                                dark:bg-[#F7941D]/10
+                                                dark:text-[#F7941D]
                                             "
                                         >
                                             <i className={value.icon}></i>
@@ -395,17 +379,16 @@ function About() {
                                     </article>
                                 </ScrollReveal>
                             ))}
-
                         </div>
-
                     </div>
                 </ScrollReveal>
-
             </section>
 
             {/* MINISTRY STAT */}
             <section
                 className="
+                    border-y
+                    border-[#27292d]
                     bg-gradient-to-b
                     from-[#101112]
                     via-[#141618]
@@ -413,8 +396,6 @@ function About() {
                     px-[6%]
                     py-16
                     text-white
-                    border-y
-                    border-[#27292d]
                 "
             >
                 <ScrollReveal>
@@ -432,27 +413,23 @@ function About() {
                             sm:gap-16
                         "
                     >
-
                         <div>
-
                             <p
                                 className="
                                     text-sm
                                     font-semibold
                                     uppercase
                                     tracking-[0.2em]
-                                    text-[#9188ff]
+                                    text-[#F7941D]
                                 "
                             >
                                 Winners Iguosa
                             </p>
 
                             <div className="mt-4 flex items-center justify-center gap-4">
-
-                                <i className="fas fa-church text-3xl text-[#7c6cff]"></i>
+                                <i className="fas fa-church text-3xl text-[#E31B23]"></i>
 
                                 <div className="text-left">
-
                                     <h3 className="text-4xl font-bold sm:text-5xl">
                                         6+
                                     </h3>
@@ -460,10 +437,8 @@ function About() {
                                     <p className="mt-1 text-sm text-gray-400">
                                         Years of Ministry
                                     </p>
-
                                 </div>
                             </div>
-
                         </div>
 
                         <div className="hidden h-16 w-px bg-white/15 sm:block"></div>
@@ -473,11 +448,9 @@ function About() {
                             God's Kingdom through the transforming power of His
                             Word.
                         </p>
-
                     </div>
                 </ScrollReveal>
             </section>
-
         </main>
     );
 }
