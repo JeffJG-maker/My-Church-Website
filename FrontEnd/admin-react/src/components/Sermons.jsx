@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faBookOpen,
@@ -9,1213 +11,1184 @@ import {
     faPen,
     faTrash,
     faChevronLeft,
-    faChevronRight
+    faChevronRight,
+    faPlus,
+    faTimes,
+    faUpload,
+    faVideo,
 } from "@fortawesome/free-solid-svg-icons";
+const emptyForm = {
+    title: "",
+    speaker: "",
+    category: "",
+    date: "",
+    duration: "",
+    description: "",
+    type: "video",
+};
+const formatDate = (date) => {
+    if (!date) return "—";
+    const parsed = new Date(`${date}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) return date;
+    return parsed.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+};
+const API_BASE = "http://localhost:5000";
 
-import { useState } from "react";
+const getMediaUrl = (value) => {
+    if (!value) return "";
+    if (/^https?:\/\//i.test(value) || value.startsWith("blob:")) return value;
+    return `${API_BASE}/${value.replace(/^\/+/, "")}`;
+};
 
-const latestSermons = [
-    {
-        id: 1,
-        title: "Walking By Faith",
-        speaker: "Pastor Tobore",
-        date: "2 hours ago",
-        thumbnail: "/media/Walking By Faith Thumbnail.jpg"
-    },
-    {
-        id: 2,
-        title: "The Power of Prayer",
-        speaker: "Pastor Tobore",
-        date: "5 hours ago",
-        thumbnail: "/media/The Power of Prayer Thumbnail.jpg"
-    },
-    {
-        id: 3,
-        title: "Living a Life of Purpose",
-        speaker: "Pastor Paul",
-        date: "1 day ago",
-        thumbnail: "/media/Living a Life of Purpose Thumbnail.jpg"
-    },
-    {
-        id: 4,
-        title: "The Power of Consecration",
-        speaker: "Pastor Paul",
-        date: "2 days ago",
-        thumbnail: "/media/The Power of Consecration Thumbnail.jpg"
-    }
-];
+const dateInputValue = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
+    return date.toISOString().slice(0, 10);
+};
 
-const sermonSummary = [
-    {
-        title: "Total Sermons",
-        value: "128",
-        icon: faBookOpen
-    },
-    {
-        title: "Categories",
-        value: "8",
-        icon: faLayerGroup
-    },
-    {
-        title: "Total Views",
-        value: "24.5K",
-        icon: faPlayCircle
-    }
-];
-
-const Sermons = () => {
-    const [showAddModal, setShowAddModal] = useState(false);
+const Sermons = ({
+    categories: sharedCategories = ["Faith", "Prayer", "Teaching", "Worship", "Praise"],
+}) => {
+    const [sermons, setSermons] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [audioFile, setAudioFile] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    // Keep typing separate from the search currently applied to the table.
+    const [appliedSearchTerm, setAppliedSearchTerm] = useState("");
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [categoryFilter, setCategoryFilter] = useState("all");
+    const [speakerFilter, setSpeakerFilter] = useState("all");
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 3;
+    const [showModal, setShowModal] = useState(false);
+    const [editingId, setEditingId] = useState(null);
+    const [viewingSermon, setViewingSermon] = useState(null);
+    const [form, setForm] = useState(emptyForm);
     const [thumbnailFile, setThumbnailFile] = useState(null);
     const [videoFile, setVideoFile] = useState(null);
+    const [formError, setFormError] = useState("");
+    const [notice, setNotice] = useState("");
+    const [showActivityHistory, setShowActivityHistory] = useState(false);
+    const [activities, setActivities] = useState(() => {
+        try {
+            const saved = localStorage.getItem("church-sermon-activity");
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    });
 
+    useEffect(() => {
+        try {
+            localStorage.setItem("church-sermon-activity", JSON.stringify(activities));
+        } catch (error) {
+            console.error("Could not save sermon activity history:", error);
+        }
+    }, [activities]);
+
+    const recordActivity = (action, sermonTitle, thumbnail = "", sermonId = null) => {
+        const activity = {
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            action,
+            sermonTitle,
+            sermonId,
+            thumbnail: thumbnail || "",
+            timestamp: new Date().toISOString(),
+        };
+        setActivities((current) => {
+            const cutoff = Date.now() - 14 * 24 * 60 * 60 * 1000;
+            return [activity, ...current]
+                .filter((item) => new Date(item.timestamp).getTime() >= cutoff)
+                .slice(0, 100);
+        });
+    };
+
+    const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+    const recentActivities = activities.filter(
+        (activity) => new Date(activity.timestamp).getTime() >= twoWeeksAgo
+    );
+    const displayedActivities = showActivityHistory
+        ? recentActivities
+        : recentActivities.slice(0, 4);
+
+    const formatActivityTime = (timestamp) => {
+        const time = new Date(timestamp);
+        if (Number.isNaN(time.getTime())) return "Time unavailable";
+        const difference = Math.max(0, Date.now() - time.getTime());
+        const minutes = Math.floor(difference / 60000);
+        if (minutes < 1) return "Just now";
+        if (minutes < 60) return `${minutes} min${minutes === 1 ? "" : "s"} ago`;
+        const hours = Math.floor(minutes / 60);
+        if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+        const days = Math.floor(hours / 24);
+        if (days < 7) return `${days} day${days === 1 ? "" : "s"} ago`;
+        return time.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+    };
+    const fetchSermons = async () => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${API_BASE}/api/sermons`);
+            if (!response.ok) throw new Error("Could not load sermons from the server.");
+            const data = await response.json();
+            setSermons(Array.isArray(data) ? data.map((sermon) => ({
+                ...sermon,
+                date: dateInputValue(sermon.date),
+                thumbnail: getMediaUrl(sermon.thumbnail),
+                mediaUrl: getMediaUrl(sermon.mediaUrl),
+                duration: sermon.duration || "—",
+                views: sermon.views || 0,
+            })) : []);
+        } catch (error) {
+            setNotice(error.message || "Unable to connect to the sermons API.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchSermons();
+    }, []);
+
+    const speakers = useMemo(
+        () =>
+            [
+                ...new Set(
+                    sermons.map((sermon) => sermon.speaker).filter(Boolean)
+                ),
+            ].sort(),
+        [sermons]
+    );
+    const filteredSermons = useMemo(() => {
+        const query = appliedSearchTerm.trim().toLowerCase();
+        return sermons.filter((sermon) => {
+            const matchesSearch =
+                !query ||
+                sermon.title.toLowerCase().includes(query) ||
+                sermon.speaker.toLowerCase().includes(query) ||
+                sermon.category.toLowerCase().includes(query);
+            const matchesCategory =
+                categoryFilter === "all" ||
+                sermon.category === categoryFilter;
+            const matchesSpeaker =
+                speakerFilter === "all" ||
+                sermon.speaker === speakerFilter;
+            return matchesSearch && matchesCategory && matchesSpeaker;
+        });
+    }, [sermons, appliedSearchTerm, categoryFilter, speakerFilter]);
+    const totalPages = Math.max(
+        1,
+        Math.ceil(filteredSermons.length / pageSize)
+    );
+    const safePage = Math.min(currentPage, totalPages);
+    const pageSermons = filteredSermons.slice(
+        (safePage - 1) * pageSize,
+        safePage * pageSize
+    );
+    const totalViews = sermons.reduce(
+        (total, sermon) => total + (Number(sermon.views) || 0),
+        0
+    );
+    const summary = [
+        {
+            title: "Total Sermons",
+            value: sermons.length,
+            icon: faBookOpen,
+            tone: "bg-violet-100 text-violet-700",
+        },
+        {
+            title: "Categories",
+            value: new Set(sermons.map((sermon) => sermon.category)).size,
+            icon: faLayerGroup,
+            tone: "bg-emerald-100 text-emerald-700",
+        },
+        {
+            title: "Total Views",
+            value: totalViews.toLocaleString(),
+            icon: faPlayCircle,
+            tone: "bg-blue-100 text-blue-700",
+        },
+    ];
+    const latestSermons = [...sermons]
+        .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+        .slice(0, 4);
+    const suggestions =
+        searchTerm.trim().length >= 2
+            ? sermons
+                .filter(
+                    (sermon) =>
+                        sermon.title
+                            .toLowerCase()
+                            .includes(searchTerm.trim().toLowerCase()) ||
+                        sermon.speaker
+                            .toLowerCase()
+                            .includes(searchTerm.trim().toLowerCase())
+                )
+                .slice(0, 5)
+            : [];
+    const resetForm = () => {
+        setForm(emptyForm);
+        setThumbnailFile(null);
+        setVideoFile(null);
+        setAudioFile(null);
+        setEditingId(null);
+        setFormError("");
+    };
+    const openAddModal = () => {
+        resetForm();
+        setShowModal(true);
+    };
+    const openEditModal = (sermon) => {
+        setForm({
+            title: sermon.title,
+            speaker: sermon.speaker,
+            category: sermon.category,
+            date: dateInputValue(sermon.date),
+            duration: sermon.duration === "—" ? "" : sermon.duration || "",
+            description: sermon.description || "",
+            type: sermon.type || "video",
+        });
+        setThumbnailFile(null);
+        setVideoFile(null);
+        setAudioFile(null);
+        setEditingId(sermon.id);
+        setFormError("");
+        setShowModal(true);
+    };
+    const closeModal = () => {
+        setShowModal(false);
+        resetForm();
+    };
+    const handleFormChange = (event) => {
+        const { name, value } = event.target;
+        setForm((current) => ({
+            ...current,
+            [name]: value,
+        }));
+    };
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setFormError("");
+
+        if (!form.title.trim() || !form.speaker.trim() || !form.category || !form.date || !form.description.trim()) {
+            setFormError("Please complete the title, speaker, category, date and description fields.");
+            return;
+        }
+
+        if (editingId === null && !thumbnailFile) {
+            setFormError("Please choose a thumbnail image for the sermon.");
+            return;
+        }
+        if (editingId === null && form.type === "video" && !videoFile) {
+            setFormError("Please choose a video file for this sermon.");
+            return;
+        }
+        if (editingId === null && form.type === "audio" && !audioFile) {
+            setFormError("Please choose an audio file for this sermon.");
+            return;
+        }
+
+        setSaving(true);
+        try {
+            let response;
+            if (editingId !== null) {
+                const payload = {
+                    title: form.title.trim(),
+                    speaker: form.speaker.trim(),
+                    category: form.category,
+                    date: form.date,
+                    description: form.description.trim(),
+                    type: form.type,
+                };
+                response = await fetch(`${API_BASE}/api/sermons/${editingId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                });
+            } else {
+                const payload = new FormData();
+                payload.append("title", form.title.trim());
+                payload.append("speaker", form.speaker.trim());
+                payload.append("category", form.category);
+                payload.append("date", form.date);
+                payload.append("description", form.description.trim());
+                payload.append("type", form.type);
+                payload.append("thumbnail", thumbnailFile);
+                if (form.type === "video" && videoFile) payload.append("video", videoFile);
+                if (form.type === "audio" && audioFile) payload.append("audio", audioFile);
+                response = await fetch(`${API_BASE}/api/sermons`, { method: "POST", body: payload });
+            }
+
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.message || "The sermon could not be saved.");
+
+            const activityTitle = form.title.trim();
+            const previousSermon = editingId !== null
+                ? sermons.find((sermon) => String(sermon.id) === String(editingId))
+                : null;
+            const activityThumbnail = editingId !== null
+                ? (previousSermon?.thumbnail || form.thumbnail || "")
+                : getMediaUrl(result.thumbnail || result.sermon?.thumbnail || "");
+            recordActivity(
+                editingId !== null ? "updated" : "uploaded",
+                activityTitle,
+                activityThumbnail,
+                editingId !== null ? editingId : (result.id ?? result.sermon?.id ?? null)
+            );
+            await fetchSermons();
+            setNotice(editingId !== null ? "Sermon updated successfully." : "Sermon added successfully.");
+            setSearchTerm("");
+            setAppliedSearchTerm("");
+            setCategoryFilter("all");
+            setSpeakerFilter("all");
+            setCurrentPage(1);
+            closeModal();
+        } catch (error) {
+            setFormError(error.message || "Something went wrong while saving the sermon.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleDelete = async (sermon) => {
+        const confirmed = window.confirm(`Delete "${sermon.title}"? This cannot be undone.`);
+        if (!confirmed) return;
+        try {
+            const response = await fetch(`${API_BASE}/api/sermons/${sermon.id}`, { method: "DELETE" });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.message || "Failed to delete sermon.");
+            setSermons((current) => current.filter((item) => item.id !== sermon.id));
+            recordActivity("deleted", sermon.title, sermon.thumbnail, sermon.id);
+            if (viewingSermon?.id === sermon.id) setViewingSermon(null);
+            setNotice("Sermon deleted successfully.");
+        } catch (error) {
+            setNotice(error.message || "Failed to delete sermon.");
+        }
+    };
+
+    const handleRefresh = async () => {
+        setSearchTerm("");
+        setAppliedSearchTerm("");
+        setCategoryFilter("all");
+        setSpeakerFilter("all");
+        setCurrentPage(1);
+        await fetchSermons();
+        setNotice("Sermon list refreshed.");
+    };
+    const applySearch = () => {
+        setAppliedSearchTerm(searchTerm.trim());
+        setShowSuggestions(false);
+        setCurrentPage(1);
+    };
+    const chooseSuggestion = (sermon) => {
+        setSearchTerm(sermon.title);
+        setAppliedSearchTerm(sermon.title);
+        setShowSuggestions(false);
+        setCurrentPage(1);
+    };
+    const changePage = (page) => {
+        setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+    };
     return (
-        <section className="sermons-page">
-
-            <div className="flex gap-6 justify-between">
-
-
-                <main className="dashboard-content">
-
-                    {/* Page heading */}
-                    <div className="page-heading mb-7">
+        <motion.section className="sermons-page min-w-0 text-[var(--text)]" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: "easeOut" }}>
+            <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(280px,300px)]">
+                {/* MAIN CONTENT */}
+                <main className="min-w-0 space-y-4">
+                    {/* PAGE HEADING */}
+                    <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
                         <div>
-                            <h2 className="text-xl font-bold">
-                                Sermons
-                            </h2>
-
-                            <p className="text-xs text-slate-500 mt-1">
+                            <h2 className="text-2xl font-bold">Sermons</h2>
+                            <p className="mt-1 text-sm text-[var(--muted-text)]">
                                 Manage, update and organize your sermons.
                             </p>
                         </div>
-                    </div>
-
-                    {/* Summary cards */}
-                    <section className="sermon-summary grid grid-cols-3 gap-[15px] mb-[18px]">
-                        {sermonSummary.map((summary, index) => (
-                            <div
-                                key={summary.title}
-                                className="summary-card flex items-center gap-[14px] p-[18px] bg-[var(--card-background)] shadow-[0_5px_30px_var(--card-shadow)] rounded-[14px] cursor-pointer transition-transform duration-300 hover:-translate-y-[5px]"
-                            >
-                                <div
-                                    className="summary-icon w-[42px] h-[42px] flex items-center justify-center rounded-full"
-                                    style={{
-                                        backgroundColor:
-                                            index === 0
-                                                ? "#eee9ff"
-                                                : index === 1
-                                                    ? "#e5f7ed"
-                                                    : "#e7efff",
-
-                                        color:
-                                            index === 0
-                                                ? "#7055df"
-                                                : index === 1
-                                                    ? "#20a468"
-                                                    : "#4878df"
-                                    }}
-                                >
-                                    <FontAwesomeIcon icon={summary.icon} />
-                                </div>
-
-                                <div>
-                                    <span className="block mb-[5px] text-[11px] text-slate-500">
-                                        {summary.title}
-                                    </span>
-
-                                    <h3 className="text-[23px] font-bold">
-                                        {summary.value}
-                                    </h3>
-                                </div>
-                            </div>
-                        ))}
-                    </section>
-
-                    <section className="sermon-toolbar flex items-center gap-3 p-4 mb-[18px] bg-[var(--card-background)] shadow-[0_5px_20px_var(--card-shadow)] rounded-[14px]">
-
-                        {/* Search */}
-                        <div className="search-field w-1/2 relative">
-
-                            <div className="sermon-search w-full h-10 flex items-center gap-[9px] px-3 border border-[#e8ebf0] rounded-lg">
-
-                                <FontAwesomeIcon
-                                    icon={faSearch}
-                                    className="text-[#929bab] text-[13px]"
-                                />
-
-                                <input
-                                    type="text"
-                                    placeholder="Search sermons..."
-                                    className="w-full border-none outline-none bg-transparent text-[12px] text-[var(--text)]"
-                                />
-
-                            </div>
-
-                            <div className="search-suggestions absolute left-0 top-[50px] z-10 w-full max-h-[350px] overflow-auto bg-[var(--card-background)] shadow-[0_10px_30px_var(--card-shadow)] rounded-[10px]">
-                            </div>
-
-                        </div>
-
-                        {/* Category */}
-                        <select
-                            className="min-w-[150px] h-10 px-3 border border-[#e8ebf0] rounded-lg bg-transparent text-[#596274] text-[11px] outline-none"
-                        >
-                            <option value="all">
-                                All Categories
-                            </option>
-                        </select>
-
-                        {/* Speaker */}
-                        <select
-                            className="min-w-[150px] h-10 px-3 border border-[#e8ebf0] rounded-lg bg-transparent text-[#596274] text-[11px] outline-none"
-                        >
-                            <option value="all">
-                                All Speakers
-                            </option>
-                        </select>
-
-                    </section>
-
-                    {/* Table heading */}
-                    <div className="table-header flex items-center justify-between p-5">
-
-                        <div>
-                            <h3 className="text-[14px] font-semibold mb-1">
-                                All Sermons
-                            </h3>
-
-                            <span className="text-[10px] text-slate-500">
-                                Showing your available sermons
-                            </span>
-                        </div>
-
                         <button
                             type="button"
-                            className="refresh-btn flex items-center gap-[7px] px-3 py-[9px] border border-[#e8ebf0] rounded-[7px] bg-[var(--card-background)] text-[var(--text)] text-[10px]"
+                            onClick={openAddModal}
+                            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--active-theme-color)] px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+                        >
+                            <FontAwesomeIcon icon={faPlus} />
+                            Add Sermon
+                        </button>
+                    </div>
+                    {/* NOTIFICATION */}
+                    {loading && <p className="rounded-lg bg-[var(--card-background)] px-4 py-3 text-sm text-[var(--muted-text)]">Loading sermons from the server...</p>}
+                    {notice && (
+                        <div
+                            className="flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm text-emerald-800"
+                            role="status"
+                        >
+                            <span>{notice}</span>
+                            <button
+                                type="button"
+                                onClick={() => setNotice("")}
+                                aria-label="Dismiss notification"
+                            >
+                                <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                        </div>
+                    )}
+                    {/* SUMMARY CARDS */}
+                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        {summary.map((item) => (
+                            <motion.article
+                                key={item.title}
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.25 }}
+                                className="flex min-w-0 items-center gap-3 rounded-2xl bg-[var(--card-background)] p-4 shadow-[0_5px_24px_var(--card-shadow)]"
+                            >
+                                <div
+                                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${item.tone}`}
+                                >
+                                    <FontAwesomeIcon icon={item.icon} />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-xs text-[var(--muted-text)]">
+                                        {item.title}
+                                    </p>
+                                    <p className="mt-1 text-xl font-bold">
+                                        {item.value}
+                                    </p>
+                                </div>
+                            </motion.article>
+                        ))}
+                    </section>
+                    {/* SEARCH AND FILTERS */}
+                    <section className="rounded-2xl bg-[var(--card-background)] p-3 shadow-[0_5px_24px_var(--card-shadow)]">
+                        <div className="grid grid-cols-1 gap-2 lg:grid-cols-[minmax(0,1.5fr)_minmax(130px,1fr)_minmax(130px,1fr)]">
+                            <div className="relative min-w-0">
+                                <div className="flex h-10 items-center gap-3 rounded-lg border border-[var(--border-color)] px-3">
+                                    <FontAwesomeIcon
+                                        icon={faSearch}
+                                        className="text-sm text-[var(--muted-text)]"
+                                    />
+                                    <input
+                                        type="search"
+                                        value={searchTerm}
+                                        onChange={(event) => {
+                                            // Typing updates suggestions only; the table waits for Enter or a suggestion click.
+                                            setSearchTerm(event.target.value);
+                                            setShowSuggestions(true);
+                                        }}
+                                        onKeyDown={(event) => {
+                                            if (event.key === "Enter") {
+                                                event.preventDefault();
+                                                applySearch();
+                                            }
+                                            if (event.key === "Escape") {
+                                                setShowSuggestions(false);
+                                            }
+                                        }}
+                                        onFocus={() => setShowSuggestions(true)}
+                                        onBlur={() =>
+                                            setTimeout(
+                                                () => setShowSuggestions(false),
+                                                150
+                                            )
+                                        }
+                                        placeholder="Search sermons..."
+                                        className="w-full min-w-0 bg-transparent text-sm outline-none"
+                                        aria-label="Search sermons"
+                                    />
+                                </div>
+                                {showSuggestions && suggestions.length > 0 && (
+                                    <div className="absolute left-0 right-0 top-11 z-20 overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--card-background)] shadow-xl">
+                                        {suggestions.map((sermon) => (
+                                            <button
+                                                type="button"
+                                                key={sermon.id}
+                                                onMouseDown={() => chooseSuggestion(sermon)}
+                                                className="block w-full px-4 py-2.5 text-left transition hover:bg-[var(--hover)]"
+                                            >
+                                                <span className="block text-sm font-medium">
+                                                    {sermon.title}
+                                                </span>
+                                                <span className="mt-1 block text-xs text-[var(--muted-text)]">
+                                                    {sermon.speaker}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <select
+                                value={categoryFilter}
+                                onChange={(event) => {
+                                    setCategoryFilter(event.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="h-10 min-w-0 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm"
+                                aria-label="Filter by category"
+                            >
+                                <option value="all">All Categories</option>
+                                {[
+                                    ...new Set([
+                                        ...sharedCategories,
+                                        ...sermons.map((sermon) => sermon.category),
+                                    ]),
+                                ].map((category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
+                                ))}
+                            </select>
+                            <select
+                                value={speakerFilter}
+                                onChange={(event) => {
+                                    setSpeakerFilter(event.target.value);
+                                    setCurrentPage(1);
+                                }}
+                                className="h-10 min-w-0 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm"
+                                aria-label="Filter by speaker"
+                            >
+                                <option value="all">All Speakers</option>
+                                {speakers.map((speaker) => (
+                                    <option key={speaker} value={speaker}>
+                                        {speaker}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </section>
+                    {/* ALL SERMONS HEADING: OUTSIDE THE TABLE CARD */}
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="min-w-0">
+                            <h3 className="text-base font-bold">All Sermons</h3>
+                            <p className="mt-1 text-xs text-[var(--muted-text)]">
+                                {filteredSermons.length} sermon{filteredSermons.length === 1 ? "" : "s"} found
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleRefresh}
+                            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm transition hover:bg-[var(--hover)]"
                         >
                             <FontAwesomeIcon icon={faSyncAlt} />
                             Refresh
                         </button>
-
                     </div>
-
-                    <section className="sermon-table-card bg-[var(--card-background)] shadow-[0_10px_30px_var(--card-shadow)] rounded-[14px] overflow-hidden">
-
-                        <div className="table-wrapper w-full overflow-x-auto">
-
-                            <table className="w-full min-w-[700px] border-collapse">
-
-                                <thead>
+                    {/* TABLE CARD */}
+                    <section className="min-w-0 overflow-hidden rounded-2xl bg-[var(--card-background)] shadow-[0_5px_24px_var(--card-shadow)]">
+                        {/* TABLE */}
+                        <div className="w-full min-w-0 overflow-hidden">
+                            <table className="w-full table-fixed border-collapse text-left text-xs">
+                                <colgroup>
+                                    <col className="w-[34%]" />
+                                    <col className="w-[16%]" />
+                                    <col className="w-[13%]" />
+                                    <col className="w-[14%]" />
+                                    <col className="w-[10%]" />
+                                    <col className="w-[13%]" />
+                                </colgroup>
+                                <thead className="bg-[var(--background)]">
                                     <tr>
-                                        <th className="px-[18px] py-[13px] text-left text-[9px] font-bold uppercase tracking-[0.7px] text-[#6060ad] whitespace-nowrap">
-                                            Sermon
-                                        </th>
-
-                                        <th className="px-[18px] py-[13px] text-left text-[9px] font-bold uppercase tracking-[0.7px] text-[#6060ad] whitespace-nowrap">
-                                            Speaker
-                                        </th>
-
-                                        <th className="px-[18px] py-[13px] text-left text-[9px] font-bold uppercase tracking-[0.7px] text-[#6060ad] whitespace-nowrap">
-                                            Category
-                                        </th>
-
-                                        <th className="px-[18px] py-[13px] text-left text-[9px] font-bold uppercase tracking-[0.7px] text-[#6060ad] whitespace-nowrap">
-                                            Date
-                                        </th>
-
-                                        <th className="px-[18px] py-[13px] text-left text-[9px] font-bold uppercase tracking-[0.7px] text-[#6060ad] whitespace-nowrap">
-                                            Duration
-                                        </th>
-
-                                        <th className="px-[18px] py-[13px] text-left text-[9px] font-bold uppercase tracking-[0.7px] text-[#6060ad] whitespace-nowrap">
-                                            Actions
-                                        </th>
+                                        {[
+                                            "Sermon",
+                                            "Speaker",
+                                            "Category",
+                                            "Date",
+                                            "Duration",
+                                            "Actions",
+                                        ].map((heading) => (
+                                            <th
+                                                key={heading}
+                                                className="px-2 py-2 text-[10px] font-semibold uppercase tracking-wide text-[var(--muted-text)] sm:px-3"
+                                            >
+                                                {heading}
+                                            </th>
+                                        ))}
                                     </tr>
                                 </thead>
-
                                 <tbody>
-                                    {/* Sermon rows will go here */}
-                                    <tr className="transition-colors duration-200 hover:bg-[var(--hover)]">
-
-                                        {/* Sermon */}
-                                        <td className="px-[18px] py-[14px] border-t border-[var(--card-shadow)] text-[10px] whitespace-nowrap">
-
-                                            <div className="flex items-center gap-[11px] min-w-[220px]">
-
-                                                <img
-                                                    src="/media/Walking By Faith Thumbnail.jpg"
-                                                    alt="Walking By Faith"
-                                                    className="w-12 h-[38px] object-cover rounded-[6px]"
-                                                />
-
-                                                <div>
-                                                    <strong className="block mb-1 text-[11px] font-semibold">
-                                                        Walking By Faith
-                                                    </strong>
-
-                                                    <span className="text-[9px] text-[#969eab]">
-                                                        Pastor Tobore
-                                                    </span>
+                                    {pageSermons.map((sermon) => (
+                                        <motion.tr
+                                            key={sermon.id}
+                                            initial={{ opacity: 0, y: 6 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="border-t border-[var(--border-color)] transition hover:bg-[var(--hover)]"
+                                        >
+                                            <td className="px-2 py-2 sm:px-3">
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    {sermon.thumbnail ? (
+                                                        <img
+                                                            src={sermon.thumbnail}
+                                                            alt=""
+                                                            className="h-8 w-10 shrink-0 rounded-md object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="flex h-8 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--hover)] text-[var(--muted-text)]">
+                                                            <FontAwesomeIcon icon={faVideo} />
+                                                        </div>
+                                                    )}
+                                                    <div className="min-w-0">
+                                                        <p
+                                                            className="truncate font-semibold"
+                                                            title={sermon.title}
+                                                        >
+                                                            {sermon.title}
+                                                        </p>
+                                                        <p
+                                                            className="mt-1 truncate text-[10px] text-[var(--muted-text)]"
+                                                            title={sermon.description || ""}
+                                                        >
+                                                            {sermon.description || "No description"}
+                                                        </p>
+                                                    </div>
                                                 </div>
-
-                                            </div>
-
-                                        </td>
-
-                                        {/* Speaker */}
-                                        <td className="px-[18px] py-[14px] border-t border-[var(--card-shadow)] text-[10px] whitespace-nowrap">
-                                            Pastor Tobore
-                                        </td>
-
-                                        {/* Category */}
-                                        <td className="px-[18px] py-[14px] border-t border-[var(--card-shadow)] text-[10px] whitespace-nowrap">
-
-                                            <span className="inline-block px-2 py-[5px] rounded-[5px] bg-[#eee9ff] text-[#7055df] text-[9px]">
-                                                Faith
-                                            </span>
-
-                                        </td>
-
-                                        {/* Date */}
-                                        <td className="px-[18px] py-[14px] border-t border-[var(--card-shadow)] text-[10px] whitespace-nowrap">
-                                            June 17, 2026
-                                        </td>
-
-                                        {/* Duration */}
-                                        <td className="px-[18px] py-[14px] border-t border-[var(--card-shadow)] text-[10px] whitespace-nowrap">
-                                            45:00
-                                        </td>
-
-                                        {/* Actions */}
-                                        <td className="px-[18px] py-[14px] border-t border-[var(--card-shadow)]">
-
-                                            <div className="flex items-center gap-[6px]">
-
-                                                <button className="w-[30px] h-[30px] flex items-center justify-center border-none rounded-[6px] bg-[#edf3ff] text-[#4d75d9] text-[11px]">
-                                                    <FontAwesomeIcon icon={faEye} />
-                                                </button>
-
-                                                <button className="w-[30px] h-[30px] flex items-center justify-center border-none rounded-[6px] bg-[#fff5e8] text-[#df8a2d] text-[11px]">
-                                                    <FontAwesomeIcon icon={faPen} />
-                                                </button>
-
-                                                <button className="w-[30px] h-[30px] flex items-center justify-center border-none rounded-[6px] bg-[#ffedf0] text-[#dc6378] text-[11px]">
-                                                    <FontAwesomeIcon icon={faTrash} />
-                                                </button>
-
-                                            </div>
-
-                                        </td>
-
-                                    </tr>
+                                            </td>
+                                            <td className="truncate px-2 py-2 sm:px-3" title={sermon.speaker}>
+                                                {sermon.speaker}
+                                            </td>
+                                            <td className="px-2 py-2 sm:px-3">
+                                                <span
+                                                    className="inline-block max-w-full truncate rounded-full bg-violet-100 px-2 py-1 text-[10px] font-medium text-violet-700"
+                                                    title={sermon.category}
+                                                >
+                                                    {sermon.category}
+                                                </span>
+                                            </td>
+                                            <td className="truncate px-2 py-2 sm:px-3" title={formatDate(sermon.date)}>
+                                                {formatDate(sermon.date)}
+                                            </td>
+                                            <td className="truncate px-2 py-2 sm:px-3">
+                                                {sermon.duration || "—"}
+                                            </td>
+                                            <td className="px-1 py-2 sm:px-2">
+                                                <div className="flex items-center justify-center gap-1">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setViewingSermon(sermon)}
+                                                        title="View sermon"
+                                                        aria-label={`View ${sermon.title}`}
+                                                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-blue-50 text-blue-700 hover:bg-blue-100"
+                                                    >
+                                                        <FontAwesomeIcon icon={faEye} />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openEditModal(sermon)}
+                                                        title="Edit sermon"
+                                                        aria-label={`Edit ${sermon.title}`}
+                                                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-amber-50 text-amber-700 hover:bg-amber-100"
+                                                    >
+                                                        <FontAwesomeIcon icon={faPen} />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDelete(sermon)}
+                                                        title="Delete sermon"
+                                                        aria-label={`Delete ${sermon.title}`}
+                                                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-rose-50 text-rose-700 hover:bg-rose-100"
+                                                    >
+                                                        <FontAwesomeIcon icon={faTrash} />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    ))}
+                                    {!loading && pageSermons.length === 0 && (
+                                        <tr>
+                                            <td colSpan={6} className="px-3 py-5 text-center">
+                                                <p className="font-semibold">
+                                                    No sermons found
+                                                </p>
+                                                <p className="mt-1 text-xs text-[var(--muted-text)]">
+                                                    Try changing your search or filters.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    )}
                                 </tbody>
-
                             </table>
-
                         </div>
-
-                        {/* Pagination */}
-                        <div className="pagination flex items-center justify-between px-5 py-4 border-t border-[var(--border)] text-[10px] text-slate-500">
-
-                            <span>
-                                Showing 1–3 of 128 sermons
-                            </span>
-
-                            <div className="pagination-buttons flex items-center gap-[5px]">
-
+                        {/* PAGINATION */}
+                        <div className="flex items-center justify-between gap-2 border-t border-[var(--border-color)] px-3 py-2">
+                            <p className="min-w-0 truncate text-[10px] text-[var(--muted-text)] sm:text-xs">
+                                {filteredSermons.length === 0
+                                    ? "Showing 0 sermons"
+                                    : `Showing ${(safePage - 1) * pageSize + 1}–${Math.min(
+                                        safePage * pageSize,
+                                        filteredSermons.length
+                                    )} of ${filteredSermons.length}`}
+                            </p>
+                            <div className="flex shrink-0 items-center gap-1">
                                 <button
-                                    disabled
-                                    className="min-w-[29px] h-[29px] border-none rounded-[6px] bg-[var(--background)] text-[#697385] text-[10px] opacity-40 cursor-not-allowed"
+                                    type="button"
+                                    disabled={safePage === 1}
+                                    onClick={() => changePage(safePage - 1)}
+                                    className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-color)] disabled:cursor-not-allowed disabled:opacity-40"
+                                    aria-label="Previous page"
                                 >
                                     <FontAwesomeIcon icon={faChevronLeft} />
                                 </button>
-
-                                <button
-                                    className="min-w-[29px] h-[29px] border-none rounded-[6px] bg-[var(--active-theme-color)] text-white text-[10px]"
-                                >
-                                    1
-                                </button>
-
-                                <button
-                                    className="min-w-[29px] h-[29px] border-none rounded-[6px] bg-[var(--background)] text-[#697385] text-[10px]"
-                                >
-                                    2
-                                </button>
-
-                                <button
-                                    className="min-w-[29px] h-[29px] border-none rounded-[6px] bg-[var(--background)] text-[#697385] text-[10px]"
-                                >
-                                    3
-                                </button>
-
-                                <span className="px-[3px]">
-                                    ...
+                                <span className="px-2 text-xs font-semibold">
+                                    {safePage} / {totalPages}
                                 </span>
-
                                 <button
-                                    className="min-w-[29px] h-[29px] border-none rounded-[6px] bg-[var(--background)] text-[#697385] text-[10px]"
-                                >
-                                    43
-                                </button>
-
-                                <button
-                                    className="min-w-[29px] h-[29px] border-none rounded-[6px] bg-[var(--background)] text-[#697385] text-[10px]"
+                                    type="button"
+                                    disabled={safePage === totalPages}
+                                    onClick={() => changePage(safePage + 1)}
+                                    className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--border-color)] disabled:cursor-not-allowed disabled:opacity-40"
+                                    aria-label="Next page"
                                 >
                                     <FontAwesomeIcon icon={faChevronRight} />
                                 </button>
                             </div>
-
                         </div>
-
                     </section>
-
                 </main>
-
-                <aside className="">
-
-                    <h3 className="text-[1.15rem] font-bold mb-4 ml-1 tracking-[-0.3px]">
-                        Latest Sermons Added
-                    </h3>
-
-                    <div className="bg-[var(--card-background)] rounded-[24px] p-5 shadow-[0_10px_20px_var(--card-shadow)]">
-
-                        <ul className="flex flex-col gap-5">
-
-                            {latestSermons.map((sermon) => (
-                                <li
-                                    key={sermon.id}
-                                    className="flex gap-[14px]"
-                                >
-
-                                    <img
-                                        src={sermon.thumbnail}
-                                        // alt={sermon.title}
-                                        className="w-12 h-[42px] rounded-full object-cover shrink-0 shadow-[0_2px_5px_#0000000d]"
-                                    />
-
-                                    <div className="flex flex-col gap-[2px]">
-
-                                        <p className="text-[0.9rem] leading-[1.35] m-0 text-[var(--text)]">
-                                            <span className="font-bold">
-                                                {sermon.title}
-                                            </span>
-
-                                            {" "}
-
-                                            <span className="font-medium text-slate-500 text-xs">
-                                                by {sermon.speaker}
-                                            </span>
-                                        </p>
-
-                                        <p className="text-[11px] text-slate-500 m-0">
-                                            {sermon.date}
-                                        </p>
-
-                                    </div>
-
-                                </li>
-                            ))}
-
-                        </ul>
-
+                {/* RIGHT-SIDE RECENT ACTIVITY */}
+                <aside className="flex h-fit min-w-0 flex-col gap-3 xl:sticky xl:top-4">
+                    <div>
+                        <h3 className="text-base font-bold">Recent Activity</h3>
+                        <p className="mt-1 text-xs text-[var(--muted-text)]">
+                            A record of sermon uploads, updates and deletions.
+                        </p>
                     </div>
+                    <section className="rounded-2xl bg-[var(--card-background)] p-5 shadow-[0_5px_24px_var(--card-shadow)]">
+                        {displayedActivities.length > 0 ? (
+                            <ul className="space-y-4">
+                                {displayedActivities.map((activity, index) => {
+                                    const activitySermon = sermons.find(
+                                        (sermon) => String(sermon.id) === String(activity.sermonId)
+                                            || sermon.title?.trim().toLowerCase() === activity.sermonTitle?.trim().toLowerCase()
+                                    );
+                                    const activityThumbnail = activity.thumbnail || activitySermon?.thumbnail || "";
 
-                    <div className="mt-5">
-
-                        <button
-                            type="button"
-                            onClick={() => setShowAddModal(true)}
-                            className="
-                w-full
-                flex
-                items-center
-                justify-center
-                gap-2
-                p-3
-                border-2
-                border-dashed
-                border-[var(--text)]
-                rounded-[16px]
-                bg-transparent
-                text-[var(--text)]
-                text-[0.9rem]
-                font-semibold
-                transition-all
-                duration-200
-                hover:bg-[var(--background)]
-            "
-                        >
-                            <span className="text-[1.2rem]">+</span>
-                            Add Sermon
-                        </button>
-
-                    </div>
-
-                </aside>
-
-            </div>
-
-            {showAddModal && (
-                <div className="fixed inset-0 z-50 bg-[#0a1220a6] backdrop-blur-[3px]">
-
-                    {/* Modal */}
-                    <div
-                        className="
-                absolute
-                top-1/2
-                left-1/2
-                -translate-x-1/2
-                -translate-y-1/2
-
-                w-[min(92%,650px)]
-                max-h-[90vh]
-
-                p-[10px]
-
-                bg-[var(--card-background)]
-
-                rounded-[15px]
-
-                shadow-[0_25px_80px_#00000040]
-
-                overflow-hidden
-            "
-                    >
-
-                        {/* =========================
-                MODAL HEADER
-            ========================== */}
-                        <div
-                            className="
-                    flex
-                    items-start
-                    justify-between
-
-                    px-[25px]
-                    py-[22px]
-
-                    border-b
-                    border-[#e8ebf0]
-                "
-                        >
-
-                            <div>
-
-                                <h2
-                                    className="
-                            mb-[5px]
-                            text-[18px]
-                            font-semibold
-                            text-[#6060ad]
-                        "
-                                >
-                                    Add New Sermon
-                                </h2>
-
-                                <p className="text-[11px] text-slate-500">
-                                    Add a new sermon to your church library.
+                                    return (
+                                        <motion.li
+                                            key={activity.id}
+                                            initial={{ opacity: 0, x: 10 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.22, delay: index * 0.025 }}
+                                            className="flex min-w-0 items-start gap-3"
+                                        >
+                                            {activityThumbnail ? (
+                                                <img
+                                                    src={getMediaUrl(activityThumbnail)}
+                                                    alt={`${activity.sermonTitle} thumbnail`}
+                                                    className="h-10 w-10 shrink-0 rounded-lg object-cover shadow-sm"
+                                                    onError={(event) => {
+                                                        event.currentTarget.style.display = "none";
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${activity.action === "uploaded" ? "bg-emerald-100 text-emerald-700" : activity.action === "updated" ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"}`}>
+                                                    <FontAwesomeIcon icon={activity.action === "uploaded" ? faUpload : activity.action === "updated" ? faPen : faTrash} />
+                                                </div>
+                                            )}
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-sm leading-5">
+                                                    <span className="font-semibold">Sermon {activity.action}</span>
+                                                </p>
+                                                <p className="mt-0.5 break-words text-xs font-medium text-[var(--muted-text)]">
+                                                    {activity.sermonTitle}
+                                                </p>
+                                                <p className="mt-1 text-[11px] text-[var(--muted-text)]" title={new Date(activity.timestamp).toLocaleString()}>
+                                                    {formatActivityTime(activity.timestamp)}
+                                                </p>
+                                            </div>
+                                        </motion.li>
+                                    );
+                                })}
+                            </ul>
+                        ) : (
+                            <div className="py-5 text-center">
+                                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-[var(--hover)] text-[var(--muted-text)]">
+                                    <FontAwesomeIcon icon={faSyncAlt} />
+                                </div>
+                                <p className="mt-3 text-sm font-semibold">No activity yet</p>
+                                <p className="mt-1 text-xs leading-5 text-[var(--muted-text)]">
+                                    When you upload, update or delete a sermon, the activity will appear here with its time.
                                 </p>
-
                             </div>
-
-
-                            {/* Close button */}
+                        )}
+                        {recentActivities.length > 4 && (
                             <button
                                 type="button"
-                                onClick={() => {
-                                    setShowAddModal(false);
-                                    setThumbnailFile(null);
-                                    setVideoFile(null);
-                                }}
-                                className="
-                        w-8
-                        h-8
-
-                        flex
-                        items-center
-                        justify-center
-
-                        border-none
-                        rounded-[7px]
-
-                        bg-[#d6d6d6]
-
-                        text-[#687284]
-                        text-[14px]
-
-                        transition-all
-                        duration-200
-
-                        hover:bg-[#eceef1]
-                        hover:text-[#222b3b]
-                    "
+                                onClick={() => setShowActivityHistory((current) => !current)}
+                                className="mt-5 w-full rounded-lg border border-[var(--border-color)] px-3 py-2 text-xs font-semibold transition hover:bg-[var(--hover)]"
                             >
-                                ×
+                                {showActivityHistory
+                                    ? "Show only the last 4 activities"
+                                    : "View activity history (last 14 days)"}
                             </button>
-
+                        )}
+                    </section>
+                    <button
+                        type="button"
+                        onClick={openAddModal}
+                        className="flex min-h-[64px] w-full items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[var(--border-color)] px-4 py-4 font-semibold transition hover:bg-[var(--hover)]"
+                    >
+                        <FontAwesomeIcon icon={faPlus} />
+                        Add Sermon
+                    </button>
+                </aside>
+            </div>
+            {/* ADD / EDIT SERMON MODAL */}
+            {showModal && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) closeModal();
+                    }}
+                >
+                    <motion.div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="sermon-modal-title"
+                        initial={{ opacity: 0, scale: 0.97, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.98, y: 8 }}
+                        transition={{ duration: 0.2 }}
+                        className="max-h-[92vh] w-full max-w-2xl overflow-hidden rounded-2xl bg-[var(--card-background)] shadow-2xl"
+                    >
+                        <div className="flex items-start justify-between border-b border-[var(--border-color)] px-6 py-5">
+                            <div>
+                                <h2 id="sermon-modal-title" className="text-lg font-bold">
+                                    {editingId !== null ? "Edit Sermon" : "Add New Sermon"}
+                                </h2>
+                                <p className="mt-1 text-sm text-[var(--muted-text)]">
+                                    Enter the sermon details below.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={closeModal}
+                                className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-[var(--hover)]"
+                                aria-label="Close modal"
+                            >
+                                <FontAwesomeIcon icon={faTimes} />
+                            </button>
                         </div>
-
-
-                        {/* =========================
-                FORM
-            ========================== */}
                         <form
-                            className="
-                    max-h-[calc(90vh-85px)]
-                    overflow-y-auto
-                    p-[25px]
-                "
-                            onSubmit={(event) => {
-                                event.preventDefault();
-                            }}
+                            onSubmit={handleSubmit}
+                            className="max-h-[calc(92vh-90px)] space-y-5 overflow-y-auto p-6"
                         >
-
-                            {/* =========================
-                    SERMON TITLE
-                ========================== */}
-                            <div className="mb-[18px]">
-
-                                <label
-                                    className="
-                            block
-                            mb-[7px]
-
-                            text-[11px]
-                            font-semibold
-                            text-[var(--text)]
-                        "
+                            {formError && (
+                                <p
+                                    role="alert"
+                                    className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700"
                                 >
-                                    Sermon Title
+                                    {formError}
+                                </p>
+                            )}
+                            <div>
+                                <label
+                                    htmlFor="sermon-title"
+                                    className="mb-2 block text-sm font-medium"
+                                >
+                                    Sermon title *
                                 </label>
-
                                 <input
-                                    type="text"
+                                    id="sermon-title"
                                     name="title"
-                                    placeholder="Enter sermon title"
+                                    value={form.title}
+                                    onChange={handleFormChange}
                                     required
-                                    className="
-                            w-full
-                            h-[42px]
-
-                            px-3
-
-                            border-none
-                            rounded-[8px]
-
-                            bg-[var(--background)]
-
-                            text-[12px]
-                            text-[var(--text)]
-
-                            outline-none
-
-                            placeholder:text-[#a7aebb]
-
-                            focus:ring-[3px]
-                            focus:ring-[#087f5b14]
-                        "
+                                    maxLength={120}
+                                    placeholder="Enter sermon title"
+                                    className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500"
                                 />
-
                             </div>
-
-
-                            {/* =========================
-                    SPEAKER + CATEGORY
-                ========================== */}
-                            <div className="grid grid-cols-2 gap-[15px]">
-
-                                {/* Speaker */}
-                                <div className="mb-[18px]">
-
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
                                     <label
-                                        className="
-                                block
-                                mb-[7px]
-
-                                text-[11px]
-                                font-semibold
-                                text-[var(--text)]
-                            "
+                                        htmlFor="sermon-speaker"
+                                        className="mb-2 block text-sm font-medium"
                                     >
-                                        Speaker
+                                        Speaker *
                                     </label>
-
                                     <input
-                                        type="text"
+                                        id="sermon-speaker"
                                         name="speaker"
+                                        value={form.speaker}
+                                        onChange={handleFormChange}
+                                        required
                                         placeholder="e.g. Pastor Tobore"
-                                        required
-                                        className="
-                                w-full
-                                h-[42px]
-
-                                px-3
-
-                                border-none
-                                rounded-[8px]
-
-                                bg-[var(--background)]
-
-                                text-[12px]
-                                text-[var(--text)]
-
-                                outline-none
-
-                                placeholder:text-[#a7aebb]
-
-                                focus:ring-[3px]
-                                focus:ring-[#087f5b14]
-                            "
+                                        className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500"
                                     />
-
                                 </div>
-
-
-                                {/* Category */}
-                                <div className="mb-[18px]">
-
+                                <div>
                                     <label
-                                        className="
-                                block
-                                mb-[7px]
-
-                                text-[11px]
-                                font-semibold
-                                text-[var(--text)]
-                            "
+                                        htmlFor="sermon-category"
+                                        className="mb-2 block text-sm font-medium"
                                     >
-                                        Category
+                                        Category *
                                     </label>
-
                                     <select
+                                        id="sermon-category"
                                         name="category"
+                                        value={form.category}
+                                        onChange={handleFormChange}
                                         required
-                                        className="
-                                w-full
-                                h-[42px]
-
-                                px-3
-
-                                border-none
-                                rounded-[8px]
-
-                                bg-[var(--background)]
-
-                                text-[12px]
-                                text-[var(--text)]
-
-                                outline-none
-
-                                focus:ring-[3px]
-                                focus:ring-[#087f5b14]
-                            "
+                                        className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500"
                                     >
-                                        <option value="">
-                                            Select category
-                                        </option>
-
-                                        <option value="Faith">
-                                            Faith
-                                        </option>
-
-                                        <option value="Prayer">
-                                            Prayer
-                                        </option>
-
-                                        <option value="Teaching">
-                                            Teaching
-                                        </option>
-
-                                        <option value="Worship">
-                                            Worship
-                                        </option>
-
-                                        <option value="Praise">
-                                            Praise
-                                        </option>
-
+                                        <option value="">Select category</option>
+                                        {[
+                                            ...new Set([
+                                                ...sharedCategories,
+                                                ...sermons.map((sermon) => sermon.category),
+                                            ]),
+                                        ].map((category) => (
+                                            <option key={category} value={category}>
+                                                {category}
+                                            </option>
+                                        ))}
                                     </select>
-
                                 </div>
-
-                            </div>
-
-
-                            {/* =========================
-                    DATE + DURATION
-                ========================== */}
-                            <div className="grid grid-cols-2 gap-[15px]">
-
-                                {/* Date */}
-                                <div className="mb-[18px]">
-
+                                <div>
                                     <label
-                                        className="
-                                block
-                                mb-[7px]
-
-                                text-[11px]
-                                font-semibold
-                                text-[var(--text)]
-                            "
+                                        htmlFor="sermon-date"
+                                        className="mb-2 block text-sm font-medium"
                                     >
-                                        Sermon Date
+                                        Sermon date *
                                     </label>
-
                                     <input
+                                        id="sermon-date"
                                         type="date"
                                         name="date"
+                                        value={form.date}
+                                        onChange={handleFormChange}
                                         required
-                                        className="
-                                w-full
-                                h-[42px]
-
-                                px-3
-
-                                border-none
-                                rounded-[8px]
-
-                                bg-[var(--background)]
-
-                                text-[12px]
-                                text-[var(--text)]
-
-                                outline-none
-
-                                focus:ring-[3px]
-                                focus:ring-[#087f5b14]
-                            "
+                                        className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500"
                                     />
-
                                 </div>
-
-
-                                {/* Duration */}
-                                <div className="mb-[18px]">
-
+                                <div>
+                                    <label htmlFor="sermon-type" className="mb-2 block text-sm font-medium">Media type *</label>
+                                    <select id="sermon-type" name="type" value={form.type} onChange={handleFormChange} required disabled={editingId !== null} className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500">
+                                        <option value="video">Video sermon</option>
+                                        <option value="audio">Audio sermon</option>
+                                    </select>
+                                </div>
+                                <div>
                                     <label
-                                        className="
-                                block
-                                mb-[7px]
-
-                                text-[11px]
-                                font-semibold
-                                text-[var(--text)]
-                            "
+                                        htmlFor="sermon-duration"
+                                        className="mb-2 block text-sm font-medium"
                                     >
-                                        Duration
+                                        Duration *
                                     </label>
-
                                     <input
-                                        type="text"
+                                        id="sermon-duration"
                                         name="duration"
+                                        value={form.duration}
+                                        onChange={handleFormChange}
                                         placeholder="e.g. 45:00"
-                                        required
-                                        className="
-                                w-full
-                                h-[42px]
-
-                                px-3
-
-                                border-none
-                                rounded-[8px]
-
-                                bg-[var(--background)]
-
-                                text-[12px]
-                                text-[var(--text)]
-
-                                outline-none
-
-                                placeholder:text-[#a7aebb]
-
-                                focus:ring-[3px]
-                                focus:ring-[#087f5b14]
-                            "
+                                        pattern="[0-9]{1,3}:[0-5][0-9]"
+                                        title="Use minutes:seconds, for example 45:00"
+                                        className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:ring-2 focus:ring-violet-500"
                                     />
-
                                 </div>
-
                             </div>
-
-
-                            {/* =========================
-                    DESCRIPTION
-                ========================== */}
-                            <div className="mb-[18px]">
-
+                            <div>
                                 <label
-                                    className="
-                            block
-                            mb-[7px]
-
-                            text-[11px]
-                            font-semibold
-                            text-[var(--text)]
-                        "
+                                    htmlFor="sermon-description"
+                                    className="mb-2 block text-sm font-medium"
                                 >
                                     Description
                                 </label>
-
                                 <textarea
+                                    id="sermon-description"
                                     name="description"
-                                    rows="5"
+                                    value={form.description}
+                                    onChange={handleFormChange}
+                                    rows={4}
                                     placeholder="Write a short description of the sermon..."
-                                    required
-                                    className="
-                            w-full
-                            min-h-[110px]
-
-                            p-3
-
-                            border-none
-                            rounded-[8px]
-
-                            bg-[var(--background)]
-
-                            text-[12px]
-                            text-[var(--text)]
-
-                            outline-none
-
-                            resize-y
-
-                            leading-[1.5]
-
-                            placeholder:text-[#a7aebb]
-
-                            focus:ring-[3px]
-                            focus:ring-[#087f5b14]
-                        "
+                                    className="w-full resize-y rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-3 text-sm outline-none focus:ring-2 focus:ring-violet-500"
                                 />
-
                             </div>
-
-
-                            {/* =========================
-                    THUMBNAIL
-                ========================== */}
-                            <div className="mb-[18px]">
-
-                                <label
-                                    className="
-                            block
-                            mb-[7px]
-
-                            text-[11px]
-                            font-semibold
-                            text-[var(--text)]
-                        "
-                                >
-                                    Thumbnail
-                                </label>
-
-
-                                <div
-                                    className="
-                            relative
-
-                            min-h-[68px]
-
-                            flex
-                            items-center
-
-                            gap-3
-
-                            px-[14px]
-                            py-3
-
-                            border
-                            border-dashed
-                            border-[#cfd5dd]
-
-                            rounded-[9px]
-
-                            bg-transparent
-
-                            overflow-hidden
-
-                            transition-all
-                            duration-200
-
-                            hover:border-[#1d1d46]
-                            hover:bg-[#f8fcfa]
-                        "
-                                >
-
-                                    {/* Icon */}
-                                    <div
-                                        className="
-                                w-[38px]
-                                h-[38px]
-                                shrink-0
-
-                                flex
-                                items-center
-                                justify-center
-
-                                rounded-[8px]
-
-                                bg-[#eaf7f1]
-
-                                text-[#1d1d46]
-
-                                text-[15px]
-                            "
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label
+                                        htmlFor="sermon-thumbnail"
+                                        className="mb-2 block text-sm font-medium"
                                     >
-                                        🖼️
-                                    </div>
-
-
-                                    {/* Text */}
-                                    <div className="flex-1 min-w-0">
-
-                                        <strong
-                                            className="
-                                    block
-                                    mb-1
-
-                                    text-[11px]
-                                    text-[#394253]
-                                "
-                                        >
-                                            Choose sermon thumbnail
-                                        </strong>
-
-                                        <span className="block text-[9px] text-[#929baa]">
-                                            {thumbnailFile
-                                                ? thumbnailFile.name
-                                                : "JPG, PNG or WEBP"}
+                                        Thumbnail image
+                                    </label>
+                                    <label className="flex min-h-20 cursor-pointer items-center gap-3 rounded-lg border border-dashed border-[var(--border-color)] p-3 hover:bg-[var(--hover)]">
+                                        <FontAwesomeIcon
+                                            icon={faUpload}
+                                            className="text-lg text-[var(--muted-text)]"
+                                        />
+                                        <span className="min-w-0 text-sm">
+                                            <span className="block font-medium">
+                                                {thumbnailFile?.name || "Choose image"}
+                                            </span>
+                                            <span className="mt-1 block text-xs text-[var(--muted-text)]">
+                                                JPG, PNG or WEBP
+                                            </span>
                                         </span>
-
-                                    </div>
-
-
-                                    {/* Invisible actual file input */}
-                                    <input
-                                        type="file"
-                                        name="thumbnail"
-                                        accept="image/*"
-                                        onChange={(event) => {
-                                            setThumbnailFile(event.target.files[0]);
-                                        }}
-                                        className="
-        absolute
-        inset-0
-        w-full
-        h-full
-        opacity-0
-        cursor-pointer
-    "
-                                    />
-
+                                        <input
+                                            id="sermon-thumbnail"
+                                            type="file"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            className="sr-only"
+                                            onChange={(event) =>
+                                                setThumbnailFile(event.target.files?.[0] || null)
+                                            }
+                                        />
+                                    </label>
                                 </div>
-
-                            </div>
-
-
-                            {/* =========================
-                    VIDEO
-                ========================== */}
-                            <div className="mb-[18px]">
-
-                                <label
-                                    className="
-                            block
-                            mb-[7px]
-
-                            text-[11px]
-                            font-semibold
-                            text-[var(--text)]
-                        "
-                                >
-                                    Sermon Video
-                                </label>
-
-
-                                <div
-                                    className="
-                            relative
-
-                            min-h-[68px]
-
-                            flex
-                            items-center
-
-                            gap-3
-
-                            px-[14px]
-                            py-3
-
-                            border
-                            border-dashed
-                            border-[#cfd5dd]
-
-                            rounded-[9px]
-
-                            bg-transparent
-
-                            overflow-hidden
-
-                            transition-all
-                            duration-200
-
-                            hover:border-[#1d1d46]
-                            hover:bg-[#f8fcfa]
-                        "
-                                >
-
-                                    {/* Icon */}
-                                    <div
-                                        className="
-                                w-[38px]
-                                h-[38px]
-                                shrink-0
-
-                                flex
-                                items-center
-                                justify-center
-
-                                rounded-[8px]
-
-                                bg-[#eaf7f1]
-
-                                text-[#1d1d46]
-
-                                text-[15px]
-                            "
+                                <div>
+                                    <label
+                                        htmlFor="sermon-video"
+                                        className="mb-2 block text-sm font-medium"
                                     >
-                                        🎥
-                                    </div>
-
-
-                                    {/* Text */}
-                                    <div className="flex-1 min-w-0">
-
-                                        <strong
-                                            className="
-                                    block
-                                    mb-1
-
-                                    text-[11px]
-                                    text-[#394253]
-                                "
-                                        >
-                                            Choose sermon video
-                                        </strong>
-
-                                        <span className="block text-[9px] text-[#929baa]">
-                                            {videoFile
-                                                ? videoFile.name
-                                                : "MP4, WebM or MOV"}
+                                        {form.type === "video" ? "Sermon video *" : "Sermon audio *"}
+                                    </label>
+                                    <label className="flex min-h-20 cursor-pointer items-center gap-3 rounded-lg border border-dashed border-[var(--border-color)] p-3 hover:bg-[var(--hover)]">
+                                        <FontAwesomeIcon icon={form.type === "video" ? faVideo : faUpload} className="text-lg text-[var(--muted-text)]" />
+                                        <span className="min-w-0 text-sm">
+                                            <span className="block break-all font-medium">{form.type === "video" ? (videoFile?.name || "Choose video") : (audioFile?.name || "Choose audio")}</span>
+                                            <span className="mt-1 block text-xs text-[var(--muted-text)]">{form.type === "video" ? "MP4, WebM or MOV" : "MP3, WAV or M4A"}</span>
                                         </span>
-
-                                    </div>
-
-
-                                    {/* Invisible file input */}
-                                    <input
-                                        type="file"
-                                        name="video"
-                                        accept="video/*"
-                                        onChange={(event) => {
-                                            setVideoFile(event.target.files[0]);
-                                        }}
-                                        className=" absolute inset-0 w-full h-full opacity-0 cursor-pointer
-    "
-                                    />
+                                        {form.type === "video" ? (
+                                            <input id="sermon-video" type="file" accept="video/mp4,video/webm,video/quicktime" className="sr-only" onChange={(event) => setVideoFile(event.target.files?.[0] || null)} />
+                                        ) : (
+                                            <input id="sermon-audio" type="file" accept="audio/mpeg,audio/wav,audio/mp4,audio/*" className="sr-only" onChange={(event) => setAudioFile(event.target.files?.[0] || null)} />
+                                        )}
+                                    </label>
                                 </div>
-
                             </div>
-
-
-                            {/* =========================
-                    MODAL ACTIONS
-                ========================== */}
-                            <div
-                                className="
-                        flex
-                        justify-end
-                        gap-[10px]
-
-                        pt-2
-                    "
-                            >
-
-                                {/* Cancel */}
+                            <div className="flex flex-col-reverse gap-3 border-t border-[var(--border-color)] pt-5 sm:flex-row sm:justify-end">
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setShowAddModal(false);
-                                        setThumbnailFile(null);
-                                        setVideoFile(null);
-                                    }}
-                                    className="
-                            h-10
-
-                            px-[17px]
-
-                            border-none
-                            rounded-[8px]
-
-                            bg-[var(--background)]
-
-                            text-[#657084]
-                            text-[11px]
-                            font-semibold
-
-                            transition-colors
-                            duration-200
-
-                            hover:bg-[#f7f8fa]
-                        "
+                                    onClick={closeModal}
+                                    className="rounded-lg border border-[var(--border-color)] px-5 py-3 text-sm font-semibold hover:bg-[var(--hover)]"
                                 >
                                     Cancel
                                 </button>
-
-
-                                {/* Add Sermon */}
                                 <button
                                     type="submit"
-                                    className="
-                            h-10
-
-                            px-[17px]
-
-                            flex
-                            items-center
-                            gap-2
-
-                            border-none
-                            rounded-[8px]
-
-                            bg-[#1d1d46]
-
-                            text-white
-                            text-[11px]
-                            font-semibold
-
-                            transition-all
-                            duration-200
-
-                            hover:bg-[#3a3a7d]
-                            hover:-translate-y-[1px]
-                        "
+                                    disabled={saving}
+                                    className="rounded-lg bg-[var(--active-theme-color)] px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
                                 >
-                                    <span>+</span>
-                                    Add Sermon
+                                    {saving ? "Saving..." : editingId !== null ? "Save changes" : "Add sermon"}
                                 </button>
-
                             </div>
-
                         </form>
-
-                    </div>
-
+                    </motion.div>
                 </div>
             )}
-
-        </section>
+            {/* VIEW SERMON MODAL */}
+            {viewingSermon && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) {
+                            setViewingSermon(null);
+                        }
+                    }}
+                >
+                    <motion.div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="sermon-details-title"
+                        initial={{ opacity: 0, scale: 0.97, y: 10 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.98, y: 8 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl bg-[var(--card-background)] shadow-2xl"
+                    >
+                        <div className="flex shrink-0 items-center justify-between border-b border-[var(--border-color)] p-5">
+                            <h2 id="sermon-details-title" className="text-lg font-bold">
+                                Sermon details
+                            </h2>
+                            <button
+                                type="button"
+                                onClick={() => setViewingSermon(null)}
+                                className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-[var(--hover)]"
+                                aria-label="Close details"
+                            >
+                                <FontAwesomeIcon icon={faTimes} />
+                            </button>
+                        </div>
+                        <div className="min-h-0 space-y-4 overflow-y-auto p-5">
+                            {viewingSermon.thumbnail && (
+                                <img
+                                    src={viewingSermon.thumbnail}
+                                    alt=""
+                                    className="max-h-64 w-full rounded-xl object-cover"
+                                />
+                            )}
+                            <div>
+                                <h3 className="text-xl font-bold">
+                                    {viewingSermon.title}
+                                </h3>
+                                <p className="mt-1 text-sm text-[var(--muted-text)]">
+                                    By {viewingSermon.speaker}
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                                <p>
+                                    <span className="text-[var(--muted-text)]">
+                                        Category:
+                                    </span>
+                                    <br />
+                                    {viewingSermon.category}
+                                </p>
+                                <p>
+                                    <span className="text-[var(--muted-text)]">
+                                        Date:
+                                    </span>
+                                    <br />
+                                    {formatDate(viewingSermon.date)}
+                                </p>
+                                <p>
+                                    <span className="text-[var(--muted-text)]">
+                                        Duration:
+                                    </span>
+                                    <br />
+                                    {viewingSermon.duration || "—"}
+                                </p>
+                                <p>
+                                    <span className="text-[var(--muted-text)]">
+                                        Views:
+                                    </span>
+                                    <br />
+                                    {(viewingSermon.views || 0).toLocaleString()}
+                                </p>
+                            </div>
+                            <div>
+                                <p className="mb-1 text-sm font-semibold">
+                                    Description
+                                </p>
+                                <p className="whitespace-pre-wrap text-sm leading-6 text-[var(--muted-text)]">
+                                    {viewingSermon.description ||
+                                        "No description provided."}
+                                </p>
+                            </div>
+                            {viewingSermon.mediaUrl && viewingSermon.type === "video" && (
+                                <video controls src={viewingSermon.mediaUrl} className="max-h-64 w-full rounded-lg object-contain" />
+                            )}
+                            {viewingSermon.mediaUrl && viewingSermon.type === "audio" && (
+                                <audio controls src={viewingSermon.mediaUrl} className="w-full" />
+                            )}
+                            <div className="flex justify-end">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const sermon = viewingSermon;
+                                        setViewingSermon(null);
+                                        openEditModal(sermon);
+                                    }}
+                                    className="rounded-lg bg-[var(--active-theme-color)] px-4 py-2 text-sm font-semibold text-white"
+                                >
+                                    Edit sermon
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </motion.section>
     );
 };
-
 export default Sermons;

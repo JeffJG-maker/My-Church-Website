@@ -1,21 +1,218 @@
 @import "tailwindcss";
+@import "@fortawesome/fontawesome-free/css/all.min.css";
 
-* {
-    font-family: tahoma;
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* =========================
+   LIGHT THEME
+========================= */
+:root {
+  color-scheme: light;
+  --active-theme-color: #1a1a4c;
+  --background: #f8fafc;
+  --card-background: #ffffff;
+  --elevated-background: #ffffff;
+  --sidebar-background: #ffffff;
+
+  --text: #171717;
+  --muted-text: #737373;
+
+  --border-color: #e5e7eb;
+  --input-background: #ffffff;
+  --hover: #f3f4f6;
+  --sidebar-hover: #f3f4f6;
+
+  /* Original soft blue-lavender card shadow */
+  --card-shadow: rgba(129, 140, 248, 0.13);
+  --card-shadow-hover: rgba(129, 140, 248, 0.2);
 }
 
-:root {
-    --background: #f6f8fb;
-    --card-background: white;
-    --sidebar-hover: #c0bbf4;
-    --active-theme-color: #1a1a4c;
-    --card-shadow: #e2e1fd;
-    --text: #172033;
-    --some-icon: #d4ffd4;
-    /* --carding: #edebff; */
-    /* lighting-color: #d4ffd4; */
+/* =========================
+   DARK THEME
+   Visitor-page palette
+========================= */
+:root.dark {
+  color-scheme: dark;
+  --active-theme-color: #1a1a4c;
+  --background: #101112;
+  --card-background: #141618;
+  --elevated-background: #181a1d;
+  --sidebar-background: #101112;
+
+  --text: #ffffff;
+  --muted-text: #a1a1aa;
+
+  --border-color: #2a2c30;
+  --input-background: #141618;
+  --hover: #181a1d;
+  --sidebar-hover: #181a1d;
+
+  --card-shadow: rgba(0, 0, 0, 0.18);
+  --card-shadow-hover: rgba(0, 0, 0, 0.28);
+}
+
+/* =========================
+   GENERAL STYLES
+========================= */
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: #a1a1aa var(--background);
+}
+
+:root.dark html {
+  scrollbar-color: #2a2c30 #101112;
 }
 
 body {
-    background-color: var(--background);
+  margin: 0;
+  font-family: Tahoma, Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--text);
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: #7c6cff;
+  color: #ffffff;
+}
+
+/* =========================
+   MAIN ADMIN LAYOUT
+========================= */
+.admin-app,
+.main-area {
+  min-height: 100vh;
+  background-color: var(--background);
+  color: var(--text);
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* =========================
+   DASHBOARD CARDS
+========================= */
+.admin-app .dashboard-card,
+.admin-app .stat-card,
+.admin-app .sermon-card {
+  background-color: var(--card-background);
+  color: var(--text);
+  border-color: var(--border-color);
+
+  /* Soft shadow in light mode; subtle shadow in dark mode */
+  box-shadow: 0 8px 24px var(--card-shadow);
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.admin-app .dashboard-card:hover,
+.admin-app .stat-card:hover,
+.admin-app .sermon-card:hover {
+  box-shadow: 0 10px 28px var(--card-shadow-hover);
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.admin-app aside {
+  background-color: var(--sidebar-background);
+  color: var(--text);
+  border-color: var(--border-color);
+}
+
+/* Preserve the existing active accent color */
+.admin-app .nav-link.active {
+  background-color: var(--active-theme-color);
+  color: #ffffff;
+}
+
+.admin-app .nav-link:not(.active):hover {
+  background-color: var(--sidebar-hover);
+}
+
+/* =========================
+   FORM FIELDS
+========================= */
+.admin-app input,
+.admin-app select,
+.admin-app textarea {
+  background-color: var(--input-background);
+  color: var(--text);
+  border-color: var(--border-color);
+}
+
+.admin-app input::placeholder,
+.admin-app textarea::placeholder {
+  color: var(--muted-text);
+}
+
+/* =========================
+   THEME-AWARE TEXT
+========================= */
+.admin-app .header-welcome h1,
+.admin-app .admin-profile strong,
+.admin-app h1,
+.admin-app h2,
+.admin-app h3 {
+  color: var(--text);
+}
+
+.admin-app .text-slate-900,
+.admin-app .text-slate-800,
+.admin-app .text-gray-900,
+.admin-app .text-gray-800 {
+  color: var(--text);
+}
+
+.admin-app .text-slate-600,
+.admin-app .text-slate-500,
+.admin-app .text-gray-600,
+.admin-app .text-gray-500 {
+  color: var(--muted-text);
+}
+
+/* =========================
+   THEME-AWARE BORDERS
+========================= */
+.admin-app .border-slate-200,
+.admin-app .border-slate-300,
+.admin-app .border-gray-200,
+.admin-app .border-gray-300 {
+  border-color: var(--border-color);
+}
+
+/* =========================
+   TABLES
+========================= */
+.admin-app table {
+  color: var(--text);
+}
+
+.admin-app th,
+.admin-app td {
+  border-color: var(--border-color);
+}
+
+/* =========================
+   DARK-MODE TABLE HOVER
+========================= */
+:root.dark .admin-app tbody tr:hover {
+  background-color: var(--hover);
 }
