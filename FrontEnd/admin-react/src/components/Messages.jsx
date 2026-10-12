@@ -1,10 +1,9 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faSearch,
     faEnvelope,
-    faEnvelopeOpen,
     faTrash,
     faArrowLeft,
     faInbox,
@@ -13,45 +12,8 @@ import {
     faCheckDouble,
     faReply,
     faEllipsisVertical,
-    faPaperPlane,
     faMessage,
 } from "@fortawesome/free-solid-svg-icons";
-
-const sampleMessages = [
-    {
-        id: 1,
-        name: "Grace A.",
-        email: "grace@example.com",
-        subject: "Prayer request",
-        message:
-            "Good evening, please I would appreciate prayers for my family during this difficult season. Thank you for all the support and encouragement.",
-        date: "Today, 10:42 AM",
-        category: "Prayer request",
-        read: false,
-    },
-    {
-        id: 2,
-        name: "Michael O.",
-        email: "michael@example.com",
-        subject: "Question about Sunday service",
-        message:
-            "Hello, I would like to confirm the time for the Sunday service and whether first-time visitors should register before coming. Thank you.",
-        date: "Today, 9:15 AM",
-        category: "General enquiry",
-        read: false,
-    },
-    {
-        id: 3,
-        name: "Esther I.",
-        email: "esther@example.com",
-        subject: "Thank you for the message",
-        message:
-            "I wanted to say thank you for the sermon shared last week. It was encouraging and helped me reflect on my faith. God bless the church.",
-        date: "Yesterday",
-        category: "Feedback",
-        read: true,
-    },
-];
 
 const fadeUp = {
     hidden: { opacity: 0, y: 14 },
@@ -68,72 +30,161 @@ function getInitials(name) {
         .toUpperCase();
 }
 
+const API_BASE_URL = "http://localhost:5000/api/contact";
+
+function formatMessageDate(value) {
+    if (!value) return "Date unavailable";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value);
+    return date.toLocaleString([], {
+        dateStyle: "medium",
+        timeStyle: "short",
+    });
+}
+
 export default function Messages() {
     const shouldReduceMotion = useReducedMotion();
-
-    // These are sample messages for preview. Replace with backend data later.
-    const [messages, setMessages] = useState(sampleMessages);
+    const [messages, setMessages] = useState([]);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("All messages");
-    const [selectedId, setSelectedId] = useState(sampleMessages[0]?.id ?? null);
+    const [selectedId, setSelectedId] = useState(null);
     const [menuOpen, setMenuOpen] = useState(false);
     const [notice, setNotice] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState("");
+    const [busyIds, setBusyIds] = useState([]);
+
+    const loadMessages = async () => {
+        setIsLoading(true);
+        setLoadError("");
+        try {
+            const response = await fetch(API_BASE_URL);
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok || result.success === false) {
+                throw new Error(result.message || "Unable to load messages.");
+            }
+            const records = Array.isArray(result) ? result : result.messages || result.data || [];
+            const normalized = records.map((item) => ({
+                ...item,
+                id: item._id || item.id,
+                name: item.name || "Unknown sender",
+                email: item.email || "No email provided",
+                subject: item.subject || "No subject",
+                message: item.message || "",
+                date: formatMessageDate(item.createdAt || item.date),
+                category: item.category || "General enquiry",
+                read: Boolean(item.read),
+            }));
+            setMessages(normalized);
+            setSelectedId((currentId) =>
+                normalized.some((item) => item.id === currentId)
+                    ? currentId
+                    : normalized[0]?.id ?? null
+            );
+        } catch (error) {
+            setLoadError(error.message || "Unable to connect to the messages service.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadMessages();
+    }, []);
 
     const selectedMessage = messages.find((message) => message.id === selectedId);
     const unreadCount = messages.filter((message) => !message.read).length;
 
     const filteredMessages = useMemo(() => {
         const query = search.trim().toLowerCase();
-
         return messages.filter((message) => {
             const matchesSearch =
                 `${message.name} ${message.email} ${message.subject} ${message.message}`
                     .toLowerCase()
                     .includes(query);
-
             const matchesFilter =
                 filter === "All messages" ||
                 (filter === "Unread" && !message.read) ||
                 (filter === "Read" && message.read);
-
             return matchesSearch && matchesFilter;
         });
     }, [messages, search, filter]);
 
-    const selectMessage = (message) => {
+    const selectMessage = async (message) => {
         setSelectedId(message.id);
         setMenuOpen(false);
         setNotice("");
-        if (!message.read) {
+        if (message.read) return;
+
+        setMessages((current) =>
+            current.map((item) => item.id === message.id ? { ...item, read: true } : item)
+        );
+        try {
+            const response = await fetch(`${API_BASE_URL}/${message.id}/read`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ read: true }),
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.message || "Could not mark the message as read.");
+        } catch (error) {
             setMessages((current) =>
-                current.map((item) =>
-                    item.id === message.id ? { ...item, read: true } : item
-                )
+                current.map((item) => item.id === message.id ? { ...item, read: false } : item)
             );
+            setNotice(error.message || "Could not update the message status.");
         }
     };
 
-    const toggleRead = (id) => {
-        setMessages((current) =>
-            current.map((item) =>
-                item.id === id ? { ...item, read: !item.read } : item
-            )
-        );
+    const toggleRead = async (id) => {
+        const message = messages.find((item) => item.id === id);
+        if (!message) return;
+        const nextRead = !message.read;
         setMenuOpen(false);
+        setNotice("");
+        setBusyIds((current) => [...current, id]);
+        setMessages((current) =>
+            current.map((item) => item.id === id ? { ...item, read: nextRead } : item)
+        );
+        try {
+            const response = await fetch(`${API_BASE_URL}/${id}/read`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ read: nextRead }),
+            });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.message || "Could not update the message status.");
+        } catch (error) {
+            setMessages((current) =>
+                current.map((item) => item.id === id ? { ...item, read: message.read } : item)
+            );
+            setNotice(error.message || "Could not update the message status.");
+        } finally {
+            setBusyIds((current) => current.filter((itemId) => itemId !== id));
+        }
     };
 
-    const deleteMessage = (message) => {
+    const deleteMessage = async (message) => {
         const confirmed = window.confirm(
-            `Delete the message "${message.subject}" from this demo inbox?`
+            `Permanently delete the message "${message.subject}"? This cannot be undone.`
         );
-
         if (!confirmed) return;
 
-        const remaining = messages.filter((item) => item.id !== message.id);
-        setMessages(remaining);
-        setSelectedId(remaining[0]?.id ?? null);
-        setMenuOpen(false);
-        setNotice("Message removed from this local demo inbox.");
+        setBusyIds((current) => [...current, message.id]);
+        setNotice("");
+        try {
+            const response = await fetch(`${API_BASE_URL}/${message.id}`, { method: "DELETE" });
+            const result = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(result.message || "Could not delete the message.");
+            const remaining = messages.filter((item) => item.id !== message.id);
+            setMessages(remaining);
+            setSelectedId(remaining[0]?.id ?? null);
+            setMenuOpen(false);
+            setNotice("Message deleted successfully.");
+        } catch (error) {
+            setNotice(error.message || "Could not delete the message.");
+        } finally {
+            setBusyIds((current) => current.filter((itemId) => itemId !== message.id));
+        }
     };
 
     const enterTransition = shouldReduceMotion
@@ -185,6 +236,20 @@ export default function Messages() {
                     </div>
                 </div>
             </motion.div>
+
+            {(loadError || notice || isLoading) && (
+                <motion.div
+                    variants={fadeUp}
+                    transition={enterTransition}
+                    className={`rounded-xl border px-4 py-3 text-sm ${loadError ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300" : "border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"}`}
+                    role={loadError ? "alert" : "status"}
+                >
+                    {isLoading ? "Loading messages from the backend…" : loadError || notice}
+                    {loadError && (
+                        <button type="button" onClick={loadMessages} className="ml-3 font-semibold underline">Try again</button>
+                    )}
+                </motion.div>
+            )}
 
             {/* Inbox workspace */}
             <motion.section
@@ -490,7 +555,7 @@ export default function Messages() {
 
                                     <div className="flex flex-col gap-3 border-t border-neutral-100 pt-5 dark:border-neutral-800 sm:flex-row sm:items-center sm:justify-between">
                                         <p className="text-[10px] text-neutral-400">
-                                            Demo message · Not connected to a live inbox
+                                            Message stored in your church inbox
                                         </p>
                                         <button
                                             type="button"
@@ -527,8 +592,7 @@ export default function Messages() {
                 transition={enterTransition}
                 className="text-[10px] leading-5 text-neutral-400 dark:text-neutral-500"
             >
-                Sample messages are included for preview. Connect a real contact form or
-                messaging service to load live messages.
+                Messages are loaded from your church contact inbox.
             </motion.p>
         </motion.div>
     );

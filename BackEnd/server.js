@@ -8,6 +8,7 @@ const connectDatabase = require("./config/database");
 const sermonRoutes = require("./routes/sermonRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const eventRoutes = require("./routes/eventRoutes");
+const mediaRoutes = require("./routes/mediaRoutes");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/churchData", express.static(path.join(__dirname, "churchData")));
 app.use("/api/sermons", sermonRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/media", mediaRoutes);
 
 const PORT = process.env.PORT || 5000;
 

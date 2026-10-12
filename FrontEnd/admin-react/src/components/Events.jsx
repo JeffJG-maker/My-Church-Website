@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faCalendarAlt,
@@ -21,7 +22,35 @@ const emptyEventForm = {
     status: "Upcoming",
 };
 
-const initialEvents = [];
+const API_BASE_URL = "http://localhost:5000/api/events";
+
+const toDateInputValue = (value) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+};
+
+const getEventStatus = (dateValue) => {
+    if (!dateValue) return "Upcoming";
+    const eventDate = new Date(`${toDateInputValue(dateValue)}T00:00:00`);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return eventDate < today ? "Completed" : "Upcoming";
+};
+
+const normalizeEvent = (event) => ({
+    ...event,
+    date: toDateInputValue(event.date),
+    title: event.title || "Untitled event",
+    time: event.time || "",
+    location: event.location || "",
+    description: event.description || "",
+    status: getEventStatus(event.date),
+});
 
 const formatEventDate = (date) => {
     if (!date) return "Date not set";
@@ -36,7 +65,9 @@ const formatEventDate = (date) => {
 };
 
 const Events = () => {
-    const [events, setEvents] = useState(initialEvents);
+    const [events, setEvents] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [showModal, setShowModal] = useState(false);
@@ -44,6 +75,27 @@ const Events = () => {
     const [form, setForm] = useState(emptyEventForm);
     const [formError, setFormError] = useState("");
     const [notice, setNotice] = useState("");
+    const reduceMotion = useReducedMotion();
+
+    useEffect(() => {
+        const loadEvents = async () => {
+            setIsLoading(true);
+            try {
+                const response = await fetch(API_BASE_URL);
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || "Unable to load events.");
+                }
+                setEvents(Array.isArray(data) ? data.map(normalizeEvent) : []);
+            } catch (error) {
+                setNotice(error.message || "Could not connect to the events API. Make sure the backend is running.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadEvents();
+    }, []);
 
     const filteredEvents = useMemo(() => {
         const query = searchTerm.trim().toLowerCase();
@@ -65,14 +117,8 @@ const Events = () => {
             .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
     }, [events, searchTerm, statusFilter]);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const upcomingCount = events.filter(
-        (event) => event.date && new Date(`${event.date}T00:00:00`) >= today
-    ).length;
-    const pastCount = events.filter(
-        (event) => event.date && new Date(`${event.date}T00:00:00`) < today
-    ).length;
+    const upcomingCount = events.filter((event) => getEventStatus(event.date) === "Upcoming").length;
+    const pastCount = events.filter((event) => getEventStatus(event.date) === "Completed").length;
 
     const resetForm = () => {
         setForm(emptyEventForm);
@@ -89,11 +135,11 @@ const Events = () => {
     const openEditModal = (event) => {
         setForm({
             title: event.title,
-            date: event.date,
+            date: toDateInputValue(event.date),
             time: event.time,
             location: event.location,
             description: event.description,
-            status: event.status,
+            status: getEventStatus(event.date),
         });
         setEditingId(event.id);
         setFormError("");
@@ -111,7 +157,7 @@ const Events = () => {
         setForm((current) => ({ ...current, [name]: value }));
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         setFormError("");
 
@@ -120,52 +166,87 @@ const Events = () => {
             return;
         }
 
-        const updatedEvent = {
-            id: editingId ?? Date.now(),
+        const payload = {
             title: form.title.trim(),
-            date: form.date,
+            date: new Date(`${form.date}T00:00:00`).toISOString(),
             time: form.time,
             location: form.location.trim(),
             description: form.description.trim(),
-            status: form.status,
+            label: "UPCOMING EVENT",
+            isPublished: true,
         };
 
-        if (editingId !== null) {
-            setEvents((current) =>
-                current.map((item) => (item.id === editingId ? updatedEvent : item))
+        setIsSaving(true);
+        try {
+            const isEditing = editingId !== null;
+            const response = await fetch(
+                isEditing ? `${API_BASE_URL}/${editingId}` : API_BASE_URL,
+                {
+                    method: isEditing ? "PUT" : "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                }
             );
-            setNotice("Event updated successfully.");
-        } else {
-            setEvents((current) => [...current, updatedEvent]);
-            setNotice("Event added successfully.");
-        }
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || `Failed to ${isEditing ? "update" : "create"} event.`);
+            }
 
-        closeModal();
+            const savedEvent = normalizeEvent(data);
+            if (isEditing) {
+                setEvents((current) => current.map((item) => item.id === savedEvent.id ? savedEvent : item));
+                setNotice("Event updated successfully.");
+            } else {
+                setEvents((current) => [...current, savedEvent]);
+                setNotice("Event added successfully.");
+            }
+            closeModal();
+        } catch (error) {
+            setFormError(error.message || "Something went wrong while saving the event.");
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const handleDelete = (eventItem) => {
+    const handleDelete = async (eventItem) => {
         if (!window.confirm(`Delete "${eventItem.title}"? This cannot be undone.`)) {
             return;
         }
 
-        setEvents((current) => current.filter((item) => item.id !== eventItem.id));
-        setNotice("Event deleted successfully.");
+        try {
+            const response = await fetch(`${API_BASE_URL}/${eventItem.id}`, {
+                method: "DELETE",
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to delete event.");
+            }
+            setEvents((current) => current.filter((item) => item.id !== eventItem.id));
+            setNotice("Event deleted successfully.");
+        } catch (error) {
+            setNotice(error.message || "Something went wrong while deleting the event.");
+        }
     };
 
+    const sectionMotion = reduceMotion
+        ? {}
+        : { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.35, ease: "easeOut" } };
+
     return (
-        <section className="min-w-0 space-y-6 text-[var(--text)]">
+        <motion.section {...sectionMotion} className="min-w-0 space-y-6 text-[var(--text)]">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <div>
-                    <h2 className="text-2xl font-bold">Events</h2>
-                    <p className="mt-1 text-sm text-[var(--muted-text)]">
-                        Create and manage church services, meetings, and special programmes.
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--muted-text)]">Church administration</p>
+                    <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Events</h2>
+                    <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--muted-text)]">
+                        Plan services, coordinate programmes, and keep your church calendar organised.
                     </p>
                 </div>
 
                 <button
                     type="button"
                     onClick={openAddModal}
-                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#1a1a4c] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-teal-800 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:bg-teal-300 dark:text-slate-950 dark:hover:bg-teal-200"
                 >
                     <FontAwesomeIcon icon={faPlus} />
                     Add Event
@@ -175,7 +256,7 @@ const Events = () => {
             {notice && (
                 <div
                     role="status"
-                    className="flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200/70 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 shadow-sm dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
                 >
                     <span>{notice}</span>
                     <button type="button" onClick={() => setNotice("")} aria-label="Dismiss notification">
@@ -184,28 +265,50 @@ const Events = () => {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                {[
-                    { label: "Total Events", value: events.length, icon: faCalendarAlt, tone: "bg-violet-100 text-violet-700" },
-                    { label: "Upcoming Events", value: upcomingCount, icon: faClock, tone: "bg-emerald-100 text-emerald-700" },
-                    { label: "Past Events", value: pastCount, icon: faMapMarkerAlt, tone: "bg-blue-100 text-blue-700" },
-                ].map((stat) => (
-                    <article
-                        key={stat.label}
-                        className="flex items-center gap-3 rounded-2xl bg-[var(--card-background)] p-5 shadow-[0_5px_24px_var(--card-shadow)]"
-                    >
-                        <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${stat.tone}`}>
-                            <FontAwesomeIcon icon={stat.icon} />
+            <motion.section
+                initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                aria-label="Event calendar overview"
+                className="overflow-hidden rounded-2xl border border-[var(--border-color)]/70 bg-[var(--card-background)] shadow-[0_5px_24px_var(--card-shadow)]"
+            >
+                <div className="grid grid-cols-1 divide-y divide-[var(--border-color)]/70 sm:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)] sm:divide-x sm:divide-y-0">
+                    <div className="relative flex min-h-36 items-center gap-4 overflow-hidden p-5 sm:p-6">
+                        <div className="pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full border-[18px] border-[#1a1a4c]/[0.04] dark:border-white/[0.04]" />
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1a1a4c] text-white shadow-sm dark:bg-violet-200 dark:text-[#1a1a4c]">
+                            <FontAwesomeIcon icon={faCalendarAlt} className="text-lg" />
                         </div>
-                        <div>
-                            <p className="text-sm text-[var(--muted-text)]">{stat.label}</p>
-                            <p className="mt-1 text-2xl font-bold">{stat.value}</p>
+                        <div className="relative min-w-0">
+                            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted-text)]">Calendar overview</p>
+                            <div className="mt-1 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                                <span className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">{events.length}</span>
+                                <span className="text-sm text-[var(--muted-text)]">total events</span>
+                            </div>
                         </div>
-                    </article>
-                ))}
-            </div>
+                    </div>
 
-            <div className="flex flex-col gap-3 rounded-2xl bg-[var(--card-background)] p-4 shadow-[0_5px_24px_var(--card-shadow)] sm:flex-row">
+                    <div className="grid grid-cols-2 divide-x divide-[var(--border-color)]/70">
+                        <div className="flex min-w-0 flex-col justify-center p-5 sm:p-6">
+                            <div className="mb-3 flex items-center gap-2">
+                                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                                <span className="text-sm text-[var(--muted-text)]">Upcoming</span>
+                            </div>
+                            <p className="text-2xl font-semibold tabular-nums sm:text-3xl">{upcomingCount}</p>
+                            <p className="mt-1 text-xs text-[var(--muted-text)]">Events still to come</p>
+                        </div>
+                        <div className="flex min-w-0 flex-col justify-center p-5 sm:p-6">
+                            <div className="mb-3 flex items-center gap-2">
+                                <span className="h-2 w-2 rounded-full bg-slate-400" />
+                                <span className="text-sm text-[var(--muted-text)]">Completed</span>
+                            </div>
+                            <p className="text-2xl font-semibold tabular-nums sm:text-3xl">{pastCount}</p>
+                            <p className="mt-1 text-xs text-[var(--muted-text)]">Events in the past</p>
+                        </div>
+                    </div>
+                </div>
+            </motion.section>
+
+            <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border-color)]/60 bg-[var(--card-background)] p-3 shadow-[0_5px_24px_var(--card-shadow)] sm:flex-row sm:items-center sm:p-4">
                 <div className="relative min-w-0 flex-1">
                     <FontAwesomeIcon
                         icon={faSearch}
@@ -217,7 +320,7 @@ const Events = () => {
                         onChange={(event) => setSearchTerm(event.target.value)}
                         placeholder="Search events..."
                         aria-label="Search events"
-                        className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] pl-9 pr-3 text-sm outline-none focus:border-[#1a1a4c]"
+                        className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] pl-9 pr-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
                     />
                 </div>
 
@@ -227,7 +330,7 @@ const Events = () => {
                         value={statusFilter}
                         onChange={(event) => setStatusFilter(event.target.value)}
                         aria-label="Filter events by status"
-                        className="h-11 rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:border-[#1a1a4c]"
+                        className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15 sm:w-auto"
                     >
                         <option value="all">All events</option>
                         <option value="upcoming">Upcoming</option>
@@ -236,21 +339,28 @@ const Events = () => {
                 </div>
             </div>
 
-            {filteredEvents.length > 0 ? (
+            {isLoading ? (
+                <div className="rounded-2xl border border-[var(--border-color)]/60 bg-[var(--card-background)] px-5 py-14 text-center text-sm text-[var(--muted-text)] shadow-[0_5px_24px_var(--card-shadow)]">
+                    Loading events...
+                </div>
+            ) : filteredEvents.length > 0 ? (
                 <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
                     {filteredEvents.map((eventItem) => {
-                        const isPast =
-                            eventItem.date &&
-                            new Date(`${eventItem.date}T00:00:00`) < today;
+                        const isPast = getEventStatus(eventItem.date) === "Completed";
 
                         return (
-                            <article
+                            <motion.article
                                 key={eventItem.id}
-                                className="rounded-2xl bg-[var(--card-background)] p-5 shadow-[0_5px_24px_var(--card-shadow)]"
+                                initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.28, ease: "easeOut" }}
+                                whileHover={reduceMotion ? undefined : { y: -3 }}
+                                layout={!reduceMotion}
+                                className="min-w-0 rounded-2xl border border-[var(--border-color)]/60 bg-[var(--card-background)] p-4 shadow-[0_5px_24px_var(--card-shadow)] transition-shadow duration-200 hover:shadow-md sm:p-5"
                             >
                                 <div className="flex items-start justify-between gap-3">
                                     <div className="flex min-w-0 items-start gap-3">
-                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
+                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1a1a4c]/10 text-[#1a1a4c] dark:bg-violet-300/10 dark:text-violet-200">
                                             <FontAwesomeIcon icon={faCalendarAlt} className="text-lg" />
                                         </div>
                                         <div className="min-w-0">
@@ -299,13 +409,13 @@ const Events = () => {
                                         Delete
                                     </button>
                                 </div>
-                            </article>
+                            </motion.article>
                         );
                     })}
                 </div>
             ) : (
-                <div className="rounded-2xl bg-[var(--card-background)] px-5 py-14 text-center shadow-[0_5px_24px_var(--card-shadow)]">
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+                <div className="rounded-2xl border border-[var(--border-color)]/60 bg-[var(--card-background)] px-5 py-14 text-center shadow-[0_5px_24px_var(--card-shadow)]">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1a1a4c]/10 text-[#1a1a4c] dark:bg-violet-300/10 dark:text-violet-200">
                         <FontAwesomeIcon icon={faCalendarAlt} className="text-xl" />
                     </div>
                     <h3 className="font-semibold">
@@ -320,7 +430,7 @@ const Events = () => {
                         <button
                             type="button"
                             onClick={openAddModal}
-                            className="mt-5 rounded-lg bg-[#1a1a4c] px-4 py-2.5 text-sm font-semibold text-white hover:opacity-90"
+                            className="mt-5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:bg-teal-300 dark:text-slate-950 dark:hover:bg-teal-200"
                         >
                             Add your first event
                         </button>
@@ -328,142 +438,153 @@ const Events = () => {
                 </div>
             )}
 
-            {showModal && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
-                    onMouseDown={(event) => {
-                        if (event.target === event.currentTarget) closeModal();
-                    }}
-                >
-                    <div
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="event-modal-title"
-                        className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-[var(--card-background)] text-[var(--text)] shadow-2xl"
+            <AnimatePresence>
+                {showModal && (
+                    <motion.div
+                        initial={reduceMotion ? false : { opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.18 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm sm:p-4"
+                        onMouseDown={(event) => {
+                            if (event.target === event.currentTarget) closeModal();
+                        }}
                     >
-                        <div className="flex items-center justify-between border-b border-[var(--border-color)] p-5">
-                            <div>
-                                <h2 id="event-modal-title" className="text-lg font-bold">
-                                    {editingId !== null ? "Edit Event" : "Add New Event"}
-                                </h2>
-                                <p className="mt-1 text-sm text-[var(--muted-text)]">
-                                    Enter the event details below.
-                                </p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={closeModal}
-                                aria-label="Close event form"
-                                className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-[var(--hover)]"
-                            >
-                                <FontAwesomeIcon icon={faTimes} />
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="space-y-4 p-5">
-                            {formError && (
-                                <p role="alert" className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">
-                                    {formError}
-                                </p>
-                            )}
-
-                            <div>
-                                <label htmlFor="event-title" className="mb-1.5 block text-sm font-medium">
-                                    Event title *
-                                </label>
-                                <input
-                                    id="event-title"
-                                    name="title"
-                                    value={form.title}
-                                    onChange={handleFormChange}
-                                    required
-                                    maxLength={120}
-                                    placeholder="e.g. Sunday Worship Service"
-                                    className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:border-[#1a1a4c]"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <motion.div
+                            initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.985 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 8, scale: 0.99 }}
+                            transition={{ duration: 0.2, ease: "easeOut" }}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="event-modal-title"
+                            className="max-h-[92dvh] w-full max-w-xl overflow-y-auto rounded-2xl border border-[var(--border-color)]/70 bg-[var(--card-background)] text-[var(--text)] shadow-2xl"
+                        >
+                            <div className="flex items-center justify-between border-b border-[var(--border-color)] p-5">
                                 <div>
-                                    <label htmlFor="event-date" className="mb-1.5 block text-sm font-medium">
-                                        Date *
-                                    </label>
-                                    <input
-                                        id="event-date"
-                                        name="date"
-                                        type="date"
-                                        value={form.date}
-                                        onChange={handleFormChange}
-                                        required
-                                        className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:border-[#1a1a4c]"
-                                    />
+                                    <h2 id="event-modal-title" className="text-lg font-bold">
+                                        {editingId !== null ? "Edit Event" : "Add New Event"}
+                                    </h2>
+                                    <p className="mt-1 text-sm text-[var(--muted-text)]">
+                                        Enter the event details below.
+                                    </p>
                                 </div>
-                                <div>
-                                    <label htmlFor="event-time" className="mb-1.5 block text-sm font-medium">
-                                        Time *
-                                    </label>
-                                    <input
-                                        id="event-time"
-                                        name="time"
-                                        type="time"
-                                        value={form.time}
-                                        onChange={handleFormChange}
-                                        required
-                                        className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:border-[#1a1a4c]"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label htmlFor="event-location" className="mb-1.5 block text-sm font-medium">
-                                    Location *
-                                </label>
-                                <input
-                                    id="event-location"
-                                    name="location"
-                                    value={form.location}
-                                    onChange={handleFormChange}
-                                    required
-                                    placeholder="e.g. Main Auditorium"
-                                    className="h-11 w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none focus:border-[#1a1a4c]"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="event-description" className="mb-1.5 block text-sm font-medium">
-                                    Description
-                                </label>
-                                <textarea
-                                    id="event-description"
-                                    name="description"
-                                    value={form.description}
-                                    onChange={handleFormChange}
-                                    rows={3}
-                                    placeholder="Add details about this event..."
-                                    className="w-full rounded-lg border border-[var(--border-color)] bg-[var(--input-background)] p-3 text-sm outline-none focus:border-[#1a1a4c]"
-                                />
-                            </div>
-
-                            <div className="flex flex-col-reverse gap-3 border-t border-[var(--border-color)] pt-4 sm:flex-row sm:justify-end">
                                 <button
                                     type="button"
                                     onClick={closeModal}
-                                    className="rounded-lg border border-[var(--border-color)] px-5 py-3 text-sm font-semibold hover:bg-[var(--hover)]"
+                                    aria-label="Close event form"
+                                    className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-[var(--hover)]"
                                 >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="rounded-lg bg-[#1a1a4c] px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
-                                >
-                                    {editingId !== null ? "Save Changes" : "Add Event"}
+                                    <FontAwesomeIcon icon={faTimes} />
                                 </button>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-        </section>
+
+                            <form onSubmit={handleSubmit} className="space-y-4 p-5">
+                                {formError && (
+                                    <p role="alert" className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">
+                                        {formError}
+                                    </p>
+                                )}
+
+                                <div>
+                                    <label htmlFor="event-title" className="mb-1.5 block text-sm font-medium">
+                                        Event title *
+                                    </label>
+                                    <input
+                                        id="event-title"
+                                        name="title"
+                                        value={form.title}
+                                        onChange={handleFormChange}
+                                        required
+                                        maxLength={120}
+                                        placeholder="e.g. Sunday Worship Service"
+                                        className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                    <div>
+                                        <label htmlFor="event-date" className="mb-1.5 block text-sm font-medium">
+                                            Date *
+                                        </label>
+                                        <input
+                                            id="event-date"
+                                            name="date"
+                                            type="date"
+                                            value={form.date}
+                                            onChange={handleFormChange}
+                                            required
+                                            className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="event-time" className="mb-1.5 block text-sm font-medium">
+                                            Time *
+                                        </label>
+                                        <input
+                                            id="event-time"
+                                            name="time"
+                                            type="time"
+                                            value={form.time}
+                                            onChange={handleFormChange}
+                                            required
+                                            className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="event-location" className="mb-1.5 block text-sm font-medium">
+                                        Location *
+                                    </label>
+                                    <input
+                                        id="event-location"
+                                        name="location"
+                                        value={form.location}
+                                        onChange={handleFormChange}
+                                        required
+                                        placeholder="e.g. Main Auditorium"
+                                        className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="event-description" className="mb-1.5 block text-sm font-medium">
+                                        Description
+                                    </label>
+                                    <textarea
+                                        id="event-description"
+                                        name="description"
+                                        value={form.description}
+                                        onChange={handleFormChange}
+                                        rows={3}
+                                        placeholder="Add details about this event..."
+                                        className="w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] p-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                    />
+                                </div>
+
+                                <div className="flex flex-col-reverse gap-3 border-t border-[var(--border-color)] pt-4 sm:flex-row sm:justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={closeModal}
+                                        className="rounded-lg border border-[var(--border-color)] px-5 py-3 text-sm font-semibold hover:bg-[var(--hover)]"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={isSaving}
+                                        className="rounded-lg bg-teal-700 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-300 dark:text-slate-950 dark:hover:bg-teal-200"
+                                    >
+                                        {isSaving ? "Saving..." : editingId !== null ? "Save Changes" : "Add Event"}
+                                    </button>
+                                </div>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </motion.section>
     );
 };
 
