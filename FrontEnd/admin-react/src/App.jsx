@@ -61,21 +61,22 @@ const pageConfig = {
     },
 };
 
-function ComingSoonPage({ page }) {
-    const title = pageConfig[page]?.title || "Page";
+// function ComingSoonPage({ page }) {
+//     const title = pageConfig[page]?.title || "Page";
 
-    return (
-        <section className="rounded-xl border border-[var(--border-color)] bg-[var(--card-background)] p-8 text-center text-[var(--text)] shadow-[0_5px_24px_var(--card-shadow)]">
-            <h2 className="text-xl font-bold">{title}</h2>
-            <p className="mt-2 text-sm text-[var(--muted-text)]">
-                This page is not available yet. Its functionality will be added next.
-            </p>
-        </section>
-    );
-}
+//     return (
+//         <section className="rounded-xl border border-[var(--border-color)] bg-[var(--card-background)] p-8 text-center text-[var(--text)] shadow-[0_5px_24px_var(--card-shadow)]">
+//             <h2 className="text-xl font-bold">{title}</h2>
+//             <p className="mt-2 text-sm text-[var(--muted-text)]">
+//                 This page is not available yet. Its functionality will be added next.
+//             </p>
+//         </section>
+//     );
+// }
 
 function App() {
     const [activePage, setActivePage] = useState("dashboard");
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     // Persist the selected theme.
     const [isDarkMode, setIsDarkMode] = useState(
@@ -173,14 +174,26 @@ function App() {
             <Sidebar
                 activePage={activePage}
                 setActivePage={setActivePage}
+                isSidebarOpen={isSidebarOpen}
+                setIsSidebarOpen={setIsSidebarOpen}
             />
+
+            {isSidebarOpen && (
+                <button
+                    type="button"
+                    aria-label="Close sidebar"
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+                />
+            )}
 
             <MainArea
                 activePage={activePage}
                 title={currentPage.title}
                 description={currentPage.description}
                 isDarkMode={isDarkMode}
-                onToggleTheme={() => setIsDarkMode((previous) => !previous)}
+                onToggleTheme={() => setIsDarkMode(previous => !previous)}
+                onToggleSidebar={() => setIsSidebarOpen(previous => !previous)}
             >
                 {renderPage()}
             </MainArea>

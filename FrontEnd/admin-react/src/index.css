@@ -22,14 +22,12 @@
   --hover: #f3f4f6;
   --sidebar-hover: #f3f4f6;
 
-  /* Original soft blue-lavender card shadow */
   --card-shadow: rgba(129, 140, 248, 0.13);
   --card-shadow-hover: rgba(129, 140, 248, 0.2);
 }
 
 /* =========================
    DARK THEME
-   Visitor-page palette
 ========================= */
 :root.dark {
   color-scheme: dark;
@@ -56,11 +54,6 @@
 ========================= */
 html {
   scroll-behavior: smooth;
-  scrollbar-color: #a1a1aa var(--background);
-}
-
-:root.dark html {
-  scrollbar-color: #2a2c30 #101112;
 }
 
 body {
@@ -68,7 +61,6 @@ body {
   font-family: Tahoma, Arial, sans-serif;
   background-color: var(--background);
   color: var(--text);
-
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
@@ -96,7 +88,6 @@ a {
   min-height: 100vh;
   background-color: var(--background);
   color: var(--text);
-
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
@@ -111,10 +102,7 @@ a {
   background-color: var(--card-background);
   color: var(--text);
   border-color: var(--border-color);
-
-  /* Soft shadow in light mode; subtle shadow in dark mode */
   box-shadow: 0 8px 24px var(--card-shadow);
-
   transition:
     background-color 0.3s ease,
     color 0.3s ease,
@@ -137,7 +125,6 @@ a {
   border-color: var(--border-color);
 }
 
-/* Preserve the existing active accent color */
 .admin-app .nav-link.active {
   background-color: var(--active-theme-color);
   color: #ffffff;
@@ -215,4 +202,52 @@ a {
 ========================= */
 :root.dark .admin-app tbody tr:hover {
   background-color: var(--hover);
+}
+
+/* =========================
+   GLOBAL ULTRA-THIN SCROLLBARS
+   Hidden when idle.
+   JavaScript adds .is-scrolling
+   to the body during scrolling.
+========================= */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+body.is-scrolling,
+body.is-scrolling * {
+  scrollbar-color: #a1a1aa transparent;
+}
+
+:root.dark body.is-scrolling,
+:root.dark body.is-scrolling * {
+  scrollbar-color: #62626d transparent;
+}
+
+/* Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 999px;
+}
+
+body.is-scrolling ::-webkit-scrollbar-thumb,
+body.is-scrolling::-webkit-scrollbar-thumb {
+  background: #a1a1aa;
+}
+
+:root.dark body.is-scrolling ::-webkit-scrollbar-thumb,
+:root.dark body.is-scrolling::-webkit-scrollbar-thumb {
+  background: #62626d;
 }

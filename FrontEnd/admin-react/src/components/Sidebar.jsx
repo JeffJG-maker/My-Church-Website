@@ -38,17 +38,12 @@ const systemLinks = [
   { name: "Settings", icon: faCog, page: "settings" },
 ];
 
-const Sidebar = ({ activePage, setActivePage }) => {
+const Sidebar = ({ activePage, setActivePage, isSidebarOpen,
+  setIsSidebarOpen }) => {
   return (
     <aside
-      className="
-  sidebar fixed left-0 top-0 z-40
-  flex h-screen w-60 flex-col
-  bg-transparent
-  text-[var(--text)]
-  border-none
-  transition-colors duration-300
-"
+      className={`sidebar fixed left-0 top-0 z-40 flex h-screen w-60 flex-col border-none bg-transparent text-[var(--text)] transition-transform duration-300 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
     >
       {/* Sidebar header */}
       <div className="sidebar-header flex items-center gap-3 p-3">

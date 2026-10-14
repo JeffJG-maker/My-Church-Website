@@ -26,68 +26,29 @@ const Header = ({
             </div>
 
             {/* Header actions */}
-            <div className="header-actions flex items-center gap-5 shrink-0">
-                {/* Theme toggle */}
-                <div
-                    className="theme-toggle flex items-center overflow-hidden rounded-lg border border-[var(--border-color)] bg-[var(--card-background)]"
-                    aria-label="Choose dashboard theme"
-                    role="group"
+
+            <div className="admin-profile flex items-center gap-2">
+                <div className="profile-avatar flex h-10 w-10 items-center justify-center rounded-full bg-blue-950 p-2 text-white">
+                    A
+                </div>
+
+                <div className="profile-info flex flex-col">
+                    <strong className="text-sm text-[var(--text)]">
+                        Admin
+                    </strong>
+
+                    <span className="text-[12px] text-[var(--muted-text)]">
+                        Super Admin
+                    </span>
+                </div>
+
+                <button
+                    type="button"
+                    aria-label="Administrator menu"
+                    className="flex h-8 w-8 items-center justify-center rounded-full cursor-pointer text-[var(--muted-text)] transition-colors hover:bg-[var(--hover)]"
                 >
-                    <button
-                        type="button"
-                        onClick={() => {
-                            if (isDarkMode) onToggleTheme();
-                        }}
-                        aria-label="Switch to light theme"
-                        aria-pressed={!isDarkMode}
-                        className={`flex h-8 w-10 items-center justify-center cursor-pointer transition-colors duration-200 ${!isDarkMode
-                                ? "bg-blue-950 text-white"
-                                : "bg-[var(--card-background)] text-[var(--text)] hover:bg-[var(--hover)]"
-                            }`}
-                    >
-                        <FontAwesomeIcon icon={faSun} />
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() => {
-                            if (!isDarkMode) onToggleTheme();
-                        }}
-                        aria-label="Switch to dark theme"
-                        aria-pressed={isDarkMode}
-                        className={`flex h-8 w-10 items-center justify-center cursor-pointer transition-colors duration-200 ${isDarkMode
-                                ? "bg-blue-950 text-white"
-                                : "bg-[var(--card-background)] text-[var(--text)] hover:bg-[var(--hover)]"
-                            }`}
-                    >
-                        <FontAwesomeIcon icon={faMoon} />
-                    </button>
-                </div>
-
-                {/* Administrator profile */}
-                <div className="admin-profile flex items-center gap-2">
-                    <div className="profile-avatar flex h-10 w-10 items-center justify-center rounded-full bg-blue-950 p-2 text-white">
-                        A
-                    </div>
-
-                    <div className="profile-info flex flex-col">
-                        <strong className="text-sm text-[var(--text)]">
-                            Admin
-                        </strong>
-
-                        <span className="text-[12px] text-[var(--muted-text)]">
-                            Super Admin
-                        </span>
-                    </div>
-
-                    <button
-                        type="button"
-                        aria-label="Administrator menu"
-                        className="flex h-8 w-8 items-center justify-center rounded-full cursor-pointer text-[var(--muted-text)] transition-colors hover:bg-[var(--hover)]"
-                    >
-                        <FontAwesomeIcon icon={faChevronDown} className="text-[10px]" />
-                    </button>
-                </div>
+                    <FontAwesomeIcon icon={faChevronDown} className="text-[10px]" />
+                </button>
             </div>
         </header>
     );
