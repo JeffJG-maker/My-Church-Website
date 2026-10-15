@@ -93,7 +93,7 @@ function Header() {
                     className="flex items-center gap-3"
                 >
                     <img
-                        src="/media/Big_Winnersogo.png"
+                        src="/media/Big_Winnerslogo.png"
                         alt="Living Faith Church Iguosa"
                         className="
                             h-[52px]
