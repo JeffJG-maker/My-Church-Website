@@ -47,7 +47,7 @@ function HomeHero() {
     };
 
     return (
-        <section className="relative h-full min-h-[600px] w-full overflow-hidden bg-[#101112]">
+        <section className="relative h-full min-h-[60vh] w-full overflow-hidden bg-[#101112]">
             {/* IMAGE SLIDER */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <div

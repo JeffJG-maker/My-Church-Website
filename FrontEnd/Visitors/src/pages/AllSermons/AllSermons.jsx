@@ -1,15 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-
-
 import SermonHeader from "./components/SermonHeader";
 
 import SermonSidebar from "./components/SermonSidebar";
 
 import SermonPlayer from "./components/SermonPlayer";
-import { useTheme } from "../../context/ThemeContext"
 
-
+import { useTheme } from "../../context/ThemeContext";
 
 function AllSermons() {
 
@@ -19,15 +16,11 @@ function AllSermons() {
 
     const [selectedSermon, setSelectedSermon] = useState(null);
 
-
-
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const { theme } = useTheme();
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-
 
     const [sermons, setSermons] = useState([]);
 
@@ -35,22 +28,11 @@ function AllSermons() {
 
     const [fetchError, setFetchError] = useState("");
 
-
-
     const [showAllCategories, setShowAllCategories] =
 
         useState(false);
 
-
-
     const categoryScrollRef = useRef(null);
-
-
-
-
-
-
-
 
     const fetchSermons = async () => {
 
@@ -60,15 +42,11 @@ function AllSermons() {
 
             setFetchError("");
 
-
-
             const response = await fetch(
 
                 `${import.meta.env.VITE_API_URL}/api/sermons`
 
             );
-
-
 
             if (!response.ok) {
 
@@ -76,19 +54,13 @@ function AllSermons() {
 
             }
 
-
-
             const data = await response.json();
-
-
 
             setSermons(Array.isArray(data) ? data : []);
 
         } catch (error) {
 
             console.error("Sermon fetch error:", error);
-
-
 
             setFetchError(
 
@@ -104,20 +76,11 @@ function AllSermons() {
 
     };
 
-
-
     useEffect(() => {
 
         fetchSermons();
 
     }, []);
-
-
-
-
-
-
-
 
     const categories = useMemo(() => {
 
@@ -139,11 +102,7 @@ function AllSermons() {
 
     }, [sermons]);
 
-
-
     const mediaTypes = ["All", "Video", "Audio"];
-
-
 
     const filteredSermons = useMemo(() => {
 
@@ -155,15 +114,11 @@ function AllSermons() {
 
                 sermon.category === selectedCategory;
 
-
-
             const typeMatch =
 
                 selectedType === "All" ||
 
                 sermon.type === selectedType.toLowerCase();
-
-
 
             return categoryMatch && typeMatch;
 
@@ -171,30 +126,17 @@ function AllSermons() {
 
     }, [sermons, selectedCategory, selectedType]);
 
-
-
     const visibleCategories = categories.slice(0, 4);
 
     const extraCategories = categories.slice(4);
 
-
-
-
-
-
-
-
     const latestSermons = filteredSermons.slice(0, 8);
-
-
 
     const popularSermons = [...filteredSermons]
 
         .reverse()
 
         .slice(0, 6);
-
-
 
     const categorySermons = (category, limit = 8) => {
 
@@ -212,8 +154,6 @@ function AllSermons() {
 
     };
 
-
-
     const prayerSermons = categorySermons("Prayer");
 
     const faithSermons = categorySermons("Faith");
@@ -222,13 +162,6 @@ function AllSermons() {
 
     const consecrationSermons = categorySermons("Consecration");
 
-
-
-
-
-
-
-
     const featuredSermon =
 
         filteredSermons[0] ||
@@ -236,8 +169,6 @@ function AllSermons() {
         sermons[0] ||
 
         null;
-
-
 
     const featuredSecondarySermons =
 
@@ -254,13 +185,6 @@ function AllSermons() {
             )
 
             .slice(0, 2);
-
-
-
-
-
-
-
 
     const relatedSermons = selectedSermon
 
@@ -280,8 +204,6 @@ function AllSermons() {
 
             ),
 
-
-
             ...sermons.filter(
 
                 (sermon) =>
@@ -300,13 +222,6 @@ function AllSermons() {
 
         : [];
 
-
-
-
-
-
-
-
     const getSermonFromUrl = () => {
 
         const params = new URLSearchParams(
@@ -315,23 +230,17 @@ function AllSermons() {
 
         );
 
-
-
         const sermonId = Number(
 
             params.get("sermon")
 
         );
 
-
-
         if (!sermonId) {
 
             return null;
 
         }
-
-
 
         return (
 
@@ -347,8 +256,6 @@ function AllSermons() {
 
     };
 
-
-
     useEffect(() => {
 
         if (
@@ -363,13 +270,9 @@ function AllSermons() {
 
         }
 
-
-
         const sermonFromUrl =
 
             getSermonFromUrl();
-
-
 
         if (sermonFromUrl) {
 
@@ -378,8 +281,6 @@ function AllSermons() {
                 sermonFromUrl
 
             );
-
-
 
             window.scrollTo({
 
@@ -393,8 +294,6 @@ function AllSermons() {
 
     }, [sermons, isLoading]);
 
-
-
     useEffect(() => {
 
         const handlePopState = () => {
@@ -403,15 +302,11 @@ function AllSermons() {
 
                 getSermonFromUrl();
 
-
-
             setSelectedSermon(
 
                 sermonFromUrl
 
             );
-
-
 
             window.scrollTo({
 
@@ -423,8 +318,6 @@ function AllSermons() {
 
         };
 
-
-
         window.addEventListener(
 
             "popstate",
@@ -432,8 +325,6 @@ function AllSermons() {
             handlePopState
 
         );
-
-
 
         return () => {
 
@@ -449,20 +340,11 @@ function AllSermons() {
 
     }, [sermons]);
 
-
-
-
-
-
-
-
     const handleSearchSelect = (sermon) => {
 
         handleSermonClick(sermon);
 
     };
-
-
 
     const handleSermonClick = (sermon) => {
 
@@ -472,11 +354,7 @@ function AllSermons() {
 
         }
 
-
-
         setSelectedSermon(sermon);
-
-
 
         window.history.pushState(
 
@@ -488,8 +366,6 @@ function AllSermons() {
 
         );
 
-
-
         window.scrollTo({
 
             top: 0,
@@ -500,13 +376,9 @@ function AllSermons() {
 
     };
 
-
-
     const handleBackToSermons = () => {
 
         setSelectedSermon(null);
-
-
 
         window.history.replaceState(
 
@@ -518,8 +390,6 @@ function AllSermons() {
 
         );
 
-
-
         window.scrollTo({
 
             top: 0,
@@ -530,18 +400,9 @@ function AllSermons() {
 
     };
 
-
-
-
-
-
-
-
     const handleShowMoreCategories = () => {
 
         setShowAllCategories(true);
-
-
 
         setTimeout(() => {
 
@@ -557,13 +418,9 @@ function AllSermons() {
 
     };
 
-
-
     const handleShowLessCategories = () => {
 
         setShowAllCategories(false);
-
-
 
         categoryScrollRef.current?.scrollTo({
 
@@ -575,8 +432,6 @@ function AllSermons() {
 
     };
 
-
-
     const slideCategories = (direction) => {
 
         if (!categoryScrollRef.current) {
@@ -584,8 +439,6 @@ function AllSermons() {
             return;
 
         }
-
-
 
         categoryScrollRef.current.scrollBy({
 
@@ -603,21 +456,15 @@ function AllSermons() {
 
     };
 
-
-
     const handleCategoryChange = (category) => {
 
         setSelectedCategory(category);
-
-
 
         if (category === "All") {
 
             setSelectedType("All");
 
         }
-
-
 
         window.scrollTo({
 
@@ -629,15 +476,11 @@ function AllSermons() {
 
     };
 
-
-
     const handleLatestSermons = () => {
 
         setSelectedCategory("All");
 
         setSelectedType("All");
-
-
 
         setTimeout(() => {
 
@@ -653,15 +496,11 @@ function AllSermons() {
 
     };
 
-
-
     const handlePopularSermons = () => {
 
         setSelectedCategory("All");
 
         setSelectedType("All");
-
-
 
         setTimeout(() => {
 
@@ -677,14 +516,6 @@ function AllSermons() {
 
     };
 
-
-
-
-
-
-
-
-
     const SermonCard = ({
 
         sermon,
@@ -698,8 +529,6 @@ function AllSermons() {
             return null;
 
         }
-
-
 
         return (
 
@@ -718,8 +547,6 @@ function AllSermons() {
             >
 
                 {/* THUMBNAIL */}
-
-
 
                 <div className="relative aspect-[4/3] overflow-hidden">
 
@@ -745,19 +572,11 @@ function AllSermons() {
 
                     )}
 
-
-
                     {/* GRADIENT */}
-
-
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
 
-
-
                     {/* TYPE */}
-
-
 
                     <div className="absolute left-3 top-3">
 
@@ -769,11 +588,7 @@ function AllSermons() {
 
                     </div>
 
-
-
                     {/* DURATION */}
-
-
 
                     {sermon.duration && (
 
@@ -785,11 +600,7 @@ function AllSermons() {
 
                     )}
 
-
-
                     {/* TEXT OVERLAY */}
-
-
 
                     <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
 
@@ -801,8 +612,6 @@ function AllSermons() {
 
                             </span>
 
-
-
                             {sermon.date && (
 
                                 <>
@@ -812,8 +621,6 @@ function AllSermons() {
                                         •
 
                                     </span>
-
-
 
                                     <span className="text-white/60">
 
@@ -826,8 +633,6 @@ function AllSermons() {
                             )}
 
                         </div>
-
-
 
                         <h3
 
@@ -845,8 +650,6 @@ function AllSermons() {
 
                         </h3>
 
-
-
                         <div className="mt-2 flex items-center gap-2 text-xs text-white/70">
 
                             <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-[#8b1e2d] dark:text-[#d8a0a6] backdrop-blur-sm">
@@ -854,8 +657,6 @@ function AllSermons() {
                                 <i className="fa-solid fa-user text-[9px]" />
 
                             </span>
-
-
 
                             <span className="truncate">
 
@@ -874,13 +675,6 @@ function AllSermons() {
         );
 
     };
-
-
-
-
-
-
-
 
     const SermonSection = ({
 
@@ -904,8 +698,6 @@ function AllSermons() {
 
         }
 
-
-
         const gridClass =
 
             columns === 3
@@ -914,11 +706,9 @@ function AllSermons() {
 
                 : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 
-
-
         return (
 
-            <section className="mt-12">
+            <section id={sectionId} className="mt-12 scroll-mt-24">
 
                 <div className="mb-5 flex items-end justify-between gap-4">
 
@@ -928,8 +718,6 @@ function AllSermons() {
 
                             <span className="h-6 w-1 rounded-full bg-[#8b1e2d]" />
 
-
-
                             <h2 className="text-xl font-black text-slate-900 dark:text-white sm:text-2xl">
 
                                 {title}
@@ -937,8 +725,6 @@ function AllSermons() {
                             </h2>
 
                         </div>
-
-
 
                         {subtitle && (
 
@@ -951,8 +737,6 @@ function AllSermons() {
                         )}
 
                     </div>
-
-
 
                     {category && (
 
@@ -967,8 +751,6 @@ function AllSermons() {
                                     category
 
                                 );
-
-
 
                                 window.scrollTo({
 
@@ -993,8 +775,6 @@ function AllSermons() {
                     )}
 
                 </div>
-
-
 
                 <div
 
@@ -1022,13 +802,6 @@ function AllSermons() {
 
     };
 
-
-
-
-
-
-
-
     return (
 
         <div data-theme={theme} className="min-h-screen bg-stone-50 text-slate-900 transition-colors duration-300 dark:bg-[#101112] dark:text-white">
@@ -1049,11 +822,7 @@ function AllSermons() {
 
             />
 
-
-
             {/* DESKTOP SIDEBAR */}
-
-
 
             <SermonSidebar
 
@@ -1069,47 +838,13 @@ function AllSermons() {
 
                 setSelectedType={setSelectedType}
 
-                onLatestClick={() => {
+                onLatestClick={handleLatestSermons}
 
-                    setSelectedCategory("All");
-
-                    setSelectedType("All");
-
-                    window.scrollTo({
-
-                        top: 0,
-
-                        behavior: "smooth",
-
-                    });
-
-                }}
-
-                onPopularClick={() => {
-
-                    setSelectedCategory("All");
-
-                    setSelectedType("All");
-
-                    window.scrollTo({
-
-                        top: 0,
-
-                        behavior: "smooth",
-
-                    });
-
-                }}
+                onPopularClick={handlePopularSermons}
 
             />
 
-
-
-
-
             {/* MOBILE SIDEBAR */}
-
-
 
             {isMobileMenuOpen && (
 
@@ -1122,8 +857,6 @@ function AllSermons() {
                         onClick={() => setIsMobileMenuOpen(false)}
 
                     />
-
-
 
                     <div className="relative z-10 h-full">
 
@@ -1143,21 +876,9 @@ function AllSermons() {
 
                             setSelectedType={setSelectedType}
 
-                            onLatestClick={() => {
+                            onLatestClick={handleLatestSermons}
 
-                                setSelectedCategory("All");
-
-                                setSelectedType("All");
-
-                            }}
-
-                            onPopularClick={() => {
-
-                                setSelectedCategory("All");
-
-                                setSelectedType("All");
-
-                            }}
+                            onPopularClick={handlePopularSermons}
 
                         />
 
@@ -1187,8 +908,6 @@ function AllSermons() {
 
             )}
 
-
-
             <main
 
                 className={`transition-[margin] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isSidebarOpen ? "lg:ml-64" : "lg:ml-0"
@@ -1196,11 +915,6 @@ function AllSermons() {
                     }`}
 
             >
-
-
-
-
-
 
                 {selectedSermon ? (
 
@@ -1234,26 +948,17 @@ function AllSermons() {
 
                 ) : (
 
-
-
-
-
-
                     <section className="min-h-screen px-4 py-8 sm:px-6 lg:px-10">
 
                         <div className="mx-auto max-w-7xl">
 
                             {/* INTRO */}
 
-
-
                             <div className="mb-8">
 
                                 <div className="flex items-center gap-3">
 
                                     <span className="h-8 w-1 rounded-full bg-[#8b1e2d]" />
-
-
 
                                     <div>
 
@@ -1262,8 +967,6 @@ function AllSermons() {
                                             Living Faith Church Iguosa
 
                                         </p>
-
-
 
                                         <h1 className="mt-1 text-3xl font-black sm:text-4xl">
 
@@ -1274,8 +977,6 @@ function AllSermons() {
                                     </div>
 
                                 </div>
-
-
 
                                 <p className="mt-4 max-w-2xl leading-7 text-slate-600 dark:text-[#9ca3af]">
 
@@ -1295,11 +996,7 @@ function AllSermons() {
 
                             </div>
 
-
-
                             {/* CATEGORY NAVIGATION */}
-
-
 
                             <div className="mb-8 rounded-2xl border border-stone-200 bg-white dark:border-[#27292d] dark:bg-[#141618] p-4 sm:p-5">
 
@@ -1315,8 +1012,6 @@ function AllSermons() {
 
                                             </p>
 
-
-
                                             <p className="mt-1 text-sm text-slate-600 dark:text-[#9ca3af]">
 
                                                 Find messages by topic
@@ -1324,8 +1019,6 @@ function AllSermons() {
                                             </p>
 
                                         </div>
-
-
 
                                         {extraCategories.length >
 
@@ -1355,8 +1048,6 @@ function AllSermons() {
 
                                                         : "See More"}
 
-
-
                                                     <i
 
                                                         className={`fa-solid ${showAllCategories
@@ -1374,8 +1065,6 @@ function AllSermons() {
                                             )}
 
                                     </div>
-
-
 
                                     <div className="flex items-center gap-2">
 
@@ -1408,8 +1097,6 @@ function AllSermons() {
                                                 </button>
 
                                             )}
-
-
 
                                         <div
 
@@ -1484,8 +1171,6 @@ function AllSermons() {
                                                     )
 
                                                 )}
-
-
 
                                                 {extraCategories.length >
 
@@ -1563,8 +1248,6 @@ function AllSermons() {
 
                                         </div>
 
-
-
                                         {showAllCategories &&
 
                                             extraCategories.length >
@@ -1597,11 +1280,7 @@ function AllSermons() {
 
                                     </div>
 
-
-
                                     {/* MEDIA FILTER */}
-
-
 
                                     <div className="pt-4">
 
@@ -1612,8 +1291,6 @@ function AllSermons() {
                                                 Media
 
                                             </span>
-
-
 
                                             {mediaTypes.map(
 
@@ -1671,8 +1348,6 @@ function AllSermons() {
 
                                                         />
 
-
-
                                                         {type}
 
                                                     </button>
@@ -1689,11 +1364,7 @@ function AllSermons() {
 
                             </div>
 
-
-
                             {/* RESULTS COUNT */}
-
-
 
                             <div className="mb-6 flex items-center justify-between">
 
@@ -1717,11 +1388,7 @@ function AllSermons() {
 
                             </div>
 
-
-
                             {/* LOADING */}
-
-
 
                             {isLoading ? (
 
@@ -1767,17 +1434,11 @@ function AllSermons() {
 
                                                 <div className="aspect-[4/3] animate-pulse bg-stone-300 dark:bg-[#27292d]" />
 
-
-
                                                 <div className="space-y-4 p-4">
 
                                                     <div className="h-3 w-1/3 animate-pulse rounded bg-stone-300 dark:bg-[#27292d]" />
 
-
-
                                                     <div className="h-5 w-4/5 animate-pulse rounded bg-stone-300 dark:bg-[#27292d]" />
-
-
 
                                                     <div className="h-3 w-2/5 animate-pulse rounded bg-stone-300 dark:bg-[#27292d]" />
 
@@ -1793,9 +1454,6 @@ function AllSermons() {
 
                             ) : fetchError ? (
 
-
-
-
                                 <div className="rounded-3xl border border-stone-200 bg-white dark:border-[#27292d] dark:bg-[#141618] px-6 py-16 text-center">
 
                                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-400">
@@ -1804,15 +1462,11 @@ function AllSermons() {
 
                                     </div>
 
-
-
                                     <h2 className="mt-5 text-xl font-bold">
 
                                         Unable to load sermons
 
                                     </h2>
-
-
 
                                     <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-[#9ca3af]">
 
@@ -1823,8 +1477,6 @@ function AllSermons() {
                                         }
 
                                     </p>
-
-
 
                                     <button
 
@@ -1854,19 +1506,11 @@ function AllSermons() {
 
                                 <>
 
-
-
-
-
-
-
                                     {featuredSermon && (
 
                                         <section className="flex h-[75vh] min-h-[520px] flex-col">
 
                                             {/* SECTION TITLE */}
-
-
 
                                             <div className="mb-5 flex shrink-0 items-end justify-between gap-4">
 
@@ -1878,8 +1522,6 @@ function AllSermons() {
 
                                                     </p>
 
-
-
                                                     <h2 className="mt-1 text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">
 
                                                         Today's Message
@@ -1890,17 +1532,11 @@ function AllSermons() {
 
                                             </div>
 
-
-
                                             {/* FEATURED CARDS */}
-
-
 
                                             <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[1.6fr_1fr]">
 
                                                 {/* LARGE FEATURED CARD */}
-
-
 
                                                 <button
 
@@ -1946,11 +1582,7 @@ function AllSermons() {
 
                                                     )}
 
-
-
                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-
-
 
                                                     <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
 
@@ -1964,8 +1596,6 @@ function AllSermons() {
 
                                                         </span>
 
-
-
                                                         <h3 className="mt-2 max-w-2xl text-2xl font-black text-white sm:text-3xl">
 
                                                             {
@@ -1975,8 +1605,6 @@ function AllSermons() {
                                                             }
 
                                                         </h3>
-
-
 
                                                         <p className="mt-2 text-sm text-white/70">
 
@@ -1992,11 +1620,7 @@ function AllSermons() {
 
                                                 </button>
 
-
-
                                                 {/* SUPPORTING FEATURED CARDS */}
-
-
 
                                                 <div className="grid min-h-0 gap-5 sm:grid-cols-2 lg:grid-cols-1">
 
@@ -2038,11 +1662,7 @@ function AllSermons() {
 
                                     )}
 
-
-
                                     {/* LATEST */}
-
-
 
                                     <SermonSection
 
@@ -2059,8 +1679,6 @@ function AllSermons() {
                                     />
 
                                     {/* POPULAR */}
-
-
 
                                     <SermonSection
 
@@ -2080,11 +1698,7 @@ function AllSermons() {
 
                                     />
 
-
-
                                     {/* PRAYER */}
-
-
 
                                     <SermonSection
 
@@ -2106,11 +1720,7 @@ function AllSermons() {
 
                                     />
 
-
-
                                     {/* FAITH */}
-
-
 
                                     <SermonSection
 
@@ -2130,11 +1740,7 @@ function AllSermons() {
 
                                     />
 
-
-
                                     {/* WISDOM */}
-
-
 
                                     <SermonSection
 
@@ -2154,11 +1760,7 @@ function AllSermons() {
 
                                     />
 
-
-
                                     {/* CONSECRATION */}
-
-
 
                                     <SermonSection
 
@@ -2182,9 +1784,6 @@ function AllSermons() {
 
                             ) : (
 
-
-
-
                                 <div className="rounded-3xl border border-stone-200 bg-white dark:border-[#27292d] dark:bg-[#141618] px-6 py-16 text-center">
 
                                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-500 dark:text-[#6f737a]">
@@ -2193,15 +1792,11 @@ function AllSermons() {
 
                                     </div>
 
-
-
                                     <h2 className="mt-5 text-xl font-bold">
 
                                         No sermons found
 
                                     </h2>
-
-
 
                                     <p className="mx-auto mt-2 max-w-md text-sm text-slate-600 dark:text-[#9ca3af]">
 
@@ -2212,8 +1807,6 @@ function AllSermons() {
                                         or media type.
 
                                     </p>
-
-
 
                                     <button
 
@@ -2260,7 +1853,5 @@ function AllSermons() {
     );
 
 }
-
-
 
 export default AllSermons;

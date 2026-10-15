@@ -19,8 +19,8 @@ function AppContent() {
   const exactPublicPaths = ["/login", "/sermons"];
 
   const isLoginPage =
-    exactPublicPaths.includes(location.pathname) 
-    // location.pathname.startsWith("/events/");
+    exactPublicPaths.includes(location.pathname)
+  // location.pathname.startsWith("/events/");
 
   return (
     <>

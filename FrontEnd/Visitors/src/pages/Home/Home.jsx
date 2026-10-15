@@ -7,7 +7,7 @@ function Home() {
     return (
         <main className="bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
             {/* Hero */}
-            <div className="sticky top-0 z-0 w-full">
+            <div className="sticky top-0 z-0 lg:h-[90vh] min-h-[60vh]">
                 <HomeHero />
             </div>
 
