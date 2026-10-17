@@ -1,571 +1,669 @@
+
+import { useCallback, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookOpen, faMessage, faPlay, faUsers } from "@fortawesome/free-solid-svg-icons"
-import { faCalendarAlt } from "@fortawesome/free-regular-svg-icons"
 import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    ResponsiveContainer,
-    Tooltip
-} from "recharts";
+    faBookOpen,
+    faCalendarAlt,
+    faMessage,
+    faEnvelopeOpenText,
+    faRotateRight,
+    faArrowRight,
+    faClock,
+    faMapMarkerAlt,
+} from "@fortawesome/free-solid-svg-icons";
 
+const API_URL = (
+    import.meta.env.VITE_API_URL || "http://localhost:5000"
+).replace(/\/+$/, "");
 
-const statistics = [
-    {
-        title: "Total Sermons",
-        value: "128",
-        icon: faBookOpen,
-        iconBg: "#ede9fe",
-        iconColor: "#7c3aed"
-    },
-    {
-        title: "Total Views",
-        value: "24.5K",
-        icon: faPlay,
-        iconBg: "#dff7eb",
-        iconColor: "#16a34a"
-    },
-    {
-        title: "Total Users",
-        value: "1,842",
-        icon: faUsers,
-        iconBg: "#e0ecff",
-        iconColor: "#2563eb"
-    },
-    {
-        title: "Upcoming Events",
-        value: "6",
-        icon: faCalendarAlt,
-        iconBg: "#fff0df",
-        iconColor: "#f97316"
-    },
-    {
-        title: "Total Messages",
-        value: "256",
-        icon: faMessage,
-        iconBg: "#ffe4eb",
-        iconColor: "#f43f5e"
+const formatDate = (value) => {
+    if (!value) return "Date not available";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Date not available";
     }
-];
 
+    return new Intl.DateTimeFormat("en", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    }).format(date);
+};
 
-const viewsData = [
-    { date: "May 20", views: 2300 },
-    { date: "May 22", views: 3400 },
-    { date: "May 24", views: 2900 },
-    { date: "May 26", views: 4200 },
-    { date: "May 28", views: 2200 },
-    { date: "May 30", views: 3400 },
-    { date: "Jun 1", views: 5600 },
-    { date: "Jun 3", views: 4700 },
-    { date: "Jun 5", views: 5400 },
-    { date: "Jun 7", views: 3800 },
-    { date: "Jun 9", views: 1800 },
-    { date: "Jun 11", views: 3500 },
-    { date: "Jun 13", views: 4000 },
-    { date: "Jun 15", views: 3200 },
-    { date: "Jun 17", views: 5000 }
-];
+const formatDateTime = (value) => {
+    if (!value) return "";
 
+    const date = new Date(value);
 
-const topSermons = [
-    {
-        id: 1,
-        title: "Walking By Faith",
-        speaker: "Pastor Tobore",
-        views: "4.6K",
-        thumbnail: "../media/sermons/walking-by-faith.jpg"
-    },
-    {
-        id: 2,
-        title: "The Power of Prayer",
-        speaker: "Pastor Tobore",
-        views: "3.2K",
-        thumbnail: "../media/sermons/power-of-prayer.jpg"
-    },
-    {
-        id: 3,
-        title: "Living a Life of Purpose",
-        speaker: "Pastor Paul",
-        views: "2.8K",
-        thumbnail: "../media/sermons/life-of-purpose.jpg"
-    },
-    {
-        id: 4,
-        title: "The Power of Consecration",
-        speaker: "Pastor Paul",
-        views: "2.1K",
-        thumbnail: "../media/sermons/power-of-consecration.jpg"
-    },
-    {
-        id: 5,
-        title: "Purity",
-        speaker: "Pastor Tobore",
-        views: "1.9K",
-        thumbnail: "../media/sermons/purity.jpg"
-    }
-];
-const recentActivities = [
-    {
-        id: 1,
-        title: "New sermon added",
-        description: '"The Power of Prayer" was added',
-        time: "2m"
-    },
-    {
-        id: 2,
-        title: "New user registered",
-        description: "A new member joined",
-        time: "12m"
-    },
-    {
-        id: 3,
-        title: "New message",
-        description: "A visitor sent a message",
-        time: "25m"
-    },
-    {
-        id: 4,
-        title: "Sermon updated",
-        description: '"Living a Life of Purpose"',
-        time: "1h"
-    }
-];
+    if (Number.isNaN(date.getTime())) return "";
 
+    return new Intl.DateTimeFormat("en", {
+        day: "numeric",
+        month: "short",
+        hour: "numeric",
+        minute: "2-digit",
+    }).format(date);
+};
 
-const sermonCategories = [
-    { id: 1, name: "Faith", percentage: "35%", color: "#8b5cf6" },
-    { id: 2, name: "Prayer", percentage: "25%", color: "#60a5fa" },
-    { id: 3, name: "Teaching", percentage: "20%", color: "#34d399" },
-    { id: 4, name: "Worship", percentage: "10%", color: "#fbbf24" },
-    { id: 5, name: "Others", percentage: "10%", color: "#f87171" }
-];
+const getEventDate = (event) => {
+    if (!event?.date) return null;
 
-const upcomingEvents = [
-    {
-        id: 1,
-        month: "JUN",
-        day: "25",
-        title: "Sunday Worship Service",
-        date: "June 25, 2026",
-        time: "9:00 AM"
-    },
-    {
-        id: 2,
-        month: "JUN",
-        day: "30",
-        title: "Youth Conference",
-        date: "June 30, 2026",
-        time: "10:00 AM"
-    },
-    {
-        id: 3,
-        month: "JUL",
-        day: "07",
-        title: "Prayer & Fasting",
-        date: "July 7, 2026",
-        time: "6:00 AM"
-    }
-];
+    const date = new Date(event.date);
 
-const systemOverview = [
-    {
-        id: 1,
-        name: "Database",
-        value: "Healthy",
-        percentage: 98
-    },
-    {
-        id: 2,
-        name: "Storage",
-        value: "45%",
-        percentage: 45
-    },
-    {
-        id: 3,
-        name: "Active Users",
-        value: "1,842",
-        percentage: 75
-    },
-    {
-        id: 4,
-        name: "Server Usage",
-        value: "35%",
-        percentage: 35
-    }
-];
+    return Number.isNaN(date.getTime()) ? null : date;
+};
 
-const Dashboard = () => {
-    let total = 0;
-
-    const categoryGradient = sermonCategories.map(category => {
-        const percentage = parseInt(category.percentage);
-
-        const start = total;
-
-        total += percentage;
-
-        return `${start}% ${total}%`;
+const Dashboard = ({ token }) => {
+    const [dashboardData, setDashboardData] = useState({
+        sermons: [],
+        events: [],
+        messages: [],
     });
 
-    return (
-        <section >
-            <div className="flex items-center justify-between mb-6">
-                <div>
-                    <h1 className="text-xl font-bold">
-                        Dashboard
-                    </h1>
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState("");
 
-                    <p className="text-[12px] text-slate-500">
-                        Overview of your church platform
+    const fetchDashboardData = useCallback(async () => {
+        if (!token) {
+            setError("Your admin session is missing. Please log in again.");
+            setIsLoading(false);
+            return;
+        }
+
+        setIsLoading(true);
+        setError("");
+
+        try {
+            const headers = {
+                Authorization: `Bearer ${token}`,
+            };
+
+            const [sermonsResponse, eventsResponse, messagesResponse] =
+                await Promise.all([
+                    fetch(`${API_URL}/api/sermons`, { headers }),
+                    fetch(`${API_URL}/api/events`, { headers }),
+                    fetch(`${API_URL}/api/contact`, { headers }),
+                ]);
+
+            const responses = [
+                sermonsResponse,
+                eventsResponse,
+                messagesResponse,
+            ];
+
+            if (responses.some((response) => response.status === 401)) {
+                throw new Error(
+                    "Your admin session has expired or is invalid. Please log in again."
+                );
+            }
+
+            if (responses.some((response) => !response.ok)) {
+                throw new Error(
+                    "Some dashboard information could not be loaded. Please try again."
+                );
+            }
+
+            const [sermonsData, eventsData, messagesData] =
+                await Promise.all(
+                    responses.map((response) => response.json())
+                );
+
+            const sermons = Array.isArray(sermonsData)
+                ? sermonsData
+                : sermonsData.sermons;
+
+            const events = Array.isArray(eventsData)
+                ? eventsData
+                : eventsData.events;
+
+            const messages = Array.isArray(messagesData)
+                ? messagesData
+                : messagesData.messages;
+
+            if (
+                !Array.isArray(sermons) ||
+                !Array.isArray(events) ||
+                !Array.isArray(messages)
+            ) {
+                throw new Error(
+                    "The server returned an unexpected data format."
+                );
+            }
+
+            setDashboardData({
+                sermons,
+                events,
+                messages,
+            });
+        } catch (requestError) {
+            setError(
+                requestError.message ||
+                "Unable to load dashboard information. Check your connection."
+            );
+        } finally {
+            setIsLoading(false);
+        }
+    }, [token]);
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, [fetchDashboardData]);
+
+    const now = new Date();
+
+    const upcomingEvents = dashboardData.events
+        .filter((event) => {
+            const date = getEventDate(event);
+
+            return (
+                date &&
+                date >= now &&
+                event.isPublished !== false
+            );
+        })
+        .sort((a, b) => getEventDate(a) - getEventDate(b))
+        .slice(0, 5);
+
+    const recentSermons = [...dashboardData.sermons]
+        .sort((a, b) => {
+            const dateA = new Date(a.createdAt || a.date || 0).getTime();
+            const dateB = new Date(b.createdAt || b.date || 0).getTime();
+
+            return dateB - dateA;
+        })
+        .slice(0, 5);
+
+    const unreadMessages = dashboardData.messages.filter(
+        (message) => message.read !== true
+    );
+
+    const categories = dashboardData.sermons.reduce((result, sermon) => {
+        const category = sermon.category?.trim() || "Uncategorized";
+
+        result[category] = (result[category] || 0) + 1;
+
+        return result;
+    }, {});
+
+    const categoryEntries = Object.entries(categories).sort(
+        (a, b) => b[1] - a[1]
+    );
+
+    const statistics = [
+        {
+            title: "Total Sermons",
+            value: dashboardData.sermons.length,
+            description: "Sermons in your database",
+            icon: faBookOpen,
+            color: "#7c3aed",
+            background: "#ede9fe",
+        },
+        {
+            title: "Upcoming Events",
+            value: upcomingEvents.length,
+            description: "Published future events",
+            icon: faCalendarAlt,
+            color: "#ea580c",
+            background: "#ffedd5",
+        },
+        {
+            title: "Total Messages",
+            value: dashboardData.messages.length,
+            description: "Messages received",
+            icon: faMessage,
+            color: "#2563eb",
+            background: "#dbeafe",
+        },
+        {
+            title: "Unread Messages",
+            value: unreadMessages.length,
+            description: "Messages awaiting attention",
+            icon: faEnvelopeOpenText,
+            color: "#059669",
+            background: "#d1fae5",
+        },
+    ];
+
+    const cardClass =
+        "rounded-2xl border border-[var(--border-color)] bg-[var(--card-background)] p-5 shadow-[0_5px_30px_0_var(--card-shadow)]";
+
+    if (isLoading) {
+        return (
+            <section className="space-y-6">
+                <div className="animate-pulse">
+                    <div className="mb-2 h-6 w-48 rounded bg-[var(--sidebar-hover)]" />
+                    <div className="h-4 w-72 max-w-full rounded bg-[var(--sidebar-hover)]" />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    {[1, 2, 3, 4].map((item) => (
+                        <div
+                            key={item}
+                            className={`${cardClass} animate-pulse`}
+                        >
+                            <div className="mb-4 h-10 w-10 rounded-xl bg-[var(--sidebar-hover)]" />
+                            <div className="mb-3 h-4 w-28 rounded bg-[var(--sidebar-hover)]" />
+                            <div className="h-7 w-16 rounded bg-[var(--sidebar-hover)]" />
+                        </div>
+                    ))}
+                </div>
+
+                <div className={`${cardClass} py-12 text-center`}>
+                    <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-[var(--sidebar-hover)] border-t-violet-600" />
+                    <p className="text-sm text-[var(--muted-text)]">
+                        Loading your church dashboard...
                     </p>
                 </div>
-                {/* 
+            </section>
+        );
+    }
+
+    if (error) {
+        return (
+            <section className={`${cardClass} py-14 text-center`}>
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600">
+                    <FontAwesomeIcon icon={faRotateRight} size="lg" />
+                </div>
+
+                <h2 className="text-lg font-bold text-[var(--text)]">
+                    Unable to load dashboard
+                </h2>
+
+                <p
+                    role="alert"
+                    className="mx-auto mt-2 max-w-lg text-sm leading-6 text-[var(--muted-text)]"
+                >
+                    {error}
+                </p>
+
+                <button
+                    type="button"
+                    onClick={fetchDashboardData}
+                    className="mt-6 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-700"
+                >
+                    <FontAwesomeIcon icon={faRotateRight} />
+                    Try again
+                </button>
+            </section>
+        );
+    }
+
+    return (
+        <section className="space-y-6 pb-8">
+            <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <button>Last 7 Days</button>
-                    <button>Last 30 Days</button>
-                    <button>Custom Range</button>
-                </div> */}
+                    <h2 className="text-xl font-bold text-[var(--text)]">
+                        Church Overview
+                    </h2>
+
+                    <p className="mt-1 text-sm text-[var(--muted-text)]">
+                        A live overview of your church content and communications.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={fetchDashboardData}
+                    className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-color)] px-4 py-2.5 text-sm font-medium text-[var(--text)] transition hover:bg-[var(--hover)]"
+                >
+                    <FontAwesomeIcon icon={faRotateRight} />
+                    Refresh
+                </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                {statistics.map(stat => (
-                    <div
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                {statistics.map((stat, index) => (
+                    <motion.article
                         key={stat.title}
-                        className="bg-[var(--card-background)] rounded-xl p-5 shadow-[0_5px_30px_0_var(--card-shadow)] transition-transform duration-300 hover:translate-y-[-3px] flex items-center gap-4"
+                        initial={{ opacity: 0, y: 18 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                            duration: 0.35,
+                            delay: index * 0.07,
+                        }}
+                        className={`${cardClass} flex items-start gap-4 transition-transform duration-300 hover:-translate-y-1`}
                     >
                         <div
-                            className="w-10 h-10 rounded-full flex items-center justify-center"
+                            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
                             style={{
-                                backgroundColor: stat.iconBg,
-                                color: stat.iconColor
+                                backgroundColor: stat.background,
+                                color: stat.color,
                             }}
                         >
-                            <FontAwesomeIcon icon={stat.icon} />
+                            <FontAwesomeIcon
+                                icon={stat.icon}
+                                size="lg"
+                            />
                         </div>
 
-                        <div className="flex flex-col gap-1">
-                            <p className="text-[13.5px] text-slate-500">
+                        <div className="min-w-0">
+                            <p className="text-sm text-[var(--muted-text)]">
                                 {stat.title}
                             </p>
 
-                            <h2 className="text-xl font-bold">
-                                {stat.value}
-                            </h2>
+                            <h3 className="mt-1 text-2xl font-bold text-[var(--text)]">
+                                {stat.value.toLocaleString()}
+                            </h3>
+
+                            <p className="mt-1 text-xs leading-5 text-[var(--muted-text)]">
+                                {stat.description}
+                            </p>
                         </div>
-                    </div>
+                    </motion.article>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-7">
-
-                <div className="lg:col-span-5 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5">
-
-                    <div className="flex items-start justify-between">
-
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+                <motion.div
+                    initial={{ opacity: 0, x: -12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className={cardClass}
+                >
+                    <div className="mb-5 flex items-center justify-between gap-3">
                         <div>
-                            <h2 className="text-md font-bold">
-                                Views Overview
-                            </h2>
-
-                            <p className="text-[13px] text-slate-500">
-                                Sermon views over time
+                            <h3 className="font-bold text-[var(--text)]">
+                                Recent Sermons
+                            </h3>
+                            <p className="mt-1 text-xs text-[var(--muted-text)]">
+                                Recently added church content
                             </p>
                         </div>
 
-                        <button className="px-4 py-2 rounded-lg cursor-pointer bg-[var(--background)] transition-transform duration-300 hover:translate-y-[-3px] hover:bg-[var(--sidebar-hover)] hover:text-[var(--card-background)] text-[12px]">
-                            This Month
-                        </button>
-
+                        <FontAwesomeIcon
+                            icon={faBookOpen}
+                            className="text-violet-500"
+                        />
                     </div>
 
-                    <div className="h-70 mt-5">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart
-                                data={viewsData}
-                                margin={{
-                                    top: 10,
-                                    right: 5,
-                                    left: -15,
-                                    bottom: 5
-                                }}
-                            >
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    vertical={false}
-                                />
-
-                                <XAxis
-                                    dataKey="date"
-                                    tick={{ fontSize: 10 }}
-                                    axisLine={false}
-                                    tickLine={false}
-                                />
-
-                                <YAxis
-                                    tick={{ fontSize: 10 }}
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tickFormatter={(value) => `${value / 1000}K`}
-                                />
-
-                                <Tooltip />
-
-                                <Line
-                                    type="monotone"
-                                    dataKey="views"
-                                    stroke="#635bff"
-                                    strokeWidth={3}
-                                    dot={false}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
-
-                </div>
-
-                <div className="lg:col-span-3 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 hover:cursor-pointer">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-md font-bold">
-                            Top Sermons
-                        </h2>
-
-                        <button className="text-[12px] cursor-pointer transition-transform duration-300 hover:translate-y-[-3px]">
-                            View All
-                        </button>
-                    </div>
-
-                    {topSermons.map(sermon => (
-                        <div
-                            key={sermon.id}
-                            className="flex items-center gap-3 py-2"
-                        >
-                            <span className="w-4 text-center text-xs text-slate-500 flex-shrink-0">
-                                {sermon.id}
-                            </span>
-
-                            <div className="w-11 h-11 rounded-md overflow-hidden flex-shrink-0">
-                                <img
-                                    src={sermon.thumbnail}
-                                    alt={sermon.title}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                                <h3 className="text-[13px] font-semibold truncate">
-                                    {sermon.title}
-                                </h3>
-
-                                <p className="text-[11px] text-slate-500 mt-1">
-                                    {sermon.speaker}
-                                </p>
-                            </div>
-
-                            <span className="text-[#3737c5] bg-[#edebff] px-2 py-1 text-[10px] font-semibold rounded-lg flex-shrink-0">
-                                {sermon.views}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="lg:col-span-4 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] transition-transform duration-300 hover:translate-y-[-3px] rounded-xl p-5">
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-md font-bold">
-                            Recent Activity
-                        </h2>
-
-                        <button className="text-[12px] cursor-pointer transition-transform duration-300 hover:translate-y-[-3px]">
-                            View All
-                        </button>
-                    </div>
-
-                    {recentActivities.map(activity => (
-                        <div
-                            key={activity.id}
-                            className="flex items-center gap-3 py-3 border-b border-[var(--sidebar-hover)] last:border-b-0"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-[var(--background)] flex items-center justify-center flex-shrink-0">
-                                {/* Activity icon */}
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                                <h3 className="text-[13px] font-semibold">
-                                    {activity.title}
-                                </h3>
-
-                                <p className="text-[11px] text-slate-500 mt-1 truncate">
-                                    {activity.description}
-                                </p>
-                            </div>
-
-                            <span className="text-[10px] text-slate-500 flex-shrink-0">
-                                {activity.time}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-5">
-
-                {/* Sermons by Category */}
-                <div className="lg:col-span-5 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 transition-transform duration-300 hover:translate-y-[-3px]">
-
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-md font-bold">
-                            Sermons by Category
-                        </h2>
-
-                        <button className="text-[12px] cursor-pointer transition-transform duration-300 hover:translate-y-[-3px]">
-                            View All
-                        </button>
-                    </div>
-
-                    <div className="flex  justify-between mt-14">
-                        <div className="flex gap-5">
-                            <div
-                                className="relative w-36 h-36 rounded-full"
-                                style={{
-                                    background: `conic-gradient(
-        ${sermonCategories[0].color} ${categoryGradient[0]},
-        ${sermonCategories[1].color} ${categoryGradient[1]},
-        ${sermonCategories[2].color} ${categoryGradient[2]},
-        ${sermonCategories[3].color} ${categoryGradient[3]},
-        ${sermonCategories[4].color} ${categoryGradient[4]}
-    )`
-                                }}
-                            >
-                                <div className="absolute inset-5 rounded-full bg-[var(--card-background)]"></div>
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                                {sermonCategories.map(category => (
-                                    <div key={category.id} className="flex gap-2 items-center">
-                                        <span
-                                            className="w-2.5 h-2.5 rounded-full"
-                                            style={{ backgroundColor: category.color }}
-                                        ></span>
-
-                                        <span className="text-slate-500 text-[12px]">
-                                            {category.name}
-                                        </span>
+                    {recentSermons.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-[var(--muted-text)]">
+                            No sermons have been added yet.
+                        </p>
+                    ) : (
+                        <div className="divide-y divide-[var(--border-color)]">
+                            {recentSermons.map((sermon, index) => (
+                                <div
+                                    key={sermon._id || sermon.id || index}
+                                    className="flex items-center gap-3 py-3"
+                                >
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[var(--background)]">
+                                        {sermon.thumbnail ? (
+                                            <img
+                                                src={
+                                                    sermon.thumbnail.startsWith("http")
+                                                        ? sermon.thumbnail
+                                                        : `${API_URL}/${sermon.thumbnail.replace(/^\/+/, "")}`
+                                                }
+                                                alt={sermon.title || "Sermon"}
+                                                className="h-full w-full object-cover"
+                                                onError={(event) => {
+                                                    event.currentTarget.style.display =
+                                                        "none";
+                                                }}
+                                            />
+                                        ) : (
+                                            <FontAwesomeIcon
+                                                icon={faBookOpen}
+                                                className="text-violet-500"
+                                            />
+                                        )}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
 
-                        {/* Category list */}
-                        <div
-                            className="flex flex-col gap-2 text-sm"
-                        >
-                            {sermonCategories.map(category => (
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate text-sm font-semibold text-[var(--text)]">
+                                            {sermon.title || "Untitled sermon"}
+                                        </p>
+                                        <p className="mt-1 truncate text-xs text-[var(--muted-text)]">
+                                            {sermon.speaker || "Speaker not specified"}
+                                            {sermon.category
+                                                ? ` · ${sermon.category}`
+                                                : ""}
+                                        </p>
+                                    </div>
 
-                                <span className="font-semibold text-[13px]">
-                                    {category.percentage}
-                                </span>
-
+                                    <span className="shrink-0 text-xs text-[var(--muted-text)]">
+                                        {formatDate(sermon.createdAt || sermon.date)}
+                                    </span>
+                                </div>
                             ))}
                         </div>
+                    )}
+                </motion.div>
 
+                <motion.div
+                    initial={{ opacity: 0, x: 12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: 0.08 }}
+                    className={cardClass}
+                >
+                    <div className="mb-5 flex items-center justify-between gap-3">
+                        <div>
+                            <h3 className="font-bold text-[var(--text)]">
+                                Upcoming Events
+                            </h3>
+                            <p className="mt-1 text-xs text-[var(--muted-text)]">
+                                Published events scheduled for the future
+                            </p>
+                        </div>
+
+                        <FontAwesomeIcon
+                            icon={faCalendarAlt}
+                            className="text-orange-500"
+                        />
                     </div>
 
-                </div>
+                    {upcomingEvents.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-[var(--muted-text)]">
+                            No upcoming published events.
+                        </p>
+                    ) : (
+                        <div className="divide-y divide-[var(--border-color)]">
+                            {upcomingEvents.map((event, index) => {
+                                const date = getEventDate(event);
 
-
-                {/* Upcoming Events */}
-                <div className="lg:col-span-3 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 transition-transform duration-300 hover:translate-y-[-3px]">
-
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-md font-bold">
-                            Upcoming Events
-                        </h2>
-
-                        <button className="text-[12px] cursor-pointer transition-transform duration-300 hover:translate-y-[-3px]">
-                            View All
-                        </button>
-                    </div>
-
-                    <div className="flex flex-col">
-
-                        {upcomingEvents.map(event => (
-                            <div
-                                key={event.id}
-                                className="flex items-center gap-3 py-3 border-b border-[var(--sidebar-hover)] last:border-b-0"
-                            >
-
-                                <div className="flex flex-col items-center justify-center min-w-12 h-12 rounded-lg bg-[var(--background)]">
-                                    <span className="text-[10px] font-semibold text-slate-500">
-                                        {event.month}
-                                    </span>
-
-                                    <strong className="text-md font-bold">
-                                        {event.day}
-                                    </strong>
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-[13px] font-semibold truncate">
-                                        {event.title}
-                                    </h3>
-
-                                    <p className="text-[10px] text-slate-500 mt-1">
-                                        {event.date} · {event.time}
-                                    </p>
-                                </div>
-
-                                <span className="text-[10px] font-semibold px-2 py-1 rounded-full bg-[#d4ffd4] text-[green]">
-                                    Upcoming
-                                </span>
-
-                            </div>
-                        ))}
-
-                    </div>
-
-                </div>
-
-
-                {/* System Overview */}
-                <div className="lg:col-span-4 bg-[var(--card-background)] shadow-[0_5px_30px_0_var(--card-shadow)] rounded-xl p-5 transition-transform duration-300 hover:translate-y-[-3px]">
-
-                    <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-md font-bold">
-                            System Overview
-                        </h2>
-                    </div>
-
-                    <div className="flex flex-col gap-5">
-
-                        {systemOverview.map(system => (
-                            <div key={system.id}>
-
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm text-slate-500">
-                                        {system.name}
-                                    </span>
-
-                                    <span className="text-sm font-semibold">
-                                        {system.value}
-                                    </span>
-                                </div>
-
-                                {/* Progress bar will come here */}
-                                <div className="w-full h-2 rounded-full bg-[var(--background)] overflow-hidden">
+                                return (
                                     <div
-                                        className="h-full rounded-full transition-all duration-500 bg-purple-500"
-                                        style={{ width: `${system.percentage}%` }}
-                                    ></div>
-                                </div>
+                                        key={event._id || event.id || index}
+                                        className="flex items-center gap-3 py-3"
+                                    >
+                                        <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-orange-50 text-orange-700">
+                                            <span className="text-[10px] font-semibold uppercase">
+                                                {date.toLocaleDateString("en", {
+                                                    month: "short",
+                                                })}
+                                            </span>
+                                            <strong className="text-lg leading-5">
+                                                {date.getDate()}
+                                            </strong>
+                                        </div>
 
-                            </div>
-                        ))}
+                                        <div className="min-w-0 flex-1">
+                                            <p className="truncate text-sm font-semibold text-[var(--text)]">
+                                                {event.title || "Untitled event"}
+                                            </p>
 
+                                            <p className="mt-1 flex items-center gap-1 truncate text-xs text-[var(--muted-text)]">
+                                                <FontAwesomeIcon
+                                                    icon={faClock}
+                                                    className="shrink-0"
+                                                />
+                                                {event.time || formatDate(event.date)}
+                                            </p>
+
+                                            {event.location && (
+                                                <p className="mt-1 flex items-center gap-1 truncate text-xs text-[var(--muted-text)]">
+                                                    <FontAwesomeIcon
+                                                        icon={faMapMarkerAlt}
+                                                        className="shrink-0"
+                                                    />
+                                                    {event.location}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </motion.div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+                <div className={cardClass}>
+                    <div className="mb-5 flex items-center justify-between">
+                        <div>
+                            <h3 className="font-bold text-[var(--text)]">
+                                Sermons by Category
+                            </h3>
+                            <p className="mt-1 text-xs text-[var(--muted-text)]">
+                                Distribution based on existing sermon records
+                            </p>
+                        </div>
+
+                        <FontAwesomeIcon
+                            icon={faBookOpen}
+                            className="text-violet-500"
+                        />
                     </div>
 
+                    {categoryEntries.length === 0 ? (
+                        <p className="py-6 text-center text-sm text-[var(--muted-text)]">
+                            Category statistics will appear when sermons are added.
+                        </p>
+                    ) : (
+                        <div className="space-y-4">
+                            {categoryEntries.map(([name, count], index) => {
+                                const percentage =
+                                    dashboardData.sermons.length > 0
+                                        ? Math.round(
+                                            (count /
+                                                dashboardData.sermons.length) *
+                                            100
+                                        )
+                                        : 0;
+
+                                const colors = [
+                                    "#8b5cf6",
+                                    "#3b82f6",
+                                    "#10b981",
+                                    "#f59e0b",
+                                    "#f43f5e",
+                                    "#64748b",
+                                ];
+
+                                return (
+                                    <div key={name}>
+                                        <div className="mb-2 flex items-center justify-between gap-3">
+                                            <span className="truncate text-sm text-[var(--text)]">
+                                                {name}
+                                            </span>
+                                            <span className="shrink-0 text-xs font-semibold text-[var(--muted-text)]">
+                                                {count} · {percentage}%
+                                            </span>
+                                        </div>
+
+                                        <div className="h-2 overflow-hidden rounded-full bg-[var(--background)]">
+                                            <div
+                                                className="h-full rounded-full transition-all duration-500"
+                                                style={{
+                                                    width: `${percentage}%`,
+                                                    backgroundColor:
+                                                        colors[index % colors.length],
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
 
+                <div className={cardClass}>
+                    <div className="mb-5 flex items-center justify-between gap-3">
+                        <div>
+                            <h3 className="font-bold text-[var(--text)]">
+                                Recent Messages
+                            </h3>
+                            <p className="mt-1 text-xs text-[var(--muted-text)]">
+                                Latest enquiries from your visitors
+                            </p>
+                        </div>
+
+                        <FontAwesomeIcon
+                            icon={faMessage}
+                            className="text-blue-500"
+                        />
+                    </div>
+
+                    {dashboardData.messages.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-[var(--muted-text)]">
+                            No messages have been received yet.
+                        </p>
+                    ) : (
+                        <div className="divide-y divide-[var(--border-color)]">
+                            {[...dashboardData.messages]
+                                .sort(
+                                    (a, b) =>
+                                        new Date(b.createdAt || 0).getTime() -
+                                        new Date(a.createdAt || 0).getTime()
+                                )
+                                .slice(0, 5)
+                                .map((message, index) => (
+                                    <div
+                                        key={message._id || index}
+                                        className="flex items-start gap-3 py-3"
+                                    >
+                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-700">
+                                            {(message.name || "V")
+                                                .trim()
+                                                .charAt(0)
+                                                .toUpperCase()}
+                                        </div>
+
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <p className="truncate text-sm font-semibold text-[var(--text)]">
+                                                    {message.name || "Visitor"}
+                                                </p>
+
+                                                {message.read !== true && (
+                                                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                                                        Unread
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <p className="mt-1 truncate text-xs text-[var(--muted-text)]">
+                                                {message.subject || "General enquiry"}
+                                            </p>
+
+                                            <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--muted-text)]">
+                                                {message.message || ""}
+                                            </p>
+
+                                            <p className="mt-1 text-[10px] text-[var(--muted-text)]">
+                                                {formatDateTime(message.createdAt)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    )}
+
+                    <div className="mt-4 flex items-center gap-2 text-xs text-[var(--muted-text)]">
+                        <FontAwesomeIcon icon={faArrowRight} />
+                        <span>
+                            {unreadMessages.length} unread{" "}
+                            {unreadMessages.length === 1 ? "message" : "messages"}{" "}
+                            requiring attention
+                        </span>
+                    </div>
+                </div>
             </div>
         </section>
     );

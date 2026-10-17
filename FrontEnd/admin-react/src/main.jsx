@@ -6,24 +6,35 @@ import App from './App.jsx';
 
 function Root() {
   useEffect(() => {
-    let hideScrollbarTimer;
+    const timers = new WeakMap();
 
-    const handleScroll = () => {
-      document.body.classList.add('is-scrolling');
+    const handleScroll = (event) => {
+      const target =
+        event.target === document
+          ? document.documentElement
+          : event.target;
 
-      window.clearTimeout(hideScrollbarTimer);
+      if (!(target instanceof HTMLElement)) return;
 
-      hideScrollbarTimer = window.setTimeout(() => {
-        document.body.classList.remove('is-scrolling');
-      }, 700);
+      target.classList.add('is-scrolling');
+
+      window.clearTimeout(timers.get(target));
+
+      const timer = window.setTimeout(() => {
+        target.classList.remove('is-scrolling');
+        timers.delete(target);
+      }, 800);
+
+      timers.set(target, timer);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, {
+      passive: true,
+      capture: true,
+    });
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.clearTimeout(hideScrollbarTimer);
-      document.body.classList.remove('is-scrolling');
+      window.removeEventListener('scroll', handleScroll, true);
     };
   }, []);
 
@@ -35,3 +46,4 @@ createRoot(document.getElementById('root')).render(
     <Root />
   </StrictMode>,
 );
+

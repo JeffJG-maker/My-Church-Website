@@ -204,50 +204,46 @@ a {
   background-color: var(--hover);
 }
 
+
 /* =========================
-   GLOBAL ULTRA-THIN SCROLLBARS
-   Hidden when idle.
-   JavaScript adds .is-scrolling
-   to the body during scrolling.
+   GLOBAL THIN SCROLLBARS
 ========================= */
 
-/* Firefox */
 * {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
 }
 
-body.is-scrolling,
-body.is-scrolling * {
+/* Firefox: show while scrolling */
+.is-scrolling {
   scrollbar-color: #a1a1aa transparent;
 }
 
-:root.dark body.is-scrolling,
-:root.dark body.is-scrolling * {
+:root.dark .is-scrolling {
   scrollbar-color: #62626d transparent;
 }
 
-/* Chrome, Edge, Safari */
-::-webkit-scrollbar {
-  width: 2px;
-  height: 2px;
+/* Chrome, Edge and Safari */
+*::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
 }
 
-::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track {
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb {
   background: transparent;
   border-radius: 999px;
 }
 
-body.is-scrolling ::-webkit-scrollbar-thumb,
-body.is-scrolling::-webkit-scrollbar-thumb {
+.is-scrolling::-webkit-scrollbar-thumb,
+.is-scrolling *::-webkit-scrollbar-thumb {
   background: #a1a1aa;
 }
 
-:root.dark body.is-scrolling ::-webkit-scrollbar-thumb,
-:root.dark body.is-scrolling::-webkit-scrollbar-thumb {
+:root.dark .is-scrolling::-webkit-scrollbar-thumb,
+:root.dark .is-scrolling *::-webkit-scrollbar-thumb {
   background: #62626d;
 }

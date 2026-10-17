@@ -10,6 +10,8 @@ const MainArea = ({
   isDarkMode,
   onToggleTheme,
   onToggleSidebar,
+  admin,
+  onLogout,
 }) => {
   return (
     <main className="main-area min-h-screen border-none bg-transparent p-4 transition-all duration-300 md:p-5 lg:ml-60">
@@ -17,7 +19,7 @@ const MainArea = ({
         type="button"
         onClick={onToggleSidebar}
         aria-label="Open sidebar"
-        className="mb-4 flex items-center justify-center rounded-lg p-2 text-[var(--text)] shadow-sm hover:bg-black/5 lg:hidden"
+        className="mb-4 flex items-center justify-center rounded-lg p-2 text-[var(--text)] shadow-sm transition hover:bg-black/5 lg:hidden"
       >
         <FontAwesomeIcon icon={faBars} size="lg" />
       </button>
@@ -25,7 +27,10 @@ const MainArea = ({
       <Header
         title={title}
         description={description}
+        isDarkMode={isDarkMode}
         onToggleTheme={onToggleTheme}
+        admin={admin}
+        onLogout={onLogout}
       />
 
       {children}

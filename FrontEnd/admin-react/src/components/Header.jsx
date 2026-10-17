@@ -1,23 +1,29 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-    faSun,
-    faMoon,
-    faChevronDown,
-} from "@fortawesome/free-solid-svg-icons";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 const Header = ({
     title = "Dashboard",
     description = "Here's what's happening with your church platform today.",
-    isDarkMode,
-    onToggleTheme,
+    admin,
+    onLogout,
 }) => {
+    const adminName = admin?.name || "Administrator";
+
+    const initials = adminName
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0].toUpperCase())
+        .join("");
+
     return (
-        <header className="flex items-center justify-between gap-6 mb-10">
-            {/* Welcome message */}
+        <header className="mb-10 flex flex-wrap items-center justify-between gap-5">
             <div className="header-welcome min-w-0">
                 <h1 className="text-xl font-bold text-[var(--text)]">
-                    {title === "Dashboard" ? "Welcome back, Admin! 👋" : title}
+                    {title === "Dashboard"
+                        ? `Welcome back, ${adminName}! 👋`
+                        : title}
                 </h1>
 
                 <p className="mt-1 text-[12px] text-[var(--muted-text)]">
@@ -25,29 +31,30 @@ const Header = ({
                 </p>
             </div>
 
-            {/* Header actions */}
-
-            <div className="admin-profile flex items-center gap-2">
-                <div className="profile-avatar flex h-10 w-10 items-center justify-center rounded-full bg-blue-950 p-2 text-white">
-                    A
+            <div className="admin-profile flex min-w-0 items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-950 p-2 font-semibold text-white">
+                    {initials || "A"}
                 </div>
 
-                <div className="profile-info flex flex-col">
-                    <strong className="text-sm text-[var(--text)]">
-                        Admin
+                <div className="flex min-w-0 flex-col">
+                    <strong className="max-w-40 truncate text-sm text-[var(--text)]">
+                        {adminName}
                     </strong>
 
-                    <span className="text-[12px] text-[var(--muted-text)]">
-                        Super Admin
+                    <span className="max-w-48 truncate text-[12px] text-[var(--muted-text)]">
+                        {admin?.email || "Administrator"}
                     </span>
                 </div>
 
                 <button
                     type="button"
-                    aria-label="Administrator menu"
-                    className="flex h-8 w-8 items-center justify-center rounded-full cursor-pointer text-[var(--muted-text)] transition-colors hover:bg-[var(--hover)]"
+                    onClick={onLogout}
+                    className="flex items-center gap-2 rounded-xl border border-[var(--border-color)] px-3 py-2 text-sm font-medium text-[var(--text)] transition hover:bg-[var(--hover)]"
+                    title="Log out of the admin dashboard"
+                    aria-label="Log out"
                 >
-                    <FontAwesomeIcon icon={faChevronDown} className="text-[10px]" />
+                    <FontAwesomeIcon icon={faRightFromBracket} />
+                    <span>Logout</span>
                 </button>
             </div>
         </header>

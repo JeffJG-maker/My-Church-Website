@@ -1,6 +1,5 @@
 
 import { useEffect, useState } from "react";
-
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 import Sermons from "./components/Sermons";
@@ -12,6 +11,7 @@ import Users from "./components/Users";
 import Messages from "./components/Messages";
 import Analytics from "./components/Analytics";
 import Settings from "./components/Settings";
+import AdminLogin from "./components/AdminLogin";
 import "./App.css";
 
 const defaultCategories = [
@@ -25,7 +25,7 @@ const defaultCategories = [
 const pageConfig = {
     dashboard: {
         title: "Dashboard",
-        description: "Welcome back, Admin! Here's an overview of your church.",
+        description: "Welcome back! Here's an overview of your church.",
     },
     sermons: {
         title: "Sermons",
@@ -61,38 +61,23 @@ const pageConfig = {
     },
 };
 
-// function ComingSoonPage({ page }) {
-//     const title = pageConfig[page]?.title || "Page";
-
-//     return (
-//         <section className="rounded-xl border border-[var(--border-color)] bg-[var(--card-background)] p-8 text-center text-[var(--text)] shadow-[0_5px_24px_var(--card-shadow)]">
-//             <h2 className="text-xl font-bold">{title}</h2>
-//             <p className="mt-2 text-sm text-[var(--muted-text)]">
-//                 This page is not available yet. Its functionality will be added next.
-//             </p>
-//         </section>
-//     );
-// }
-
 function App() {
+    const [session, setSession] = useState(null);
     const [activePage, setActivePage] = useState("dashboard");
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    // Persist the selected theme.
     const [isDarkMode, setIsDarkMode] = useState(
         () => localStorage.getItem("church-admin-theme") === "dark"
     );
 
     useEffect(() => {
         document.documentElement.classList.toggle("dark", isDarkMode);
-
         localStorage.setItem(
             "church-admin-theme",
             isDarkMode ? "dark" : "light"
         );
     }, [isDarkMode]);
 
-    // Shared category list for the Categories and Sermons pages.
     const [categories, setCategories] = useState(() => {
         try {
             const savedCategories = localStorage.getItem(
@@ -125,18 +110,31 @@ function App() {
         );
     }, [categories]);
 
-    const currentPage = pageConfig[activePage] || {
-        title: "Dashboard",
-        description: "Manage your church administration.",
+    const handleLogin = ({ token, admin }) => {
+        setSession({ token, admin });
+        setActivePage("dashboard");
+        setIsSidebarOpen(false);
     };
+
+    const handleLogout = () => {
+        setSession(null);
+        setActivePage("dashboard");
+        setIsSidebarOpen(false);
+    };
+
+    if (!session) {
+        return <AdminLogin onLogin={handleLogin} />;
+    }
+
+    const currentPage = pageConfig[activePage] || pageConfig.dashboard;
 
     const renderPage = () => {
         switch (activePage) {
             case "dashboard":
-                return <Dashboard />;
+                return <Dashboard token={session.token} />;
 
             case "sermons":
-                return <Sermons categories={categories} />;
+                return <Sermons token={session.token} categories={categories} />;
 
             case "categories":
                 return (
@@ -192,8 +190,14 @@ function App() {
                 title={currentPage.title}
                 description={currentPage.description}
                 isDarkMode={isDarkMode}
-                onToggleTheme={() => setIsDarkMode(previous => !previous)}
-                onToggleSidebar={() => setIsSidebarOpen(previous => !previous)}
+                onToggleTheme={() =>
+                    setIsDarkMode((previous) => !previous)
+                }
+                onToggleSidebar={() =>
+                    setIsSidebarOpen((previous) => !previous)
+                }
+                admin={session.admin}
+                onLogout={handleLogout}
             >
                 {renderPage()}
             </MainArea>

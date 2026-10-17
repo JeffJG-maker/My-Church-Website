@@ -404,10 +404,10 @@ export default function Users() {
                                         <td className="px-4 py-4">
                                             <span
                                                 className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${user.role === "Admin"
-                                                        ? "bg-violet-50 text-violet-700 ring-1 ring-violet-200/70 dark:bg-violet-950/40 dark:text-violet-300 dark:ring-violet-900/60"
-                                                        : user.role === "Editor"
-                                                            ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200/70 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-900/60"
-                                                            : "bg-neutral-100 text-neutral-600 ring-1 ring-neutral-200/70 dark:bg-neutral-800 dark:text-neutral-300 dark:ring-neutral-700"
+                                                    ? "bg-violet-50 text-violet-700 ring-1 ring-violet-200/70 dark:bg-violet-950/40 dark:text-violet-300 dark:ring-violet-900/60"
+                                                    : user.role === "Editor"
+                                                        ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200/70 dark:bg-blue-950/40 dark:text-blue-300 dark:ring-blue-900/60"
+                                                        : "bg-neutral-100 text-neutral-600 ring-1 ring-neutral-200/70 dark:bg-neutral-800 dark:text-neutral-300 dark:ring-neutral-700"
                                                     }`}
                                             >
                                                 {user.role}
@@ -417,14 +417,14 @@ export default function Users() {
                                         <td className="px-4 py-4">
                                             <span
                                                 className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium ${user.status === "Active"
-                                                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
-                                                        : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
+                                                    ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300"
+                                                    : "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400"
                                                     }`}
                                             >
                                                 <span
                                                     className={`h-1.5 w-1.5 rounded-full ${user.status === "Active"
-                                                            ? "bg-emerald-500"
-                                                            : "bg-neutral-400"
+                                                        ? "bg-emerald-500"
+                                                        : "bg-neutral-400"
                                                         }`}
                                                 />
                                                 {user.status}
