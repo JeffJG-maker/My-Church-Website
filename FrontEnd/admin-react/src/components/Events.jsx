@@ -20,7 +20,6 @@ import {
 
     faMapMarkerAlt,
 
-
     faFilter,
 
 } from "@fortawesome/free-solid-svg-icons";
@@ -43,9 +42,12 @@ const emptyEventForm = {
 
 };
 
-const API_BASE_URL = "http://localhost:5000/api/events";
-const MEDIA_API_URL = "http://localhost:5000/api/media";
-const SERVER_URL = "http://localhost:5000";
+const SERVER_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+const API_BASE_URL = `${SERVER_URL}/api/events`;
+
+const MEDIA_API_URL = `${SERVER_URL}/api/media`;
+
+
 
 const toDateInputValue = (value) => {
 
@@ -119,7 +121,7 @@ const formatEventDate = (date) => {
 
 };
 
-const Events = () => {
+const Events = ({ token }) => {
 
     const [events, setEvents] = useState([]);
 
@@ -186,37 +188,63 @@ const Events = () => {
     }, []);
 
     useEffect(() => {
+
         if (!showModal) return;
 
         const loadMediaImages = async () => {
+
             setIsLoadingMedia(true);
+
             setMediaLoadError("");
+
             try {
+
                 const response = await fetch(MEDIA_API_URL);
+
                 const data = await response.json();
+
                 if (!response.ok || data.success === false) {
+
                     throw new Error(data.message || "Unable to load images from the Media Library.");
+
                 }
 
                 const items = Array.isArray(data) ? data : data.items;
+
                 const images = (items || [])
+
                     .filter((item) => item.kind === "image" && item.url)
+
                     .map((item) => ({
+
                         ...item,
+
                         id: item._id || item.id || item.url,
+
                         url: item.url.startsWith("http")
+
                             ? item.url
+
                             : `${SERVER_URL}${item.url.startsWith("/") ? "" : "/"}${item.url}`,
+
                     }));
+
                 setMediaImages(images);
+
             } catch (error) {
+
                 setMediaLoadError(error.message || "Could not connect to the Media Library.");
+
             } finally {
+
                 setIsLoadingMedia(false);
+
             }
+
         };
 
         loadMediaImages();
+
     }, [showModal]);
 
     const filteredEvents = useMemo(() => {
@@ -369,7 +397,7 @@ const Events = () => {
 
                     method: isEditing ? "PUT" : "POST",
 
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
 
                     body: JSON.stringify(payload),
 
@@ -428,7 +456,7 @@ const Events = () => {
             const response = await fetch(`${API_BASE_URL}/${eventItem.id}`, {
 
                 method: "DELETE",
-
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
 
             const data = await response.json();
@@ -694,16 +722,27 @@ const Events = () => {
                             >
 
                                 {eventItem.image && (
+
                                     <div className="mb-4 overflow-hidden rounded-xl bg-[var(--hover)]">
+
                                         <img
+
                                             src={eventItem.image.startsWith("http") ? eventItem.image : `${SERVER_URL}${eventItem.image.startsWith("/") ? "" : "/"}${eventItem.image}`}
+
                                             alt={eventItem.title}
+
                                             loading="lazy"
+
                                             className="h-44 w-full object-cover"
+
                                             onError={(event) => { event.currentTarget.style.display = "none"; }}
+
                                         />
+
                                     </div>
+
                                 )}
+
                                 <div className="flex items-start justify-between gap-3">
 
                                     <div className="flex min-w-0 items-start gap-3">
@@ -1067,39 +1106,73 @@ const Events = () => {
                                 </div>
 
                                 <div>
+
                                     <div className="mb-2 flex items-center justify-between gap-3">
+
                                         <label className="block text-sm font-medium" htmlFor="event-image-picker">Event image</label>
+
                                         {form.image && (
+
                                             <button type="button" onClick={() => setForm((current) => ({ ...current, image: "" }))} className="text-xs font-semibold text-rose-600 hover:text-rose-700">
+
                                                 Remove image
+
                                             </button>
+
                                         )}
+
                                     </div>
+
                                     {form.image ? (
+
                                         <div className="mb-3 overflow-hidden rounded-xl border border-[var(--border-color)]">
+
                                             <img src={form.image.startsWith("http") ? form.image : `${SERVER_URL}${form.image.startsWith("/") ? "" : "/"}${form.image}`} alt="Selected event" className="h-44 w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} />
+
                                         </div>
+
                                     ) : (
+
                                         <div className="mb-3 flex min-h-24 items-center justify-center rounded-xl border border-dashed border-[var(--border-color)] bg-[var(--hover)] px-4 text-center text-sm text-[var(--muted-text)]">
+
                                             No image selected. Choose a photo below, or leave this empty.
+
                                         </div>
+
                                     )}
+
                                     {isLoadingMedia ? (
+
                                         <p className="text-sm text-[var(--muted-text)]">Loading Media Library images...</p>
+
                                     ) : mediaLoadError ? (
+
                                         <p role="alert" className="text-sm text-rose-600">{mediaLoadError}</p>
+
                                     ) : mediaImages.length > 0 ? (
+
                                         <div id="event-image-picker" className="grid max-h-56 grid-cols-2 gap-3 overflow-y-auto rounded-xl border border-[var(--border-color)] p-2 sm:grid-cols-3">
+
                                             {mediaImages.map((image) => (
+
                                                 <button key={image.id} type="button" onClick={() => setForm((current) => ({ ...current, image: image.url }))} aria-pressed={form.image === image.url} title={`Select ${image.name || "image"}`} className={`overflow-hidden rounded-lg border-2 text-left transition ${form.image === image.url ? "border-[#4545a0] ring-2 ring-[#4545a0]/20" : "border-transparent hover:border-[var(--border-color)]"}`}>
+
                                                     <img src={image.url} alt={image.name || "Media library image"} loading="lazy" className="h-24 w-full object-cover" />
+
                                                     <span className="block truncate px-2 py-1.5 text-xs text-[var(--muted-text)]">{image.name || "Image"}</span>
+
                                                 </button>
+
                                             ))}
+
                                         </div>
+
                                     ) : (
+
                                         <p className="rounded-lg bg-[var(--hover)] px-3 py-2 text-sm text-[var(--muted-text)]">No images found. Upload images in the Media Library first.</p>
+
                                     )}
+
                                 </div>
 
                                 <div>

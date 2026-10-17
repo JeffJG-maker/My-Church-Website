@@ -145,16 +145,16 @@ function App() {
                 );
 
             case "media":
-                return <Media />;
-
+                return <Media token={session.token} />;
+                
             case "events":
-                return <Events />;
+                return <Events token={session.token} />;
 
             case "users":
                 return <Users />;
 
             case "messages":
-                return <Messages />;
+                return <Messages token={session.token} />;
 
             case "analytics":
                 return <Analytics />;

@@ -595,15 +595,15 @@ const Sermons = ({
 
                     <section className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border-color)]/80 bg-[var(--card-background)]">
                         {/* TABLE */}
-                        <div className="w-full min-w-0 overflow-hidden">
-                            <table className="w-full table-fixed border-collapse text-left text-[13px]">
+                        <div className="w-full min-w-0 overflow-x-auto">
+                            <table className="w-full min-w-[900px] table-fixed border-collapse text-left text-[13px]">
                                 <colgroup>
-                                    <col className="w-[34%]" />
-                                    <col className="w-[16%]" />
+                                    <col className="w-[35%]" />
+                                    <col className="w-[15%]" />
                                     <col className="w-[13%]" />
                                     <col className="w-[14%]" />
-                                    <col className="w-[10%]" />
-                                    <col className="w-[13%]" />
+                                    <col className="w-[9%]" />
+                                    <col className="w-[14%]" />
                                 </colgroup>
                                 <thead className="border-b border-[var(--border-color)] bg-[var(--background)]/70">
                                     <tr>
@@ -633,28 +633,29 @@ const Sermons = ({
                                             transition={{ duration: 0.2 }}
                                             className="border-t border-[var(--border-color)]/80 transition-colors duration-150 hover:bg-[var(--background)]/70"
                                         >
-                                            <td className="px-3 py-3 sm:px-4">
-                                                <div className="flex min-w-0 items-center gap-2">
+                                            <td className="px-4 py-4 sm:px-5">
+                                                <div className="flex min-w-0 items-center gap-3">
                                                     {sermon.thumbnail ? (
                                                         <img
                                                             src={sermon.thumbnail}
                                                             alt=""
-                                                            className="h-12 w-16 shrink-0 rounded-lg object-cover ring-1 ring-black/5"
+                                                            className="h-14 w-20 shrink-0 rounded-xl object-cover ring-1 ring-black/5"
+                                                            onError={(event) => { event.currentTarget.style.display = "none"; }}
                                                         />
                                                     ) : (
-                                                        <div className="flex h-8 w-10 shrink-0 items-center justify-center rounded-md bg-[var(--hover)] text-[var(--muted-text)]">
+                                                        <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-xl border border-[var(--border-color)] bg-[var(--background)] text-[var(--muted-text)]">
                                                             <FontAwesomeIcon icon={faVideo} />
                                                         </div>
                                                     )}
                                                     <div className="min-w-0">
                                                         <p
-                                                            className="truncate font-semibold"
+                                                            className="truncate text-sm font-semibold tracking-[-0.01em]"
                                                             title={sermon.title}
                                                         >
                                                             {sermon.title}
                                                         </p>
                                                         <p
-                                                            className="mt-1 truncate text-xs leading-5 text-[var(--muted-text)]"
+                                                            className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--muted-text)]"
                                                             title={sermon.description || ""}
                                                         >
                                                             {sermon.description || "No description"}
