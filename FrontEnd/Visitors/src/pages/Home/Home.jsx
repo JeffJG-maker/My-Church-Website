@@ -1,3 +1,4 @@
+
 import HomeHero from "../../components/HomeHero/HomeHero";
 import WelcomeSection from "../../components/WelcomeSection/WelcomeSection";
 import FeaturedSermons from "../../components/FeaturedSermons/FeaturedSermons";
@@ -7,19 +8,12 @@ function Home() {
     return (
         <main className="bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
             {/* Hero */}
-            <div className="sticky top-0 z-0 lg:h-[90vh] min-h-[60vh]">
-                <HomeHero />
-            </div>
+            <HomeHero />
 
             {/* Main Content */}
             <div className="relative z-10">
-                {/* Welcome + Upcoming Event */}
                 <WelcomeSection />
-
-                {/* Featured Sermons */}
                 <FeaturedSermons />
-
-                {/* Footer */}
                 <Footer />
             </div>
         </main>
