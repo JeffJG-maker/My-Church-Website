@@ -16,13 +16,39 @@ const protectAdmin = require("./middleware/adminAuth");
 
 const app = express();
 
+// app.use(
+//   cors({
+//     origin: process.env.ADMIN_FRONTEND_URL || "http://localhost:3000",
+//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
+
+
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://lfc-iguosa-admin-dashboard.onrender.com",
+  "https://my-church-website.onrender.com",
+];
+
 app.use(
   cors({
-    origin: process.env.ADMIN_FRONTEND_URL || "http://localhost:3000",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error(`Origin not allowed by CORS: ${origin}`)
+      );
+    },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 app.use(express.json({ limit: "1mb" }));
 
