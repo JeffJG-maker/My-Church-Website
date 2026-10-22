@@ -6,4 +6,4 @@ const connectDatabase = async () => {
     console.log("Database connected");
 };
 
-module.exports = connectDatabase; 
+module.exports = connectDatabase;  
