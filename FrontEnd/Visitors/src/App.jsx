@@ -5,7 +5,7 @@ import Header from "./components/Header/Header";
 import Home from "./pages/Home/Home";
 import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
-import Login from "./pages/Login/Login";
+
 import AllSermons from "./pages/AllSermons/AllSermons";
 import Events from "./pages/Events/Events";
 import EventDetails from "./pages/EventDetails/EventDetails";
@@ -16,7 +16,7 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 function AppContent() {
   const location = useLocation();
 
-  const exactPublicPaths = ["/login", "/sermons"];
+  const exactPublicPaths = ["/sermons"];
 
   const isLoginPage =
     exactPublicPaths.includes(location.pathname)
@@ -63,10 +63,6 @@ function AppContent() {
           }
         />
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
       </Routes>
     </>
   );

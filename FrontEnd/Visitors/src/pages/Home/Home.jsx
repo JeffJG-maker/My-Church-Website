@@ -2,6 +2,7 @@
 import HomeHero from "../../components/HomeHero/HomeHero";
 import WelcomeSection from "../../components/WelcomeSection/WelcomeSection";
 import FeaturedSermons from "../../components/FeaturedSermons/FeaturedSermons";
+import ContactInvitation from "../../components/ContactInvitation/ContactInvitation";
 import Footer from "../../components/Footer/Footer";
 
 function Home() {
@@ -14,6 +15,7 @@ function Home() {
             <div className="relative z-10">
                 <WelcomeSection />
                 <FeaturedSermons />
+                <ContactInvitation />
                 <Footer />
             </div>
         </main>

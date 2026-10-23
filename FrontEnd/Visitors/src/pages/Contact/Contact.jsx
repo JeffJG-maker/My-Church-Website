@@ -1,17 +1,69 @@
 import { useState } from "react";
-import ScrollReveal from "../../components/ScrollReveal/ScrollReveal";
+import { motion, useReducedMotion } from "framer-motion";
+
+const contactItems = [
+    {
+        icon: "fa-solid fa-location-dot",
+        title: "Our Location",
+        content: "Living Faith Church, Iguosa",
+        type: "text",
+    },
+    {
+        icon: "fa-solid fa-phone",
+        title: "Phone",
+        content: "09157999889",
+        type: "phone",
+    },
+    {
+        icon: "fa-solid fa-envelope",
+        title: "Email",
+        content: "Send us a message through the form.",
+        type: "text",
+    },
+    {
+        icon: "fa-solid fa-hands-praying",
+        title: "Prayer & Enquiries",
+        content: "We are available to listen, pray with you, and connect with you.",
+        type: "text",
+    },
+];
 
 function Contact() {
+    const shouldReduceMotion = useReducedMotion();
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         subject: "",
         message: "",
     });
-
     const [submitted, setSubmitted] = useState(false);
     const [isSending, setIsSending] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
+
+    const fadeUp = {
+        hidden: {
+            opacity: shouldReduceMotion ? 1 : 0,
+            y: shouldReduceMotion ? 0 : 28,
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: shouldReduceMotion ? 0 : 0.7,
+                ease: [0.22, 1, 0.36, 1],
+            },
+        },
+    };
+
+    const stagger = {
+        hidden: {},
+        visible: {
+            transition: {
+                staggerChildren: shouldReduceMotion ? 0 : 0.12,
+            },
+        },
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,6 +72,8 @@ function Contact() {
             ...prev,
             [name]: value,
         }));
+
+        if (errorMessage) setErrorMessage("");
     };
 
     const handleSubmit = async (e) => {
@@ -44,363 +98,350 @@ function Contact() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(
-                    data.message || "Unable to send your message."
-                );
+                throw new Error(data.message || "Unable to send your message.");
             }
 
             setSubmitted(true);
-
             setFormData({
                 name: "",
                 email: "",
                 subject: "",
                 message: "",
             });
-
-            setTimeout(() => {
-                setSubmitted(false);
-            }, 5000);
         } catch (error) {
             console.error("Contact form error:", error);
-
             setErrorMessage(
-                error.message ||
-                "Unable to send your message. Please try again later."
+                error.message || "Unable to send your message. Please try again later."
             );
         } finally {
             setIsSending(false);
         }
     };
 
+    const fieldClass =
+        "w-full rounded-xl border-0 bg-white px-4 py-3.5 text-sm text-[#171717] outline-none ring-1 ring-black/[0.07] transition duration-200 placeholder:text-gray-400 focus:ring-2 focus:ring-[#E31B23]/50 dark:bg-[#101112] dark:text-white dark:ring-white/[0.08] dark:focus:ring-[#E31B23]/70";
+
     return (
-        <main className="min-h-screen bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
-            {/* ================= HERO ================= */}
+        <main className="min-h-screen overflow-hidden bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
+            {/* Hero */}
             <section
-                className="relative flex min-h-[420px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-24"
+                className="relative flex min-h-[390px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-24 sm:min-h-[440px]"
                 style={{
                     backgroundImage:
-                        "linear-gradient(rgba(30, 10, 10, 0.72), rgba(30, 10, 10, 0.82)), url('/media/contactBackground.png')",
+                        "linear-gradient(90deg, rgba(12,12,12,0.78), rgba(12,12,12,0.58)), url('/media/contactBackground.png')",
                 }}
             >
-                <ScrollReveal>
-                    <div className="relative z-10 mx-auto max-w-4xl text-center">
-                        <span className="mb-5 inline-block rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-semibold tracking-wide text-white backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-white/15">
-                            GET IN TOUCH
-                        </span>
+                <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#E31B23]/20 blur-3xl" />
+                <div className="pointer-events-none absolute -bottom-28 -left-16 h-72 w-72 rounded-full bg-white/[0.07] blur-3xl" />
 
-                        <h1 className="mb-5 text-4xl font-bold leading-tight text-white transition-all duration-300 sm:text-5xl md:text-6xl">
-                            Contact Us
-                        </h1>
+                <motion.div
+                    className="relative z-10 mx-auto max-w-3xl text-center"
+                    variants={fadeUp}
+                    initial="hidden"
+                    animate="visible"
+                >
+                    <span className="mb-5 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.28em] text-white/80 sm:text-sm">
+                        <span className="h-px w-8 bg-[#E31B23]" />
+                        Get in touch
+                        <span className="h-px w-8 bg-[#E31B23]" />
+                    </span>
 
-                        <p className="mx-auto max-w-2xl text-base leading-7 text-white/80 sm:text-lg">
-                            We would love to hear from you. Reach out to us for
-                            questions, prayers, testimonies, enquiries, or any
-                            information about our church.
-                        </p>
-                    </div>
-                </ScrollReveal>
+                    <h1 className="mb-5 text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl">
+                        Contact Us
+                    </h1>
+
+                    <p className="mx-auto max-w-2xl text-base leading-7 text-white/75 sm:text-lg sm:leading-8">
+                        We would love to hear from you. Reach out with your questions,
+                        prayer requests, testimonies, or enquiries about our church.
+                    </p>
+                </motion.div>
             </section>
 
-            {/* ================= CONTACT CONTENT ================= */}
-            <section className="px-6 py-20 sm:px-8 lg:px-12">
-                <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr]">
-                    {/* ================= CONTACT INFO ================= */}
-                    <ScrollReveal>
-                        <div>
-                            <div className="mb-8">
-                                <span className="mb-3 inline-block text-sm font-bold uppercase tracking-[0.2em] text-[#E31B23] dark:text-[#F7941D]">
-                                    Contact Us
-                                </span>
+            {/* Contact details and form */}
+            <section className="px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
+                <div className="mx-auto grid max-w-7xl items-start gap-12 lg:grid-cols-[0.88fr_1.12fr] lg:gap-16">
+                    <motion.div
+                        variants={stagger}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.15 }}
+                    >
+                        <motion.div variants={fadeUp} className="mb-9 max-w-xl">
+                            <span className="mb-4 block text-xs font-bold uppercase tracking-[0.24em] text-[#E31B23]">
+                                We’re here for you
+                            </span>
+                            <h2 className="mb-5 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+                                Let’s{" "}
+                                <span className="text-[#E31B23]">connect.</span>
+                            </h2>
+                            <p className="text-base leading-7 text-gray-600 dark:text-gray-400">
+                                Whether you need assistance, want to share a testimony, or
+                                would like someone to pray with you, we welcome your message.
+                            </p>
+                        </motion.div>
 
-                                <h2 className="mb-5 text-3xl font-bold leading-tight sm:text-4xl">
-                                    We’re here to{" "}
-                                    <span className="text-[#E31B23] dark:text-[#F7941D]">
-                                        connect with you.
+                        <motion.div variants={stagger} className="space-y-2">
+                            {contactItems.map((item, index) => (
+                                <motion.div
+                                    key={item.title}
+                                    variants={fadeUp}
+                                    className="group flex items-start gap-4 rounded-2xl bg-[#F7F7F6] p-5 transition duration-300 hover:-translate-y-0.5 hover:bg-[#F3F0EF] dark:bg-[#181a1d] dark:hover:bg-[#1d1f22] sm:gap-5 sm:p-6"
+                                >
+                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#E31B23]/[0.09] text-[#E31B23] transition duration-300 group-hover:bg-[#E31B23] group-hover:text-white dark:bg-[#E31B23]/15">
+                                        <i className={`${item.icon} text-base`} aria-hidden="true" />
+                                    </div>
+
+                                    <div className="min-w-0 pt-0.5">
+                                        <h3 className="mb-1.5 font-semibold tracking-tight">
+                                            {item.title}
+                                        </h3>
+                                        {item.type === "phone" ? (
+                                            <a
+                                                href="tel:09157999889"
+                                                className="text-sm leading-6 text-gray-600 transition-colors hover:text-[#E31B23] dark:text-gray-400 dark:hover:text-[#E31B23]"
+                                            >
+                                                {item.content}
+                                            </a>
+                                        ) : (
+                                            <p className="text-sm leading-6 text-gray-600 dark:text-gray-400">
+                                                {item.content}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <span className="ml-auto mt-1 hidden text-sm text-gray-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[#E31B23] sm:block">
+                                        <i className="fa-solid fa-arrow-up-right-from-square" aria-hidden="true" />
                                     </span>
-                                </h2>
+                                </motion.div>
+                            ))}
+                        </motion.div>
 
-                                <p className="max-w-xl leading-7 text-gray-600 dark:text-gray-400">
-                                    Whether you have a question, need assistance,
-                                    want to share a testimony, or simply want to
-                                    reach out, feel free to contact us.
-                                </p>
-                            </div>
+                        <motion.p
+                            variants={fadeUp}
+                            className="mt-6 flex items-start gap-3 px-1 text-sm leading-6 text-gray-500 dark:text-gray-400"
+                        >
+                            <i className="fa-solid fa-heart mt-1 text-[#E31B23]" aria-hidden="true" />
+                            <span>
+                                You are welcome here. We look forward to connecting with you.
+                            </span>
+                        </motion.p>
+                    </motion.div>
 
-                            {/* Contact cards */}
-                            <div className="space-y-5">
-                                {/* Address */}
-                                <div className="group flex items-start gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm shadow-[#F7941D]/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#F7941D]/15 dark:border-white/10 dark:bg-[#181a1d] dark:shadow-none dark:hover:shadow-none">
-                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E31B23]/10 text-[#E31B23] transition-all duration-300 group-hover:scale-105 group-hover:bg-[#E31B23] group-hover:text-white dark:bg-[#F7941D]/10 dark:text-[#F7941D] dark:group-hover:bg-[#F7941D] dark:group-hover:text-white">
-                                        <i className="fa-solid fa-location-dot text-lg"></i>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="mb-1 font-bold">
-                                            Our Location
-                                        </h3>
-
-                                        <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                                            Living Faith Church, Iguosa
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Phone */}
-                                <div className="group flex items-start gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm shadow-[#F7941D]/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#F7941D]/15 dark:border-white/10 dark:bg-[#181a1d] dark:shadow-none dark:hover:shadow-none">
-                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E31B23]/10 text-[#E31B23] transition-all duration-300 group-hover:scale-105 group-hover:bg-[#E31B23] group-hover:text-white dark:bg-[#F7941D]/10 dark:text-[#F7941D] dark:group-hover:bg-[#F7941D] dark:group-hover:text-white">
-                                        <i className="fa-solid fa-phone text-lg"></i>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="mb-1 font-bold">
-                                            Phone
-                                        </h3>
-
-                                        <a
-                                            href="tel:09157999889"
-                                            className="text-sm leading-6 text-gray-500 transition-colors duration-300 hover:text-[#E31B23] dark:text-gray-400 dark:hover:text-[#F7941D]"
-                                        >
-                                            09157999889
-                                        </a>
-                                    </div>
-                                </div>
-
-                                {/* Email */}
-                                <div className="group flex items-start gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm shadow-[#F7941D]/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#F7941D]/15 dark:border-white/10 dark:bg-[#181a1d] dark:shadow-none dark:hover:shadow-none">
-                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E31B23]/10 text-[#E31B23] transition-all duration-300 group-hover:scale-105 group-hover:bg-[#E31B23] group-hover:text-white dark:bg-[#F7941D]/10 dark:text-[#F7941D] dark:group-hover:bg-[#F7941D] dark:group-hover:text-white">
-                                        <i className="fa-solid fa-envelope text-lg"></i>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="mb-1 font-bold">
-                                            Email
-                                        </h3>
-
-                                        <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                                            Send us a message through the form.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {/* Prayer */}
-                                <div className="group flex items-start gap-5 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm shadow-[#F7941D]/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#F7941D]/15 dark:border-white/10 dark:bg-[#181a1d] dark:shadow-none dark:hover:shadow-none">
-                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#E31B23]/10 text-[#E31B23] transition-all duration-300 group-hover:scale-105 group-hover:bg-[#E31B23] group-hover:text-white dark:bg-[#F7941D]/10 dark:text-[#F7941D] dark:group-hover:bg-[#F7941D] dark:group-hover:text-white">
-                                        <i className="fa-solid fa-hands-praying text-lg"></i>
-                                    </div>
-
-                                    <div>
-                                        <h3 className="mb-1 font-bold">
-                                            Prayer & Enquiries
-                                        </h3>
-
-                                        <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                                            We are available to listen and connect
-                                            with you.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                    <motion.div
+                        variants={fadeUp}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.12 }}
+                        transition={{
+                            duration: shouldReduceMotion ? 0 : 0.7,
+                            delay: shouldReduceMotion ? 0 : 0.12,
+                            ease: [0.22, 1, 0.36, 1],
+                        }}
+                        className="rounded-[1.75rem] bg-[#F7F7F6] p-5 dark:bg-[#181a1d] sm:p-8 lg:p-10"
+                    >
+                        <div className="mb-8">
+                            <span className="mb-3 block text-xs font-bold uppercase tracking-[0.22em] text-[#E31B23]">
+                                Send a message
+                            </span>
+                            <h2 className="mb-3 text-2xl font-bold tracking-tight sm:text-3xl">
+                                How can we help?
+                            </h2>
+                            <p className="max-w-lg text-sm leading-6 text-gray-600 dark:text-gray-400">
+                                Fill in the details below and we’ll get back to you as soon as
+                                we can.
+                            </p>
                         </div>
-                    </ScrollReveal>
 
-                    {/* ================= CONTACT FORM ================= */}
-                    <ScrollReveal delay={150}>
-                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-[0_15px_40px_rgba(247,148,29,0.12)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(247,148,29,0.16)] sm:p-8 lg:p-10 dark:border-white/10 dark:bg-[#181a1d] dark:shadow-none dark:hover:shadow-none">
-                            <div className="mb-8">
-                                <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
-                                    Send us a message
-                                </h2>
-
-                                <p className="text-sm leading-6 text-gray-500 dark:text-gray-400">
-                                    Fill out the form below and we will get back to
-                                    you.
-                                </p>
-                            </div>
-
-                            {/* SUCCESS MESSAGE */}
-                            {submitted && (
-                                <div className="mb-6 flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-700 transition-all duration-300 dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400">
-                                    <i className="fa-solid fa-circle-check mt-0.5"></i>
-
-                                    <div>
-                                        <p className="font-semibold">
-                                            Message sent successfully.
-                                        </p>
-
-                                        <p className="mt-1 opacity-80">
-                                            Thank you for reaching out to us.
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* ERROR MESSAGE */}
-                            {errorMessage && (
-                                <div className="mb-6 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 transition-all duration-300 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
-                                    <i className="fa-solid fa-circle-exclamation mt-0.5"></i>
-
-                                    <div>
-                                        <p className="font-semibold">
-                                            Message could not be sent.
-                                        </p>
-
-                                        <p className="mt-1 opacity-80">
-                                            {errorMessage}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            <form
-                                onSubmit={handleSubmit}
-                                className="space-y-5"
+                        {submitted && (
+                            <motion.div
+                                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-6 flex items-start gap-3 rounded-xl bg-emerald-500/10 p-4 text-sm text-emerald-700 dark:text-emerald-400"
+                                role="status"
+                                aria-live="polite"
                             >
-                                {/* NAME + EMAIL */}
-                                <div className="grid gap-5 sm:grid-cols-2">
-                                    {/* NAME */}
-                                    <div>
-                                        <label
-                                            htmlFor="name"
-                                            className="mb-2 block text-sm font-semibold"
-                                        >
-                                            Your Name
-                                        </label>
-
-                                        <div className="relative">
-                                            <i className="fa-solid fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-
-                                            <input
-                                                id="name"
-                                                name="name"
-                                                type="text"
-                                                value={formData.name}
-                                                onChange={handleChange}
-                                                placeholder="Enter your name"
-                                                required
-                                                className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3.5 pl-11 pr-4 text-sm outline-none transition-all duration-300 focus:border-[#E31B23] focus:ring-4 focus:ring-[#E31B23]/10 dark:border-white/10 dark:bg-[#101112] dark:text-white dark:focus:border-[#F7941D] dark:focus:ring-[#F7941D]/10"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* EMAIL */}
-                                    <div>
-                                        <label
-                                            htmlFor="email"
-                                            className="mb-2 block text-sm font-semibold"
-                                        >
-                                            Email Address
-                                        </label>
-
-                                        <div className="relative">
-                                            <i className="fa-solid fa-envelope pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-
-                                            <input
-                                                id="email"
-                                                name="email"
-                                                type="email"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                placeholder="Enter your email"
-                                                required
-                                                className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3.5 pl-11 pr-4 text-sm outline-none transition-all duration-300 focus:border-[#E31B23] focus:ring-4 focus:ring-[#E31B23]/10 dark:border-white/10 dark:bg-[#101112] dark:text-white dark:focus:border-[#F7941D] dark:focus:ring-[#F7941D]/10"
-                                            />
-                                        </div>
-                                    </div>
+                                <i className="fa-solid fa-circle-check mt-0.5" aria-hidden="true" />
+                                <div>
+                                    <p className="font-semibold">Message sent successfully.</p>
+                                    <p className="mt-1 opacity-80">
+                                        Thank you for reaching out to us.
+                                    </p>
                                 </div>
+                            </motion.div>
+                        )}
 
-                                {/* SUBJECT */}
+                        {errorMessage && (
+                            <motion.div
+                                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-6 flex items-start gap-3 rounded-xl bg-red-500/10 p-4 text-sm text-red-700 dark:text-red-400"
+                                role="alert"
+                            >
+                                <i className="fa-solid fa-circle-exclamation mt-0.5" aria-hidden="true" />
+                                <div>
+                                    <p className="font-semibold">Message could not be sent.</p>
+                                    <p className="mt-1 opacity-80">{errorMessage}</p>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="space-y-5">
+                            <div className="grid gap-5 sm:grid-cols-2">
                                 <div>
                                     <label
-                                        htmlFor="subject"
+                                        htmlFor="name"
                                         className="mb-2 block text-sm font-semibold"
                                     >
-                                        Subject
+                                        Your Name
                                     </label>
-
                                     <div className="relative">
-                                        <i className="fa-solid fa-tag pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-
+                                        <i
+                                            className="fa-solid fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"
+                                            aria-hidden="true"
+                                        />
                                         <input
-                                            id="subject"
-                                            name="subject"
+                                            id="name"
+                                            name="name"
                                             type="text"
-                                            value={formData.subject}
+                                            autoComplete="name"
+                                            value={formData.name}
                                             onChange={handleChange}
-                                            placeholder="What would you like to talk about?"
+                                            placeholder="Enter your name"
                                             required
-                                            className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3.5 pl-11 pr-4 text-sm outline-none transition-all duration-300 focus:border-[#E31B23] focus:ring-4 focus:ring-[#E31B23]/10 dark:border-white/10 dark:bg-[#101112] dark:text-white dark:focus:border-[#F7941D] dark:focus:ring-[#F7941D]/10"
+                                            className={`${fieldClass} pl-11`}
                                         />
                                     </div>
                                 </div>
 
-                                {/* MESSAGE */}
                                 <div>
                                     <label
-                                        htmlFor="message"
+                                        htmlFor="email"
                                         className="mb-2 block text-sm font-semibold"
                                     >
-                                        Message
+                                        Email Address
                                     </label>
-
                                     <div className="relative">
-                                        <i className="fa-solid fa-message pointer-events-none absolute left-4 top-4 text-gray-400"></i>
-
-                                        <textarea
-                                            id="message"
-                                            name="message"
-                                            value={formData.message}
+                                        <i
+                                            className="fa-solid fa-envelope pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"
+                                            aria-hidden="true"
+                                        />
+                                        <input
+                                            id="email"
+                                            name="email"
+                                            type="email"
+                                            autoComplete="email"
+                                            value={formData.email}
                                             onChange={handleChange}
-                                            placeholder="Write your message here..."
-                                            rows="6"
+                                            placeholder="Enter your email"
                                             required
-                                            className="w-full resize-none rounded-xl border border-gray-200 bg-gray-50 py-3.5 pl-11 pr-4 text-sm outline-none transition-all duration-300 focus:border-[#E31B23] focus:ring-4 focus:ring-[#E31B23]/10 dark:border-white/10 dark:bg-[#101112] dark:text-white dark:focus:border-[#F7941D] dark:focus:ring-[#F7941D]/10"
-                                        ></textarea>
+                                            className={`${fieldClass} pl-11`}
+                                        />
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* SUBMIT */}
-                                <button
-                                    type="submit"
-                                    disabled={isSending}
-                                    className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#E31B23] px-6 py-3.5 font-semibold text-white shadow-lg shadow-[#E31B23]/20 transition-all duration-300 hover:-translate-y-1 hover:bg-[#C9151C] hover:shadow-xl hover:shadow-[#E31B23]/25 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#E31B23] dark:hover:bg-[#F7941D]"
+                            <div>
+                                <label
+                                    htmlFor="subject"
+                                    className="mb-2 block text-sm font-semibold"
                                 >
-                                    {isSending ? (
-                                        <>
-                                            <i className="fa-solid fa-spinner fa-spin"></i>
-                                            <span>Sending...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span>Send Message</span>
-                                            <i className="fa-solid fa-paper-plane transition-transform duration-300 group-hover:translate-x-1"></i>
-                                        </>
-                                    )}
-                                </button>
-                            </form>
-                        </div>
-                    </ScrollReveal>
+                                    Subject
+                                </label>
+                                <div className="relative">
+                                    <i
+                                        className="fa-solid fa-tag pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"
+                                        aria-hidden="true"
+                                    />
+                                    <input
+                                        id="subject"
+                                        name="subject"
+                                        type="text"
+                                        value={formData.subject}
+                                        onChange={handleChange}
+                                        placeholder="What would you like to talk about?"
+                                        required
+                                        className={`${fieldClass} pl-11`}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label
+                                    htmlFor="message"
+                                    className="mb-2 block text-sm font-semibold"
+                                >
+                                    Message
+                                </label>
+                                <div className="relative">
+                                    <i
+                                        className="fa-solid fa-message pointer-events-none absolute left-4 top-4 text-sm text-gray-400"
+                                        aria-hidden="true"
+                                    />
+                                    <textarea
+                                        id="message"
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                        placeholder="Write your message here..."
+                                        rows={5}
+                                        required
+                                        className={`${fieldClass} resize-y pl-11`}
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={isSending}
+                                className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#E31B23] px-6 py-4 font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#C9151C] disabled:cursor-not-allowed disabled:opacity-70"
+                            >
+                                {isSending ? (
+                                    <>
+                                        <i className="fa-solid fa-spinner fa-spin" aria-hidden="true" />
+                                        <span>Sending...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>Send Message</span>
+                                        <i
+                                            className="fa-solid fa-arrow-right transition-transform duration-300 group-hover:translate-x-1"
+                                            aria-hidden="true"
+                                        />
+                                    </>
+                                )}
+                            </button>
+
+                            <p className="text-center text-xs leading-5 text-gray-500 dark:text-gray-500">
+                                Your message is sent directly to our church contact service.
+                            </p>
+                        </form>
+                    </motion.div>
                 </div>
             </section>
 
-            {/* ================= BOTTOM CTA ================= */}
-            <section className="px-6 pb-20 sm:px-8 lg:px-12">
-                <ScrollReveal delay={100}>
-                    <div className="mx-auto max-w-7xl overflow-hidden rounded-3xl bg-[#9B111E] px-6 py-12 text-center shadow-xl shadow-[#E31B23]/15 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-[#E31B23]/20 sm:px-10 dark:bg-[#181a1d] dark:shadow-none dark:hover:shadow-none">
-                        <div className="mx-auto max-w-2xl">
-                            <i className="fa-solid fa-church mb-5 text-3xl text-[#F7941D] transition-transform duration-300 hover:scale-110"></i>
-
-                            <h2 className="mb-4 text-2xl font-bold text-white sm:text-3xl">
-                                We look forward to hearing from you.
-                            </h2>
-
-                            <p className="leading-7 text-white/70">
-                                Thank you for connecting with Living Faith Church
-                                Iguosa. May God bless you richly.
-                            </p>
+            {/* Closing invitation */}
+            <section className="px-5 pb-16 sm:px-8 sm:pb-20 lg:px-12">
+                <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, amount: 0.2 }}
+                    className="relative mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] bg-[#F7F7F6] px-6 py-12 text-center dark:bg-[#181a1d] sm:px-10 sm:py-16"
+                >
+                    <div className="pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-[#E31B23]/[0.07] blur-2xl" />
+                    <div className="relative mx-auto max-w-2xl">
+                        <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E31B23]/10 text-[#E31B23]">
+                            <i className="fa-solid fa-church text-lg" aria-hidden="true" />
                         </div>
+                        <h2 className="mb-4 text-2xl font-bold tracking-tight sm:text-3xl">
+                            We look forward to hearing from you.
+                        </h2>
+                        <p className="leading-7 text-gray-600 dark:text-gray-400">
+                            Thank you for connecting with Living Faith Church Iguosa. May God
+                            bless you richly.
+                        </p>
                     </div>
-                </ScrollReveal>
+                </motion.div>
             </section>
         </main>
     );
