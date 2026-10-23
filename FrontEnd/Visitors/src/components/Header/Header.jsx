@@ -84,8 +84,8 @@ function Header() {
             {mobile && (
                 <span
                     className={`text-lg ${isCurrentRoute(item)
-                            ? "text-[#E31B23]"
-                            : "text-white/40"
+                        ? "text-[#E31B23]"
+                        : "text-white/40"
                         }`}
                     aria-hidden="true"
                 >
@@ -183,8 +183,8 @@ function Header() {
                         >
                             <span
                                 className={`h-2 w-2 rounded-full ${theme === "dark"
-                                        ? "bg-[#E31B23]"
-                                        : "bg-amber-400"
+                                    ? "bg-[#E31B23]"
+                                    : "bg-amber-400"
                                     }`}
                             />
 
@@ -296,26 +296,27 @@ function Header() {
                     />
                     <span
                         className={`h-[2px] w-5 rounded-full bg-white transition-all duration-300 ${menuOpen
-                                ? "-translate-y-[7px] -rotate-45"
-                                : ""
+                            ? "-translate-y-[7px] -rotate-45"
+                            : ""
                             }`}
                     />
                 </button>
             </div>
 
-            {/* MOBILE NAVIGATION */}
+
             <div
                 className={`
-                    absolute inset-x-0 top-full overflow-hidden
-                    border-b border-white/[0.08]
-                    bg-[#101014]/40 text-white
-                    backdrop-blur-[6px]
-                    transition-all duration-300 ease-in-out md:hidden
-                    ${menuOpen
-                        ? "visible max-h-[520px] translate-y-0 opacity-100"
+        absolute inset-x-0 top-full overflow-hidden
+        border-b border-white/[0.08]
+        bg-[#101014]/75 text-white
+        backdrop-blur-xl
+        shadow-[0_16px_40px_rgba(0,0,0,0.18)]
+        transition-all duration-300 ease-in-out md:hidden
+        ${menuOpen
+                        ? "visible max-h-[600px] translate-y-0 opacity-100"
                         : "invisible max-h-0 -translate-y-2 opacity-0"
                     }
-                `}
+    `}
                 aria-hidden={!menuOpen}
             >
                 <nav

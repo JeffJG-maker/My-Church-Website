@@ -367,7 +367,7 @@ function FeaturedSermons() {
 
         <section className={`${sectionClass} pb-20`}>
 
-            <div className="mx-auto max-w-7xl">
+            <div className="mx-auto max-w-7xl overflow-x-clip">
 
                 {/* Section heading */}
 
@@ -817,6 +817,7 @@ function FeaturedSermons() {
                 </div>
 
                 {/* Full sermon collection call to action */}
+                {/* Full sermon collection call to action */}
                 <motion.div
                     initial={{ opacity: 0, x: 60 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -825,14 +826,14 @@ function FeaturedSermons() {
                         duration: 1.25,
                         ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="mt-14 flex flex-col items-start justify-between gap-6 sm:mt-16 md:flex-row md:items-end md:gap-10"
+                    className="mt-14 flex w-full min-w-0 flex-col items-start justify-between gap-6 overflow-x-clip sm:mt-16 md:flex-row md:items-end md:gap-10"
                 >
-                    <div className="max-w-2xl">
+                    <div className="w-full min-w-0 max-w-2xl">
                         <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#D91620]">
                             Keep Growing in Faith
                         </p>
 
-                        <h3 className="mt-3 text-2xl font-extrabold tracking-tight text-[#171717] dark:text-white sm:text-3xl">
+                        <h3 className="mt-3 break-words text-2xl font-extrabold tracking-tight text-[#171717] dark:text-white sm:text-3xl">
                             There&apos;s More to Discover
                         </h3>
 
@@ -845,18 +846,18 @@ function FeaturedSermons() {
                     <button
                         type="button"
                         onClick={handleViewAllSermons}
-                        className="group inline-flex shrink-0 items-center gap-3 border-0 bg-transparent py-2 text-sm font-bold text-[#D91620] transition-colors duration-300 hover:text-[#B9121B] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D91620] focus-visible:ring-offset-4 dark:focus-visible:ring-offset-[#101112]"
+                        className="group inline-flex max-w-full shrink-0 items-center gap-3 border-0 bg-transparent py-2 text-left text-sm font-bold text-[#D91620] transition-colors duration-300 hover:text-[#B9121B] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D91620] focus-visible:ring-offset-4 dark:focus-visible:ring-offset-[#101112]"
                     >
-                        Browse All Sermons
+                        <span>Browse All Sermons</span>
+
                         <span
-                            className="inline-block text-lg transition-transform duration-500 group-hover:translate-x-2"
+                            className="inline-block shrink-0 text-lg transition-transform duration-300 group-hover:translate-x-1"
                             aria-hidden="true"
                         >
                             →
                         </span>
                     </button>
                 </motion.div>
-
             </div>
 
         </section>
