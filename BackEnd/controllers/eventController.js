@@ -1,12 +1,13 @@
 const Event = require("../models/Event");
 
+// Get all events
 const getEvents = async (req, res) => {
     try {
         const events = await Event.find().sort({ date: 1 });
 
         res.json(events);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching events:", error);
 
         res.status(500).json({
             message: "Failed to retrieve events",
@@ -14,11 +15,19 @@ const getEvents = async (req, res) => {
     }
 };
 
+// Get a single event by ID
 const getEvent = async (req, res) => {
     try {
-        const event = await Event.findOne({
-            id: Number(req.params.id),
-        });
+        const id = Number(req.params.id);
+
+        // Validate the ID before querying MongoDB
+        if (!Number.isSafeInteger(id) || id <= 0) {
+            return res.status(400).json({
+                message: "Invalid event ID",
+            });
+        }
+
+        const event = await Event.findOne({ id });
 
         if (!event) {
             return res.status(404).json({
@@ -28,7 +37,7 @@ const getEvent = async (req, res) => {
 
         res.json(event);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching event:", error);
 
         res.status(500).json({
             message: "Failed to retrieve event",
@@ -36,6 +45,7 @@ const getEvent = async (req, res) => {
     }
 };
 
+// Get the next upcoming published event
 const getUpcomingEvent = async (req, res) => {
     try {
         const event = await Event.findOne({
@@ -51,7 +61,7 @@ const getUpcomingEvent = async (req, res) => {
 
         res.json(event);
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching upcoming event:", error);
 
         res.status(500).json({
             message: "Failed to fetch upcoming event",
@@ -59,6 +69,7 @@ const getUpcomingEvent = async (req, res) => {
     }
 };
 
+// Create a new event
 const createEvent = async (req, res) => {
     try {
         const event = await Event.create({
@@ -78,7 +89,7 @@ const createEvent = async (req, res) => {
 
         res.status(201).json(event);
     } catch (error) {
-        console.error(error);
+        console.error("Error creating event:", error);
 
         res.status(500).json({
             message: "Failed to create event",
@@ -86,12 +97,20 @@ const createEvent = async (req, res) => {
     }
 };
 
+// Update an existing event
 const updateEvent = async (req, res) => {
     try {
+        const id = Number(req.params.id);
+
+        // Validate the ID before querying MongoDB
+        if (!Number.isSafeInteger(id) || id <= 0) {
+            return res.status(400).json({
+                message: "Invalid event ID",
+            });
+        }
+
         const event = await Event.findOneAndUpdate(
-            {
-                id: Number(req.params.id),
-            },
+            { id },
             req.body,
             {
                 new: true,
@@ -107,7 +126,7 @@ const updateEvent = async (req, res) => {
 
         res.json(event);
     } catch (error) {
-        console.error(error);
+        console.error("Error updating event:", error);
 
         res.status(500).json({
             message: "Failed to update event",
@@ -115,11 +134,19 @@ const updateEvent = async (req, res) => {
     }
 };
 
+// Delete an event
 const deleteEvent = async (req, res) => {
     try {
-        const event = await Event.findOneAndDelete({
-            id: Number(req.params.id),
-        });
+        const id = Number(req.params.id);
+
+        // Validate the ID before querying MongoDB
+        if (!Number.isSafeInteger(id) || id <= 0) {
+            return res.status(400).json({
+                message: "Invalid event ID",
+            });
+        }
+
+        const event = await Event.findOneAndDelete({ id });
 
         if (!event) {
             return res.status(404).json({
@@ -131,7 +158,7 @@ const deleteEvent = async (req, res) => {
             message: "Event deleted successfully",
         });
     } catch (error) {
-        console.error(error);
+        console.error("Error deleting event:", error);
 
         res.status(500).json({
             message: "Failed to delete event",
