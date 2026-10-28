@@ -3,18 +3,27 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* =========================================
+   GLOBAL HTML STYLING
+========================================= */
+
 html {
   scroll-behavior: smooth;
-  scrollbar-color: #2a2c30 #101112;
+  scrollbar-width: none;
 }
 
 body {
   margin: 0;
   font-family: Tahoma, Arial, sans-serif;
+
   transition:
     background-color 0.5s ease,
     color 0.5s ease;
 }
+
+/* =========================================
+   GLOBAL RESET
+========================================= */
 
 * {
   box-sizing: border-box;
@@ -25,7 +34,126 @@ a {
   -webkit-tap-highlight-color: transparent;
 }
 
-::selection {
+*::selection {
   background: #7c6cff;
   color: #ffffff;
+}
+
+/* =========================================
+   GLOBAL SCROLLBAR — HIDDEN WHEN IDLE
+========================================= */
+
+* {
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 999px;
+}
+
+/* =========================================
+   SCROLLBAR VISIBLE WHILE SCROLLING
+========================================= */
+
+html.is-scrolling {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e5e5 transparent;
+}
+
+html.is-scrolling * {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e5e5 transparent;
+}
+
+html.is-scrolling *::-webkit-scrollbar {
+  display: block;
+  width: 3px;
+  height: 3px;
+}
+
+html.is-scrolling *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.is-scrolling *::-webkit-scrollbar-thumb {
+  background-color: #e5e5e5;
+  border-radius: 999px;
+}
+
+/* Light theme hover */
+html.is-scrolling *::-webkit-scrollbar-thumb:hover {
+  background-color: #d4d4d4;
+}
+
+/* =========================================
+   DARK THEME SCROLLBAR
+========================================= */
+
+html.dark,
+html.dark * {
+  scrollbar-color: transparent transparent;
+}
+
+/* Show dark scrollbar while scrolling */
+html.dark.is-scrolling,
+html.dark.is-scrolling * {
+  scrollbar-width: thin;
+  scrollbar-color: #454545 transparent;
+}
+
+html.dark.is-scrolling *::-webkit-scrollbar {
+  display: block;
+  width: 3px;
+  height: 3px;
+}
+
+html.dark.is-scrolling *::-webkit-scrollbar-thumb {
+  background-color: #454545;
+  border-radius: 999px;
+}
+
+/* Dark theme hover */
+html.dark.is-scrolling *::-webkit-scrollbar-thumb:hover {
+  background-color: #606060;
+}
+
+/* =========================================
+   SUPPORT NESTED DARK-THEME CONTAINERS
+========================================= */
+
+.dark * {
+  scrollbar-color: transparent transparent;
+}
+
+.dark.is-scrolling,
+.dark.is-scrolling * {
+  scrollbar-width: thin;
+  scrollbar-color: #454545 transparent;
+}
+
+.dark.is-scrolling *::-webkit-scrollbar {
+  display: block;
+  width: 3px;
+  height: 3px;
+}
+
+.dark.is-scrolling *::-webkit-scrollbar-thumb {
+  background-color: #454545;
+  border-radius: 999px;
+}
+
+.dark.is-scrolling *::-webkit-scrollbar-thumb:hover {
+  background-color: #606060;
 }

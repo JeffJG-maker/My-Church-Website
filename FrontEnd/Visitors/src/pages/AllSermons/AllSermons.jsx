@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 
 import SermonHeader from "./components/SermonHeader";
 
@@ -542,13 +543,13 @@ function AllSermons() {
 
                 }
 
-                className="group relative w-full overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-left transition duration-300 hover:-translate-y-1 hover:bg-stone-200 dark:hover:bg-[#202226] hover:shadow-xl hover:shadow-black/20"
+                className="group relative w-full overflow-hidden rounded-2xl border border-black/[0.06] bg-white text-left shadow-[0_8px_28px_rgba(0,0,0,0.035)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(0,0,0,0.10)] dark:border-white/[0.07] dark:bg-[#181a1b] dark:hover:bg-[#202122] dark:hover:shadow-black/30"
 
             >
 
                 {/* THUMBNAIL */}
 
-                <div className="relative aspect-[4/3] overflow-hidden">
+                <div className={`relative overflow-hidden ${compact ? "h-full min-h-[190px] lg:min-h-0" : "aspect-[4/3]"}`}>
 
                     {sermon.thumbnail ? (
 
@@ -566,7 +567,7 @@ function AllSermons() {
 
                         <div className="absolute inset-0 flex items-center justify-center border border-stone-200 bg-white dark:border-[#27292d] dark:bg-[#141618]">
 
-                            <i className="fa-solid fa-video text-3xl text-[#8b1e2d] dark:text-[#d8a0a6]" />
+                            <i className="fa-solid fa-video text-3xl text-[#D91620] dark:text-[#f87171]" />
 
                         </div>
 
@@ -606,7 +607,7 @@ function AllSermons() {
 
                         <div className="flex items-center gap-2 text-[11px] font-semibold">
 
-                            <span className="text-[#8b1e2d] dark:text-[#d8a0a6]">
+                            <span className="text-[#D91620] dark:text-[#f87171]">
 
                                 {sermon.category}
 
@@ -652,7 +653,7 @@ function AllSermons() {
 
                         <div className="mt-2 flex items-center gap-2 text-xs text-white/70">
 
-                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-[#8b1e2d] dark:text-[#d8a0a6] backdrop-blur-sm">
+                            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-[#D91620] dark:text-[#f87171] backdrop-blur-sm">
 
                                 <i className="fa-solid fa-user text-[9px]" />
 
@@ -716,7 +717,7 @@ function AllSermons() {
 
                         <div className="flex items-center gap-2">
 
-                            <span className="h-6 w-1 rounded-full bg-[#8b1e2d]" />
+                            <span className="h-6 w-1 rounded-full bg-[#D91620]" />
 
                             <h2 className="text-xl font-black text-slate-900 dark:text-white sm:text-2xl">
 
@@ -762,7 +763,7 @@ function AllSermons() {
 
                             }}
 
-                            className="hidden items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-slate-600 dark:text-[#9ca3af] transition hover:border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] hover:text-[#8b1e2d] dark:text-[#d8a0a6] sm:inline-flex"
+                            className="hidden items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-slate-600 dark:text-[#9ca3af] transition hover:border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] hover:text-[#D91620] dark:text-[#f87171] sm:inline-flex"
 
                         >
 
@@ -776,24 +777,23 @@ function AllSermons() {
 
                 </div>
 
-                <div
-
-                    className={`grid gap-5 ${gridClass}`}
-
-                >
-
-                    {items.map((sermon) => (
-
-                        <SermonCard
-
+                <div className={`grid gap-5 ${gridClass}`}>
+                    {items.map((sermon, index) => (
+                        <motion.div
                             key={sermon.id}
-
-                            sermon={sermon}
-
-                        />
-
+                            initial={{ opacity: 0, y: 42, scale: 0.975, filter: "blur(4px)" }}
+                            whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+                            viewport={{ once: true, amount: 0.16 }}
+                            transition={{
+                                // Each row arrives together, with a noticeable pause before the next row.
+                                duration: 0.78,
+                                delay: Math.floor(index / columns) * 0.32,
+                                ease: [0.22, 1, 0.36, 1],
+                            }}
+                        >
+                            <SermonCard sermon={sermon} />
+                        </motion.div>
                     ))}
-
                 </div>
 
             </section>
@@ -804,7 +804,7 @@ function AllSermons() {
 
     return (
 
-        <div data-theme={theme} className="min-h-screen bg-stone-50 text-slate-900 transition-colors duration-300 dark:bg-[#101112] dark:text-white">
+        <div data-theme={theme} className="min-h-screen bg-[#faf9f7] text-[#171717] transition-colors duration-300 dark:bg-[#101112] dark:text-white">
 
             <SermonHeader
 
@@ -896,7 +896,7 @@ function AllSermons() {
 
                     onClick={() => setIsSidebarOpen(true)}
 
-                    className="fixed left-4 top-[92px] z-50 hidden h-10 w-10 items-center justify-center rounded-xl border border-[#27292d] border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-600 dark:text-[#9ca3af] shadow-lg transition-all duration-300 hover:bg-stone-200 dark:bg-[#202226] hover:text-[#8b1e2d] dark:text-[#d8a0a6] lg:flex"
+                    className="fixed left-4 top-[92px] z-50 hidden h-10 w-10 items-center justify-center rounded-xl border border-[#27292d] border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-600 dark:text-[#9ca3af] shadow-lg transition-all duration-300 hover:bg-stone-200 dark:bg-[#202226] hover:text-[#D91620] dark:text-[#f87171] lg:flex"
 
                     aria-label="Open sidebar"
 
@@ -948,21 +948,26 @@ function AllSermons() {
 
                 ) : (
 
-                    <section className="min-h-screen px-4 py-8 sm:px-6 lg:px-10">
+                    <section className="min-h-screen px-4 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-12">
 
-                        <div className="mx-auto max-w-7xl">
+                        <div className="mx-auto w-full max-w-[1440px]">
 
                             {/* INTRO */}
 
-                            <div className="mb-8">
+                            <motion.div
+                                initial={{ opacity: 0, y: 16 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                                className="mb-7"
+                            >
 
                                 <div className="flex items-center gap-3">
 
-                                    <span className="h-8 w-1 rounded-full bg-[#8b1e2d]" />
+                                    <span className="h-8 w-1 rounded-full bg-[#D91620]" />
 
                                     <div>
 
-                                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#8b1e2d] dark:text-[#d8a0a6]">
+                                        <p className="inline-flex rounded-full border border-[#D91620]/15 bg-[#D91620]/[0.06] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#D91620] dark:border-white/10 dark:bg-white/[0.045] dark:text-[#ff858b]">
 
                                             Living Faith Church Iguosa
 
@@ -994,30 +999,33 @@ function AllSermons() {
 
                                 </p>
 
-                            </div>
+                            </motion.div>
 
                             {/* CATEGORY NAVIGATION */}
 
-                            <div className="mb-8 rounded-2xl border border-stone-200 bg-white dark:border-[#27292d] dark:bg-[#141618] p-4 sm:p-5">
+                            <motion.div
+                                initial={{ opacity: 0, y: 18 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+                                className="relative mb-8 overflow-hidden rounded-[1.8rem] border border-black/[0.055] bg-white/90 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.045)] backdrop-blur-xl before:absolute before:left-0 before:top-7 before:h-14 before:w-[3px] before:rounded-r-full before:bg-[#D91620] dark:border-white/[0.07] dark:bg-[#151617] sm:p-5 lg:p-6"
+                            >
 
-                                <div className="flex flex-col gap-4">
+                                <div className="relative flex flex-col gap-5">
 
-                                    <div className="flex items-center justify-between gap-4">
+                                    <div className="flex flex-wrap items-center justify-between gap-3">
 
-                                        <div>
-
-                                            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[#6f737a]">
-
-                                                Browse Categories
-
-                                            </p>
-
-                                            <p className="mt-1 text-sm text-slate-600 dark:text-[#9ca3af]">
-
-                                                Find messages by topic
-
-                                            </p>
-
+                                        <div className="flex items-start gap-3">
+                                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#D91620]/[0.09] text-[#D91620] dark:bg-[#D91620]/15 dark:text-[#ff7279]">
+                                                <i className="fa-solid fa-layer-group text-sm" />
+                                            </span>
+                                            <div>
+                                                <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#D91620] dark:text-[#ff7279]">
+                                                    Explore the collection
+                                                </p>
+                                                <p className="mt-1 text-sm text-slate-600 dark:text-[#a1a1aa]">
+                                                    Choose a topic or format to find a message.
+                                                </p>
+                                            </div>
                                         </div>
 
                                         {extraCategories.length >
@@ -1038,7 +1046,7 @@ function AllSermons() {
 
                                                     }
 
-                                                    className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] px-3 py-2 text-xs font-bold text-slate-700 dark:text-[#d1d5db] transition hover:bg-stone-200 dark:bg-[#202226] hover:text-[#8b1e2d] dark:text-[#d8a0a6]"
+                                                    className="inline-flex shrink-0 items-center gap-2 rounded-full border border-black/[0.07] bg-black/[0.025] px-4 py-2.5 text-xs font-bold text-slate-700 transition hover:border-[#D91620]/30 hover:bg-[#D91620]/[0.06] hover:text-[#D91620] dark:border-white/[0.09] dark:bg-white/[0.035] dark:text-[#d4d4d8] dark:hover:border-[#ff7279]/30 dark:hover:text-[#ff7279]"
 
                                                 >
 
@@ -1088,7 +1096,7 @@ function AllSermons() {
 
                                                     }
 
-                                                    className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-600 dark:text-[#9ca3af] transition hover:bg-stone-200 dark:bg-[#202226] hover:text-[#8b1e2d] dark:text-[#d8a0a6] sm:flex"
+                                                    className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-600 dark:text-[#9ca3af] transition hover:bg-stone-200 dark:bg-[#202226] hover:text-[#D91620] dark:text-[#f87171] sm:flex"
 
                                                 >
 
@@ -1118,7 +1126,7 @@ function AllSermons() {
 
                                         >
 
-                                            <div className="flex min-w-max items-center gap-2">
+                                            <div className="flex min-w-max items-center gap-2.5 py-1">
 
                                                 {visibleCategories.map(
 
@@ -1148,15 +1156,7 @@ function AllSermons() {
 
                                                             }
 
-                                                            className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition ${selectedCategory ===
-
-                                                                category
-
-                                                                ? "bg-[#8b1e2d] text-white shadow-lg shadow-[#8b1e2d]/15"
-
-                                                                : "border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-600 dark:text-[#9ca3af] hover:bg-stone-300 dark:bg-[#27292d] hover:text-white"
-
-                                                                }`}
+                                                            className={`group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-3 text-[13px] font-bold tracking-[-0.01em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D91620]/50 ${selectedCategory === category ? "bg-[#D91620] text-white shadow-[0_8px_22px_rgba(217,22,32,0.22)] ring-1 ring-[#D91620]/20" : "bg-white/70 text-stone-600 ring-1 ring-black/[0.07] hover:-translate-y-0.5 hover:bg-white hover:text-[#D91620] hover:ring-[#D91620]/25 dark:bg-white/[0.035] dark:text-[#c4c4c8] dark:ring-white/[0.08] dark:hover:bg-white/[0.07] dark:hover:text-[#ff858b]"}`}
 
                                                         >
 
@@ -1216,15 +1216,7 @@ function AllSermons() {
 
                                                                         }
 
-                                                                        className={`shrink-0 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${selectedCategory ===
-
-                                                                            category
-
-                                                                            ? "bg-[#8b1e2d] text-white"
-
-                                                                            : "border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-600 dark:text-[#9ca3af] hover:bg-stone-300 dark:bg-[#27292d] hover:text-white"
-
-                                                                            }`}
+                                                                        className={`group inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-3 text-[13px] font-bold tracking-[-0.01em] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D91620]/50 ${selectedCategory === category ? "bg-[#D91620] text-white shadow-[0_8px_22px_rgba(217,22,32,0.22)] ring-1 ring-[#D91620]/20" : "bg-white/70 text-stone-600 ring-1 ring-black/[0.07] hover:-translate-y-0.5 hover:bg-white hover:text-[#D91620] hover:ring-[#D91620]/25 dark:bg-white/[0.035] dark:text-[#c4c4c8] dark:ring-white/[0.08] dark:hover:bg-white/[0.07] dark:hover:text-[#ff858b]"}`}
 
                                                                     >
 
@@ -1268,7 +1260,7 @@ function AllSermons() {
 
                                                     }
 
-                                                    className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-600 dark:text-[#9ca3af] transition hover:bg-stone-200 dark:bg-[#202226] hover:text-[#8b1e2d] dark:text-[#d8a0a6] sm:flex"
+                                                    className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-600 dark:text-[#9ca3af] transition hover:bg-stone-200 dark:bg-[#202226] hover:text-[#D91620] dark:text-[#f87171] sm:flex"
 
                                                 >
 
@@ -1282,9 +1274,14 @@ function AllSermons() {
 
                                     {/* MEDIA FILTER */}
 
-                                    <div className="pt-4">
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.4, delay: 0.2 }}
+                                        className="border-t border-black/[0.055] pt-4 dark:border-white/[0.07]"
+                                    >
 
-                                        <div className="flex flex-wrap items-center gap-2">
+                                        <div className="flex flex-wrap items-center gap-2.5">
 
                                             <span className="mr-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-[#6f737a]">
 
@@ -1320,7 +1317,7 @@ function AllSermons() {
 
                                                             type
 
-                                                            ? "bg-[#8b1e2d]/15 text-[#8b1e2d] dark:text-[#d8a0a6]"
+                                                            ? "bg-[#D91620]/15 text-[#D91620] dark:text-[#f87171]"
 
                                                             : "text-slate-600 dark:text-[#9ca3af] hover:border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] hover:text-white"
 
@@ -1358,11 +1355,11 @@ function AllSermons() {
 
                                         </div>
 
-                                    </div>
+                                    </motion.div>
 
                                 </div>
 
-                            </div>
+                            </motion.div>
 
                             {/* RESULTS COUNT */}
 
@@ -1454,7 +1451,7 @@ function AllSermons() {
 
                             ) : fetchError ? (
 
-                                <div className="rounded-3xl border border-stone-200 bg-white dark:border-[#27292d] dark:bg-[#141618] px-6 py-16 text-center">
+                                <div className="rounded-3xl border border-black/[0.06] bg-white px-6 py-16 text-center shadow-[0_12px_40px_rgba(0,0,0,0.035)] dark:border-white/[0.07] dark:bg-[#151617]">
 
                                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-400">
 
@@ -1488,7 +1485,7 @@ function AllSermons() {
 
                                         }
 
-                                        className="mt-6 rounded-xl bg-[#8b1e2d] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#a52a3a]"
+                                        className="mt-6 rounded-xl bg-[#D91620] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#b8121b]"
 
                                     >
 
@@ -1508,24 +1505,27 @@ function AllSermons() {
 
                                     {featuredSermon && (
 
-                                        <section className="flex h-[75vh] min-h-[520px] flex-col">
+                                        <motion.section
+                                            initial={{ opacity: 0, y: 22 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+                                            className="flex flex-col gap-5 lg:h-[85vh] lg:min-h-[560px] lg:max-h-[860px]"
+                                        >
 
                                             {/* SECTION TITLE */}
 
-                                            <div className="mb-5 flex shrink-0 items-end justify-between gap-4">
+                                            <div className="flex shrink-0 items-end justify-between gap-4 pb-1">
 
                                                 <div>
 
-                                                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#8b1e2d] dark:text-[#d8a0a6]">
-
-                                                        Featured
-
-                                                    </p>
-
-                                                    <h2 className="mt-1 text-2xl font-black text-slate-900 dark:text-white sm:text-3xl">
-
+                                                    <div className="mb-2 flex items-center gap-2.5">
+                                                        <span className="h-1 w-8 rounded-full bg-[#E31B23]" />
+                                                        <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#E31B23] dark:text-[#F7941D]">
+                                                            Featured message
+                                                        </p>
+                                                    </div>
+                                                    <h2 className="text-2xl font-black tracking-tight text-[#171717] dark:text-white sm:text-3xl lg:text-[2rem]">
                                                         Today's Message
-
                                                     </h2>
 
                                                 </div>
@@ -1534,25 +1534,19 @@ function AllSermons() {
 
                                             {/* FEATURED CARDS */}
 
-                                            <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[1.6fr_1fr]">
+                                            <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
 
                                                 {/* LARGE FEATURED CARD */}
 
-                                                <button
-
+                                                <motion.button
                                                     type="button"
-
-                                                    onClick={() =>
-
-                                                        handleSermonClick(
-
-                                                            featuredSermon
-
-                                                        )
-
-                                                    }
-
-                                                    className="group relative min-h-0 overflow-hidden rounded-3xl border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-left transition-colors duration-300 hover:bg-stone-200 dark:hover:bg-[#202226]"
+                                                    initial={{ opacity: 0, scale: 0.985 }}
+                                                    animate={{ opacity: 1, scale: 1 }}
+                                                    transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                                                    whileHover={{ y: -4 }}
+                                                    whileTap={{ scale: 0.995 }}
+                                                    onClick={() => handleSermonClick(featuredSermon)}
+                                                    className="group relative min-h-[300px] overflow-hidden rounded-[1.75rem] border border-black/[0.06] bg-stone-100 text-left shadow-[0_18px_55px_rgba(0,0,0,0.09)] transition-shadow duration-500 hover:shadow-[0_28px_70px_rgba(0,0,0,0.18)] dark:border-white/[0.07] dark:bg-[#181a1d] lg:min-h-0"
 
                                                 >
 
@@ -1582,21 +1576,15 @@ function AllSermons() {
 
                                                     )}
 
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-black/5 transition-opacity duration-500 group-hover:from-black/90" />
 
-                                                    <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+                                                    <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 lg:p-9">
 
-                                                        <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#8b1e2d] dark:text-[#d8a0a6]">
-
-                                                            {
-
-                                                                featuredSermon.category
-
-                                                            }
-
+                                                        <span className="inline-flex rounded-full border border-white/20 bg-black/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/90 backdrop-blur-md">
+                                                            {featuredSermon.category}
                                                         </span>
 
-                                                        <h3 className="mt-2 max-w-2xl text-2xl font-black text-white sm:text-3xl">
+                                                        <h3 className="mt-3 max-w-2xl text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl lg:text-4xl">
 
                                                             {
 
@@ -1618,11 +1606,19 @@ function AllSermons() {
 
                                                     </div>
 
-                                                </button>
+                                                </motion.button>
 
                                                 {/* SUPPORTING FEATURED CARDS */}
 
-                                                <div className="grid min-h-0 gap-5 sm:grid-cols-2 lg:grid-cols-1">
+                                                <motion.div
+                                                    initial="hidden"
+                                                    animate="visible"
+                                                    variants={{
+                                                        hidden: { opacity: 0 },
+                                                        visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.18 } },
+                                                    }}
+                                                    className="grid min-h-0 auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-1"
+                                                >
 
                                                     {featuredSecondarySermons.map(
 
@@ -1632,33 +1628,26 @@ function AllSermons() {
 
                                                         ) => (
 
-                                                            <SermonCard
-
-                                                                key={
-
-                                                                    sermon.id
-
-                                                                }
-
-                                                                sermon={
-
-                                                                    sermon
-
-                                                                }
-
-                                                                compact
-
-                                                            />
+                                                            <motion.div
+                                                                key={sermon.id}
+                                                                variants={{
+                                                                    hidden: { opacity: 0, y: 18 },
+                                                                    visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
+                                                                }}
+                                                                className="min-h-0 [&>button]:h-full"
+                                                            >
+                                                                <SermonCard sermon={sermon} compact />
+                                                            </motion.div>
 
                                                         )
 
                                                     )}
 
-                                                </div>
+                                                </motion.div>
 
                                             </div>
 
-                                        </section>
+                                        </motion.section>
 
                                     )}
 
@@ -1784,7 +1773,7 @@ function AllSermons() {
 
                             ) : (
 
-                                <div className="rounded-3xl border border-stone-200 bg-white dark:border-[#27292d] dark:bg-[#141618] px-6 py-16 text-center">
+                                <div className="rounded-3xl border border-black/[0.06] bg-white px-6 py-16 text-center shadow-[0_12px_40px_rgba(0,0,0,0.035)] dark:border-white/[0.07] dark:bg-[#151617]">
 
                                     <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-stone-200 bg-stone-100 dark:border-[#27292d] dark:bg-[#181a1d] text-slate-500 dark:text-[#6f737a]">
 
@@ -1828,7 +1817,7 @@ function AllSermons() {
 
                                         }}
 
-                                        className="mt-6 rounded-xl bg-[#8b1e2d] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#a52a3a]"
+                                        className="mt-6 rounded-xl bg-[#D91620] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#b8121b]"
 
                                     >
 

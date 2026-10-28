@@ -1,999 +1,758 @@
-import { useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useTheme } from "../../../context/ThemeContext";
 
+const categories = [
+    { name: "Prayer", icon: "fa-hands-praying" },
+    { name: "Faith", icon: "fa-heart" },
+    { name: "Wisdom", icon: "fa-lightbulb" },
+    { name: "Consecration", icon: "fa-fire-flame-curved" },
+];
 
+const mainLinks = [
+    {
+        id: "all",
+        label: "All Sermons",
+        icon: "fa-layer-group",
+    },
+    {
+        id: "latest",
+        label: "Latest Sermons",
+        icon: "fa-clock",
+    },
+    {
+        id: "popular",
+        label: "Popular Sermons",
+        icon: "fa-fire",
+    },
+];
+
+const mediaTypes = [
+    { label: "All", icon: "fa-layer-group" },
+    { label: "Video", icon: "fa-video" },
+    { label: "Audio", icon: "fa-headphones" },
+];
 
 function SermonSidebar({
-
     mobile = false,
-
     isOpen = true,
-
     onClose,
-
     selectedCategory,
-
     setSelectedCategory,
-
     selectedType,
-
     setSelectedType,
-
     onLatestClick,
-
     onPopularClick,
-
 }) {
-
     const { theme } = useTheme();
-
-
 
     const [showCategories, setShowCategories] = useState(true);
     const [activeNav, setActiveNav] = useState("all");
+    const [isScrolling, setIsScrolling] = useState(false);
 
-
+    const scrollContainerRef = useRef(null);
+    const scrollTimeoutRef = useRef(null);
 
     const isDark = theme === "dark";
 
+    const colors = {
+        background: isDark ? "bg-[#101112]" : "bg-white",
+        text: isDark ? "text-[#f5f5f5]" : "text-[#171717]",
+        muted: isDark ? "text-[#a1a1aa]" : "text-[#737373]",
+        border: isDark ? "border-white/[0.08]" : "border-black/[0.07]",
+        hover: isDark
+            ? "hover:bg-white/[0.045]"
+            : "hover:bg-black/[0.035]",
+        active: isDark
+            ? "bg-[#E31B23]/[0.12]"
+            : "bg-[#E31B23]/[0.06]",
+        activeText: isDark ? "text-white" : "text-[#171717]",
+    };
 
+    // Show the scrollbar during scrolling, then hide it when scrolling stops.
+    useEffect(() => {
+        const scrollContainer = scrollContainerRef.current;
+
+        if (!scrollContainer) return;
+
+        const handleScroll = () => {
+            setIsScrolling(true);
+
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current);
+            }
+
+            scrollTimeoutRef.current = setTimeout(() => {
+                setIsScrolling(false);
+                scrollTimeoutRef.current = null;
+            }, 800);
+        };
+
+        scrollContainer.addEventListener("scroll", handleScroll, {
+            passive: true,
+        });
+
+        return () => {
+            scrollContainer.removeEventListener("scroll", handleScroll);
+
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    // Clear the scrollbar state when the sidebar closes.
+    useEffect(() => {
+        if (!isOpen) {
+            setIsScrolling(false);
+
+            if (scrollTimeoutRef.current) {
+                clearTimeout(scrollTimeoutRef.current);
+                scrollTimeoutRef.current = null;
+            }
+        }
+    }, [isOpen]);
+
+    const closeOnMobile = () => {
+        if (mobile && onClose) {
+            onClose();
+        }
+    };
 
     const handleCategoryClick = (category) => {
-
         setActiveNav("category");
         setSelectedCategory(category);
-
         setSelectedType("All");
 
-
-
-        if (mobile && onClose) {
-
-            onClose();
-
-        }
-
+        closeOnMobile();
     };
-
-
 
     const handleAllSermons = () => {
-
         setActiveNav("all");
         setSelectedCategory("All");
-
         setSelectedType("All");
 
-
-
-        if (mobile && onClose) {
-
-            onClose();
-
-        }
-
+        closeOnMobile();
     };
-
-
 
     const handleLatest = () => {
-
         setActiveNav("latest");
+
         if (onLatestClick) {
-
             onLatestClick();
-
         }
 
-
-
-        if (mobile && onClose) {
-
-            onClose();
-
-        }
-
+        closeOnMobile();
     };
-
-
 
     const handlePopular = () => {
-
         setActiveNav("popular");
+
         if (onPopularClick) {
-
             onPopularClick();
-
         }
 
-
-
-        if (mobile && onClose) {
-
-            onClose();
-
-        }
-
+        closeOnMobile();
     };
 
+    const handleMediaType = (type) => {
+        setActiveNav("all");
+        setSelectedType(type);
 
+        closeOnMobile();
+    };
 
-    const categories = [
-
-        "Prayer",
-
-        "Faith",
-
-        "Wisdom",
-
-        "Consecration",
-
-    ];
-
-
+    const handleNavigation = (id) => {
+        if (id === "all") {
+            handleAllSermons();
+        } else if (id === "latest") {
+            handleLatest();
+        } else if (id === "popular") {
+            handlePopular();
+        }
+    };
 
     return (
-
-        <aside
-
-            className={`
-
-                fixed
-
-                left-0
-
-                top-[76px]
-
-                z-50
-
-                flex
-
-                h-[calc(100vh-76px)]
-
-                flex-col
-
-                border-r
-
-                shadow-2xl
-
-                transition-transform
-
-                duration-500
-
-                ease-[cubic-bezier(0.22,1,0.36,1)]
-
-                backdrop-blur-xl
-
-                ${isDark
-
-                    ? "border-[#27292d] bg-[#141618]/95 text-white"
-
-                    : "border-black/5 bg-white/75 text-[#171717]"
-
-                }
-
-                ${mobile ? "w-72" : "w-64"}
-
-                ${isOpen
-
-                    ? "translate-x-0"
-
-                    : "-translate-x-full"
-
-                }
-
-                ${mobile ? "lg:hidden" : "hidden lg:flex"}
-
-            `}
-
-        >
-
-            {/* HEADER */}
-
-
-
-            <div
-
-                className={`
-
-                    flex items-center justify-between
-
-                    border-b px-4 py-4
-
-                    ${isDark
-
-                        ? "border-[#27292d]"
-
-                        : "border-black/5"
-
+        <>
+            {/* THIN, AUTO-HIDING SCROLLBAR */}
+            <style>
+                {`
+                    .sermon-sidebar-scroll {
+                        scrollbar-width: thin;
+                        scrollbar-color: transparent transparent;
                     }
 
+                    .sermon-sidebar-scroll::-webkit-scrollbar {
+                        width: 2px;
+                        height: 2px;
+                    }
+
+                    .sermon-sidebar-scroll::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+
+                    .sermon-sidebar-scroll::-webkit-scrollbar-thumb {
+                        background-color: transparent;
+                        border-radius: 999px;
+                        transition: background-color 200ms ease;
+                    }
+
+                    .sermon-sidebar-scroll.is-scrolling {
+                        scrollbar-color: rgba(227, 27, 35, 0.65) transparent;
+                    }
+
+                    .sermon-sidebar-scroll.is-scrolling::-webkit-scrollbar-thumb {
+                        background-color: rgba(227, 27, 35, 0.65);
+                    }
+
+                    .sermon-sidebar-scroll.is-scrolling::-webkit-scrollbar-thumb:hover {
+                        background-color: rgba(227, 27, 35, 0.9);
+                    }
+
+                    @media (prefers-reduced-motion: reduce) {
+                        .sermon-sidebar-scroll::-webkit-scrollbar-thumb {
+                            transition: none;
+                        }
+                    }
                 `}
+            </style>
 
+            <aside
+                aria-label="Sermon navigation"
+                className={`
+                    fixed inset-y-0 left-0 z-50
+                    flex h-screen flex-col
+                    overflow-hidden
+                    ${colors.background}
+                    ${colors.text}
+                    ${mobile
+                        ? "w-[min(86vw,320px)] lg:hidden"
+                        : "hidden w-[272px] lg:flex"
+                    }
+                    ${isOpen
+                        ? "translate-x-0"
+                        : "-translate-x-full"
+                    }
+                    ${isDark
+                        ? "shadow-[18px_0_50px_rgba(0,0,0,0.24)]"
+                        : "shadow-[12px_0_40px_rgba(0,0,0,0.055)]"
+                    }
+                    transition-transform duration-500
+                    ease-[cubic-bezier(0.22,1,0.36,1)]
+                `}
             >
-
-                <div>
-
-                    <p
-
-                        className="
-
-                            text-[10px]
-
-                            font-semibold
-
-                            uppercase
-
-                            tracking-[0.2em]
-
-                            text-[#E31B23]
-
-                        "
-
-                    >
-
-                        Sermon Library
-
-                    </p>
-
-
-
-                    <h2
-
-                        className={`
-
-                            mt-1 text-sm font-semibold
-
-                            ${isDark
-
-                                ? "text-white"
-
-                                : "text-[#171717]"
-
-                            }
-
-                        `}
-
-                    >
-
-                        Navigation
-
-                    </h2>
-
-                </div>
-
-
-
-                {onClose && (
-
-                    <button
-
-                        type="button"
-
-                        onClick={onClose}
-
-                        className={`
-
-                            flex h-8 w-8
-
-                            items-center justify-center
-
-                            rounded-lg border
-
-                            transition-all duration-300
-
-                            ${isDark
-
-                                ? "border-[#27292d] bg-[#181a1d] text-[#9ca3af] hover:border-[#E31B23]/30 hover:bg-[#E31B23]/10 hover:text-[#F7941D]"
-
-                                : "border-black/10 bg-black/[0.025] text-gray-500 hover:border-[#E31B23]/20 hover:bg-[#E31B23]/8 hover:text-[#E31B23]"
-
-                            }
-
-                        `}
-
-                        aria-label="Close sidebar"
-
-                    >
-
-                        <i
-
-                            className={`fa-solid ${mobile
-
-                                ? "fa-xmark"
-
-                                : "fa-chevron-left"
-
-                                } text-xs`}
-
-                        />
-
-                    </button>
-
-                )}
-
-            </div>
-
-
-
-            {/* NAVIGATION */}
-
-
-
-            <div className="flex-1 overflow-y-auto px-3 py-4">
-
-
-
-                {/* MAIN LINKS */}
-
-
-
-                <div className="space-y-1">
-
-
-
-                    {/* ALL SERMONS */}
-
-
-
-                    <button
-
-                        type="button"
-
-                        onClick={handleAllSermons}
-
-                        className={`
-
-                            flex w-full items-center gap-3
-
-                            rounded-lg px-3 py-2.5
-
-                            text-left text-sm
-
-                            transition-all duration-300
-
-                            ${activeNav === "all"
-
-                                ? isDark
-
-                                    ? "bg-[#E31B23]/10 text-[#F7941D]"
-
-                                    : "bg-[#E31B23]/8 text-[#C9151C]"
-
-                                : isDark
-
-                                    ? "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
-
-                                    : "text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
-
-                            }
-
-                        `}
-
-                    >
-
-                        <i
-
-                            className={`
-
-                                fa-solid fa-house w-4 text-xs
-
-                                ${activeNav === "all"
-
-                                    ? "text-[#E31B23]"
-
-                                    : ""
-
-                                }
-
-                            `}
-
-                        />
-
-
-
-                        <span>All Sermons</span>
-
-                    </button>
-
-
-
-                    {/* LATEST SERMONS */}
-
-
-
-                    <button
-
-                        type="button"
-
-                        onClick={handleLatest}
-
-                        className={`
-
-                            flex w-full items-center gap-3
-
-                            rounded-lg px-3 py-2.5
-
-                            text-left text-sm
-
-                            transition-all duration-300
-
-                            ${activeNav === "latest"
-
-                                ? isDark
-
-                                    ? "border-l-2 border-[#d8a0a6] bg-[#27292d] font-semibold text-white"
-
-                                    : "border-l-2 border-[#8b1e2d] bg-[#8b1e2d]/10 font-semibold text-[#8b1e2d]"
-
-                                : isDark
-
-                                    ? "border-l-2 border-transparent text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
-
-                                    : "border-l-2 border-transparent text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
-
-                            }
-
-                        `}
-
-                    >
-
-                        <i className="fa-solid fa-clock w-4 text-xs" />
-
-
-
-                        <span>Latest Sermons</span>
-
-                    </button>
-
-
-
-                    {/* POPULAR SERMONS */}
-
-
-
-                    <button
-
-                        type="button"
-
-                        onClick={handlePopular}
-
-                        className={`
-
-                            flex w-full items-center gap-3
-
-                            rounded-lg px-3 py-2.5
-
-                            text-left text-sm
-
-                            transition-all duration-300
-
-                            ${activeNav === "popular"
-
-                                ? isDark
-
-                                    ? "border-l-2 border-[#d8a0a6] bg-[#27292d] font-semibold text-white"
-
-                                    : "border-l-2 border-[#8b1e2d] bg-[#8b1e2d]/10 font-semibold text-[#8b1e2d]"
-
-                                : isDark
-
-                                    ? "border-l-2 border-transparent text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
-
-                                    : "border-l-2 border-transparent text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
-
-                            }
-
-                        `}
-
-                    >
-
-                        <i className="fa-solid fa-fire w-4 text-xs" />
-
-
-
-                        <span>Popular Sermons</span>
-
-                    </button>
-
-                </div>
-
-
-
-                {/* DIVIDER */}
-
-
-
+                {/* HEADER */}
                 <div
-
                     className={`
-
-                        my-4 border-t
-
-                        ${isDark
-
-                            ? "border-[#27292d]"
-
-                            : "border-black/5"
-
-                        }
-
+                        flex shrink-0 items-center justify-between
+                        border-b px-5 py-5
+                        ${colors.border}
                     `}
-
-                />
-
-
-
-                {/* CATEGORIES */}
-
-
-
-                <div>
-
-                    <button
-
-                        type="button"
-
-                        onClick={() =>
-
-                            setShowCategories(
-
-                                (current) => !current
-
-                            )
-
-                        }
-
-                        className="flex w-full items-center justify-between px-3 py-2"
-
-                    >
-
-                        <span
-
-                            className={`
-
-                                text-[10px]
-
-                                font-semibold
-
-                                uppercase
-
-                                tracking-[0.18em]
-
-                                ${isDark
-
-                                    ? "text-[#9ca3af]"
-
-                                    : "text-gray-500"
-
-                                }
-
-                            `}
-
+                >
+                    <div>
+                        <p
+                            className="
+                                text-[10px] font-semibold
+                                uppercase tracking-[0.18em]
+                                text-[#E31B23]
+                            "
                         >
+                            Explore
+                        </p>
 
-                            Categories
+                        <h2 className="mt-1 text-lg font-semibold tracking-[-0.035em]">
+                            Sermons
+                        </h2>
+                    </div>
 
-                        </span>
-
-
-
-                        <i
-
+                    {onClose && (
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            aria-label="Close sidebar"
                             className={`
-
-                                fa-solid
-
-                                fa-chevron-down
-
-                                text-[10px]
-
-                                transition-transform
-
-                                duration-300
-
-                                ${isDark
-
-                                    ? "text-[#9ca3af]"
-
-                                    : "text-gray-500"
-
-                                }
-
-                                ${showCategories
-
-                                    ? "rotate-0"
-
-                                    : "-rotate-90"
-
-                                }
-
+                                flex h-9 w-9 items-center justify-center
+                                rounded-xl
+                                ${colors.muted}
+                                ${colors.hover}
+                                transition-colors duration-300
                             `}
+                        >
+                            <i
+                                className={`fa-solid ${mobile
+                                        ? "fa-xmark"
+                                        : "fa-chevron-left"
+                                    } text-sm`}
+                                aria-hidden="true"
+                            />
+                        </button>
+                    )}
+                </div>
 
-                        />
+                {/* SCROLLABLE CONTENT */}
+                <div
+                    ref={scrollContainerRef}
+                    className={`
+                        sermon-sidebar-scroll
+                        min-h-0 flex-1
+                        overflow-x-hidden overflow-y-auto
+                        overscroll-contain
+                        px-4 py-6
+                        ${isScrolling ? "is-scrolling" : ""}
+                    `}
+                >
+                    {/* MAIN NAVIGATION */}
+                    <section className="mb-8">
+                        <p
+                            className={`
+                                mb-3 px-2
+                                text-[10px] font-semibold
+                                uppercase tracking-[0.16em]
+                                ${colors.muted}
+                            `}
+                        >
+                            Browse library
+                        </p>
 
-                    </button>
-
-
-
-                    <div
-
-                        className={`
-
-                            overflow-hidden
-
-                            transition-all
-
-                            duration-300
-
-                            ${showCategories
-
-                                ? "max-h-96 opacity-100"
-
-                                : "max-h-0 opacity-0"
-
-                            }
-
-                        `}
-
-                    >
-
-                        <div className="mt-1 space-y-1">
-
-                            {categories.map((category) => {
-
-                                const isActive =
-
-                                    selectedCategory === category;
-
-
+                        <div className="space-y-1">
+                            {mainLinks.map((link, index) => {
+                                const isActive = activeNav === link.id;
 
                                 return (
-
-                                    <button
-
-                                        key={category}
-
+                                    <motion.button
+                                        key={link.id}
                                         type="button"
-
                                         onClick={() =>
-
-                                            handleCategoryClick(
-
-                                                category
-
-                                            )
-
+                                            handleNavigation(link.id)
                                         }
-
+                                        initial={{ opacity: 0, x: -12 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{
+                                            duration: 0.55,
+                                            delay: 0.08 + index * 0.1,
+                                            ease: [0.22, 1, 0.36, 1],
+                                        }}
+                                        whileHover={{ x: 3 }}
+                                        whileTap={{ scale: 0.985 }}
+                                        aria-current={
+                                            isActive ? "page" : undefined
+                                        }
                                         className={`
-
-                                            flex w-full
-
+                                            group relative flex w-full
                                             items-center gap-3
-
-                                            rounded-lg px-3 py-2.5
-
-                                            text-left text-sm
-
-                                            transition-all duration-300
-
+                                            overflow-hidden rounded-xl
+                                            px-3 py-3 text-left
+                                            transition-colors duration-300
                                             ${isActive
-
-                                                ? isDark
-
-                                                    ? "bg-[#E31B23]/10 text-[#F7941D]"
-
-                                                    : "bg-[#E31B23]/8 text-[#C9151C]"
-
-                                                : isDark
-
-                                                    ? "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
-
-                                                    : "text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
-
+                                                ? `${colors.active} ${colors.activeText}`
+                                                : `${colors.muted} ${colors.hover}`
                                             }
-
                                         `}
-
                                     >
+                                        {isActive && (
+                                            <motion.span
+                                                layoutId={
+                                                    mobile
+                                                        ? "mobile-sermon-navigation"
+                                                        : "desktop-sermon-navigation"
+                                                }
+                                                className="
+                                                    absolute bottom-2.5
+                                                    left-0 top-2.5
+                                                    w-[3px] rounded-r-full
+                                                    bg-[#E31B23]
+                                                "
+                                                transition={{
+                                                    type: "spring",
+                                                    stiffness: 350,
+                                                    damping: 30,
+                                                }}
+                                            />
+                                        )}
 
                                         <span
-
                                             className={`
-
-                                                h-1.5
-
-                                                w-1.5
-
-                                                rounded-full
-
+                                                flex h-9 w-9 shrink-0
+                                                items-center justify-center
+                                                rounded-xl
+                                                transition-colors duration-300
                                                 ${isActive
-
-                                                    ? "bg-[#E31B23]"
-
+                                                    ? "bg-[#E31B23] text-white"
                                                     : isDark
-
-                                                        ? "bg-[#4b4e54]"
-
-                                                        : "bg-gray-300"
-
+                                                        ? "bg-white/[0.045] text-[#a1a1aa] group-hover:text-white"
+                                                        : "bg-black/[0.035] text-[#737373] group-hover:text-[#171717]"
                                                 }
-
                                             `}
+                                        >
+                                            <i
+                                                className={`fa-solid ${link.icon} text-[13px]`}
+                                                aria-hidden="true"
+                                            />
+                                        </span>
 
+                                        <span className="text-[13px] font-medium">
+                                            {link.label}
+                                        </span>
+
+                                        {isActive && (
+                                            <motion.i
+                                                initial={{
+                                                    opacity: 0,
+                                                    x: -3,
+                                                }}
+                                                animate={{
+                                                    opacity: 1,
+                                                    x: 0,
+                                                }}
+                                                className="
+                                                    fa-solid
+                                                    fa-chevron-right
+                                                    ml-auto text-[10px]
+                                                    text-[#E31B23]
+                                                "
+                                                aria-hidden="true"
+                                            />
+                                        )}
+                                    </motion.button>
+                                );
+                            })}
+                        </div>
+                    </section>
+
+                    {/* CATEGORY FILTER */}
+                    <section className="mb-8">
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setShowCategories((current) => !current)
+                            }
+                            aria-expanded={showCategories}
+                            className="
+                                mb-4 flex w-full items-center
+                                justify-between px-2 text-left
+                            "
+                        >
+                            <span>
+                                <span
+                                    className={`
+                                        block text-[10px] font-semibold
+                                        uppercase tracking-[0.16em]
+                                        ${colors.muted}
+                                    `}
+                                >
+                                    Discover
+                                </span>
+
+                                <span className="mt-1 block text-sm font-semibold">
+                                    Categories
+                                </span>
+                            </span>
+
+                            <motion.span
+                                animate={{
+                                    rotate: showCategories ? 0 : -90,
+                                }}
+                                transition={{ duration: 0.3 }}
+                                className={`
+                                    flex h-7 w-7 items-center
+                                    justify-center rounded-full
+                                    ${isDark
+                                        ? "bg-white/[0.05]"
+                                        : "bg-black/[0.035]"
+                                    }
+                                    ${colors.muted}
+                                `}
+                            >
+                                <i
+                                    className="fa-solid fa-chevron-down text-[10px]"
+                                    aria-hidden="true"
+                                />
+                            </motion.span>
+                        </button>
+
+                        <AnimatePresence initial={false}>
+                            {showCategories && (
+                                <motion.div
+                                    initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -8,
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                    }}
+                                    exit={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -6,
+                                    }}
+                                    transition={{
+                                        duration: 0.42,
+                                        ease: [0.22, 1, 0.36, 1],
+                                    }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {categories.map(
+                                            (category, index) => {
+                                                const isActive =
+                                                    selectedCategory ===
+                                                    category.name;
+
+                                                return (
+                                                    <motion.button
+                                                        key={category.name}
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleCategoryClick(
+                                                                category.name
+                                                            )
+                                                        }
+                                                        initial={{
+                                                            opacity: 0,
+                                                            y: 16,
+                                                        }}
+                                                        animate={{
+                                                            opacity: 1,
+                                                            y: 0,
+                                                        }}
+                                                        transition={{
+                                                            duration: 0.55,
+                                                            delay: index * 0.09,
+                                                            ease: [
+                                                                0.22,
+                                                                1,
+                                                                0.36,
+                                                                1,
+                                                            ],
+                                                        }}
+                                                        whileHover={{ y: -3 }}
+                                                        whileTap={{
+                                                            scale: 0.97,
+                                                        }}
+                                                        aria-pressed={isActive}
+                                                        className={`
+                                                            group relative flex
+                                                            min-h-[96px]
+                                                            flex-col items-start
+                                                            justify-between
+                                                            overflow-hidden
+                                                            rounded-2xl border p-3
+                                                            text-left
+                                                            transition-colors
+                                                            duration-300
+                                                            ${isActive
+                                                                ? isDark
+                                                                    ? "border-[#E31B23]/40 bg-[#E31B23]/[0.11]"
+                                                                    : "border-[#E31B23]/30 bg-[#E31B23]/[0.045]"
+                                                                : isDark
+                                                                    ? "border-white/[0.075] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04]"
+                                                                    : "border-black/[0.065] bg-[#fafafa] hover:border-black/[0.12] hover:bg-white"
+                                                            }
+                                                        `}
+                                                    >
+                                                        <span className="flex w-full items-center justify-between">
+                                                            <span
+                                                                className={`
+                                                                    flex h-8 w-8
+                                                                    items-center
+                                                                    justify-center
+                                                                    rounded-xl
+                                                                    transition-colors
+                                                                    duration-300
+                                                                    ${isActive
+                                                                        ? "bg-[#E31B23] text-white"
+                                                                        : isDark
+                                                                            ? "bg-white/[0.055] text-[#a1a1aa] group-hover:text-white"
+                                                                            : "bg-white text-[#737373] shadow-sm group-hover:text-[#E31B23]"
+                                                                    }
+                                                                `}
+                                                            >
+                                                                <i
+                                                                    className={`fa-solid ${category.icon} text-xs`}
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </span>
+
+                                                            <i
+                                                                className={`
+                                                                    fa-solid
+                                                                    fa-arrow-up-right-from-square
+                                                                    text-[9px]
+                                                                    transition-all
+                                                                    duration-300
+                                                                    ${isActive
+                                                                        ? "text-[#E31B23] opacity-100"
+                                                                        : "translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-50"
+                                                                    }
+                                                                `}
+                                                                aria-hidden="true"
+                                                            />
+                                                        </span>
+
+                                                        <span
+                                                            className={`
+                                                                mt-3 text-[11px]
+                                                                font-semibold
+                                                                leading-tight
+                                                                ${isActive
+                                                                    ? colors.text
+                                                                    : isDark
+                                                                        ? "text-[#c4c4c8]"
+                                                                        : "text-[#55555b]"
+                                                                }
+                                                            `}
+                                                        >
+                                                            {category.name}
+                                                        </span>
+
+                                                        {isActive && (
+                                                            <motion.span
+                                                                layoutId={
+                                                                    mobile
+                                                                        ? "mobile-category-indicator"
+                                                                        : "desktop-category-indicator"
+                                                                }
+                                                                className="
+                                                                    absolute bottom-0
+                                                                    left-3 right-3
+                                                                    h-[2px] rounded-full
+                                                                    bg-[#E31B23]
+                                                                "
+                                                            />
+                                                        )}
+                                                    </motion.button>
+                                                );
+                                            }
+                                        )}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </section>
+
+                    {/* MEDIA TYPE FILTER */}
+                    <section
+                        className={`
+                            border-t pt-6
+                            ${colors.border}
+                        `}
+                    >
+                        <p
+                            className={`
+                                mb-4 px-2
+                                text-[10px] font-semibold
+                                uppercase tracking-[0.16em]
+                                ${colors.muted}
+                            `}
+                        >
+                            Filter by format
+                        </p>
+
+                        <div
+                            className={`
+                                grid grid-cols-3 gap-1
+                                rounded-2xl p-1
+                                ${isDark
+                                    ? "bg-white/[0.045]"
+                                    : "bg-black/[0.035]"
+                                }
+                            `}
+                        >
+                            {mediaTypes.map((type) => {
+                                const isActive =
+                                    selectedType === type.label;
+
+                                return (
+                                    <motion.button
+                                        key={type.label}
+                                        type="button"
+                                        onClick={() =>
+                                            handleMediaType(type.label)
+                                        }
+                                        whileTap={{ scale: 0.96 }}
+                                        aria-pressed={isActive}
+                                        className={`
+                                            flex min-w-0 flex-col
+                                            items-center justify-center
+                                            gap-2 rounded-xl px-1 py-3
+                                            text-[10px] font-medium
+                                            transition-colors duration-300
+                                            ${isActive
+                                                ? isDark
+                                                    ? "bg-[#292a2d] text-white shadow-sm"
+                                                    : "bg-white text-[#171717] shadow-[0_2px_8px_rgba(0,0,0,0.07)]"
+                                                : `${colors.muted} hover:text-[#E31B23]`
+                                            }
+                                        `}
+                                    >
+                                        <i
+                                            className={`
+                                                fa-solid ${type.icon}
+                                                text-[13px]
+                                                ${isActive
+                                                    ? "text-[#E31B23]"
+                                                    : ""
+                                                }
+                                            `}
+                                            aria-hidden="true"
                                         />
 
-
-
-                                        <span>{category}</span>
-
-                                    </button>
-
+                                        <span>{type.label}</span>
+                                    </motion.button>
                                 );
-
                             })}
-
                         </div>
+                    </section>
 
-                    </div>
-
-                </div>
-
-
-
-                {/* DIVIDER */}
-
-
-
-                <div
-
-                    className={`
-
-                        my-4 border-t
-
-                        ${isDark
-
-                            ? "border-[#27292d]"
-
-                            : "border-black/5"
-
-                        }
-
-                    `}
-
-                />
-
-
-
-                {/* MEDIA TYPE */}
-
-
-
-                <div>
-
-                    <p
-
+                    {/* PUBLIC-FACING MESSAGE */}
+                    <div
                         className={`
-
-                            px-3 py-2
-
-                            text-[10px]
-
-                            font-semibold
-
-                            uppercase
-
-                            tracking-[0.18em]
-
+                            mt-8 rounded-2xl p-4
                             ${isDark
-
-                                ? "text-[#9ca3af]"
-
-                                : "text-gray-500"
-
+                                ? "bg-white/[0.035]"
+                                : "bg-[#f8f8f8]"
                             }
-
                         `}
-
                     >
+                        <div className="flex items-start gap-3">
+                            <span
+                                className="
+                                    flex h-8 w-8 shrink-0
+                                    items-center justify-center
+                                    rounded-xl bg-[#E31B23]/10
+                                    text-[#E31B23]
+                                "
+                            >
+                                <i
+                                    className="fa-solid fa-book-bible text-sm"
+                                    aria-hidden="true"
+                                />
+                            </span>
 
-                        Media Type
+                            <div>
+                                <p className="text-xs font-semibold">
+                                    Grow through the Word
+                                </p>
 
-                    </p>
-
-
-
-                    <div className="mt-1 space-y-1">
-
-                        {["All", "Video", "Audio"].map((type) => {
-
-                            const isActive =
-
-                                selectedType === type;
-
-
-
-                            return (
-
-                                <button
-
-                                    key={type}
-
-                                    type="button"
-
-                                    onClick={() => {
-
-                                        setActiveNav("all");
-                                        setSelectedType(type);
-
-
-
-                                        if (
-
-                                            mobile &&
-
-                                            onClose
-
-                                        ) {
-
-                                            onClose();
-
-                                        }
-
-                                    }}
-
+                                <p
                                     className={`
-
-                                        flex w-full
-
-                                        items-center gap-3
-
-                                        rounded-lg px-3 py-2.5
-
-                                        text-left text-sm
-
-                                        transition-all duration-300
-
-                                        ${isActive
-
-                                            ? isDark
-
-                                                ? "bg-[#E31B23]/10 text-[#F7941D]"
-
-                                                : "bg-[#E31B23]/8 text-[#C9151C]"
-
-                                            : isDark
-
-                                                ? "text-[#9ca3af] hover:bg-[#181a1d] hover:text-white"
-
-                                                : "text-gray-600 hover:bg-black/[0.035] hover:text-[#171717]"
-
-                                        }
-
+                                        mt-1 text-[11px] leading-relaxed
+                                        ${colors.muted}
                                     `}
-
                                 >
-
-                                    <i
-
-                                        className={`
-
-                                            fa-solid
-
-                                            ${type === "Video"
-
-                                                ? "fa-video"
-
-                                                : type ===
-
-                                                    "Audio"
-
-                                                    ? "fa-headphones"
-
-                                                    : "fa-layer-group"
-
-                                            }
-
-                                            w-4 text-xs
-
-                                        `}
-
-                                    />
-
-
-
-                                    <span>{type}</span>
-
-                                </button>
-
-                            );
-
-                        })}
-
+                                    Listen, learn, and put the Word into
+                                    practice.
+                                </p>
+                            </div>
+                        </div>
                     </div>
-
                 </div>
-
-            </div>
-
-
-
-            {/* FOOTER */}
-
-
-
-            <div
-
-                className={`
-
-                    border-t p-3
-
-                    ${isDark
-
-                        ? "border-[#27292d]"
-
-                        : "border-black/5"
-
-                    }
-
-                `}
-
-            >
-
-                <button
-
-                    type="button"
-
-                    onClick={() => {
-
-                        if (mobile && onClose) {
-
-                            onClose();
-
-                        }
-
-                    }}
-
-                    className={`
-
-                        flex w-full items-center gap-3
-
-                        rounded-lg px-3 py-2.5
-
-                        text-sm
-
-                        transition-all duration-300
-
-                        ${isDark
-
-                            ? "text-[#9ca3af] hover:bg-[#E31B23]/8 hover:text-[#F7941D]"
-
-                            : "text-gray-600 hover:bg-[#E31B23]/6 hover:text-[#E31B23]"
-
-                        }
-
-                    `}
-
-                >
-
-                    <i className="fa-solid fa-arrow-right-from-bracket w-4 text-xs" />
-
-
-
-                    <span>Sign Out</span>
-
-                </button>
-
-            </div>
-
-        </aside>
-
+            </aside>
+        </>
     );
-
 }
-
-
 
 export default SermonSidebar;
