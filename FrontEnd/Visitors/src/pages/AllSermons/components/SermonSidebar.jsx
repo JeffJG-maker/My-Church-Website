@@ -53,7 +53,7 @@ function SermonSidebar({
     const isDark = theme === "dark";
 
     const colors = {
-        background: isDark ? "bg-[#101112]" : "bg-white",
+        background: isDark ? "bg-[#101112]" : "bg-[#faf9f7]",
         text: isDark ? "text-[#f5f5f5]" : "text-[#171717]",
         muted: isDark ? "text-[#a1a1aa]" : "text-[#737373]",
         border: isDark ? "border-white/[0.08]" : "border-black/[0.07]",
@@ -205,8 +205,8 @@ function SermonSidebar({
                         : "-translate-x-full"
                     }
                     ${isDark
-                        ? "shadow-[18px_0_50px_rgba(0,0,0,0.38)]"
-                        : "shadow-[12px_0_40px_rgba(0,0,0,0.14)]"
+                        ? "shadow-[1px_0_0_rgba(255,255,255,0.025)]"
+                        : "shadow-[1px_0_0_rgba(0,0,0,0.025)]"
                     }
                     transition-transform duration-500
                     ease-[cubic-bezier(0.22,1,0.36,1)]
@@ -225,16 +225,35 @@ function SermonSidebar({
                 >
                     {/* MAIN NAVIGATION */}
                     <section className="mb-8">
-                        <p
-                            className={`
-                                mb-3 px-2
-                                text-[10px] font-semibold
-                                uppercase tracking-[0.16em]
-                                ${colors.muted}
-                            `}
-                        >
-                            Browse library
-                        </p>
+                        <div className="mb-3 flex items-center justify-between px-2">
+                            <p
+                                className={`
+                                    text-[10px] font-semibold
+                                    uppercase tracking-[0.16em]
+                                    ${colors.muted}
+                                `}
+                            >
+                                Browse library
+                            </p>
+
+                            {!mobile && (
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    aria-label="Collapse sermon sidebar"
+                                    title="Collapse sidebar"
+                                    className={`
+                                        hidden h-7 w-7 items-center justify-center
+                                        rounded-lg transition-colors duration-200
+                                        lg:flex ${colors.muted} ${colors.hover}
+                                        focus:outline-none focus-visible:ring-2
+                                        focus-visible:ring-[#E31B23]/60
+                                    `}
+                                >
+                                    <i className="fa-solid fa-chevron-left text-xs" aria-hidden="true" />
+                                </button>
+                            )}
+                        </div>
 
                         <div className="space-y-1">
                             {mainLinks.map((link, index) => {
@@ -471,7 +490,7 @@ function SermonSidebar({
                                                                     : "border-[#E31B23]/30 bg-[#E31B23]/[0.045]"
                                                                 : isDark
                                                                     ? "border-white/[0.075] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04]"
-                                                                    : "border-black/[0.065] bg-[#fafafa] hover:border-black/[0.12] hover:bg-white"
+                                                                    : "border-black/[0.065] bg-[#faf9f7] hover:border-black/[0.12] hover:bg-white"
                                                             }
                                                         `}
                                                     >
@@ -635,7 +654,7 @@ function SermonSidebar({
                             mt-8 rounded-2xl p-4
                             ${isDark
                                 ? "bg-white/[0.035]"
-                                : "bg-[#f8f8f8]"
+                                : "bg-[#faf9f7]"
                             }
                         `}
                     >
