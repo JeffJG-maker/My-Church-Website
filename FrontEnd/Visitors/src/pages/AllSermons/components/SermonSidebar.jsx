@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTheme } from "../../../context/ThemeContext";
 
@@ -46,12 +46,9 @@ function SermonSidebar({
 }) {
     const { theme } = useTheme();
 
-    const [showCategories, setShowCategories] = useState(true);
+    const [showCategories, setShowCategories] = useState(false);
     const [activeNav, setActiveNav] = useState("all");
-    const [isScrolling, setIsScrolling] = useState(false);
-
     const scrollContainerRef = useRef(null);
-    const scrollTimeoutRef = useRef(null);
 
     const isDark = theme === "dark";
 
@@ -68,50 +65,6 @@ function SermonSidebar({
             : "bg-[#E31B23]/[0.06]",
         activeText: isDark ? "text-white" : "text-[#171717]",
     };
-
-    // Show the scrollbar during scrolling, then hide it when scrolling stops.
-    useEffect(() => {
-        const scrollContainer = scrollContainerRef.current;
-
-        if (!scrollContainer) return;
-
-        const handleScroll = () => {
-            setIsScrolling(true);
-
-            if (scrollTimeoutRef.current) {
-                clearTimeout(scrollTimeoutRef.current);
-            }
-
-            scrollTimeoutRef.current = setTimeout(() => {
-                setIsScrolling(false);
-                scrollTimeoutRef.current = null;
-            }, 800);
-        };
-
-        scrollContainer.addEventListener("scroll", handleScroll, {
-            passive: true,
-        });
-
-        return () => {
-            scrollContainer.removeEventListener("scroll", handleScroll);
-
-            if (scrollTimeoutRef.current) {
-                clearTimeout(scrollTimeoutRef.current);
-            }
-        };
-    }, []);
-
-    // Clear the scrollbar state when the sidebar closes.
-    useEffect(() => {
-        if (!isOpen) {
-            setIsScrolling(false);
-
-            if (scrollTimeoutRef.current) {
-                clearTimeout(scrollTimeoutRef.current);
-                scrollTimeoutRef.current = null;
-            }
-        }
-    }, [isOpen]);
 
     const closeOnMobile = () => {
         if (mobile && onClose) {
@@ -174,17 +127,17 @@ function SermonSidebar({
 
     return (
         <>
-            {/* THIN, AUTO-HIDING SCROLLBAR */}
+            {/* SUBTLE, ALWAYS-VISIBLE SCROLLBAR */}
             <style>
                 {`
                     .sermon-sidebar-scroll {
                         scrollbar-width: thin;
-                        scrollbar-color: transparent transparent;
+                        scrollbar-color: rgba(148, 163, 184, 0.58) transparent;
                     }
 
                     .sermon-sidebar-scroll::-webkit-scrollbar {
-                        width: 2px;
-                        height: 2px;
+                        width: 5px;
+                        height: 5px;
                     }
 
                     .sermon-sidebar-scroll::-webkit-scrollbar-track {
@@ -192,21 +145,27 @@ function SermonSidebar({
                     }
 
                     .sermon-sidebar-scroll::-webkit-scrollbar-thumb {
-                        background-color: transparent;
+                        background-color: rgba(148, 163, 184, 0.58);
                         border-radius: 999px;
+                        border: 1px solid transparent;
+                        background-clip: padding-box;
                         transition: background-color 200ms ease;
                     }
 
-                    .sermon-sidebar-scroll.is-scrolling {
-                        scrollbar-color: rgba(227, 27, 35, 0.65) transparent;
+                    .sermon-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+                        background-color: rgba(148, 163, 184, 0.78);
                     }
 
-                    .sermon-sidebar-scroll.is-scrolling::-webkit-scrollbar-thumb {
-                        background-color: rgba(227, 27, 35, 0.65);
+                    .dark .sermon-sidebar-scroll {
+                        scrollbar-color: rgba(161, 161, 170, 0.55) transparent;
                     }
 
-                    .sermon-sidebar-scroll.is-scrolling::-webkit-scrollbar-thumb:hover {
-                        background-color: rgba(227, 27, 35, 0.9);
+                    .dark .sermon-sidebar-scroll::-webkit-scrollbar-thumb {
+                        background-color: rgba(161, 161, 170, 0.55);
+                    }
+
+                    .dark .sermon-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+                        background-color: rgba(190, 190, 200, 0.78);
                     }
 
                     @media (prefers-reduced-motion: reduce) {
@@ -217,79 +176,43 @@ function SermonSidebar({
                 `}
             </style>
 
+            {/* MOBILE BACKDROP: blurred and dimmed behind the drawer */}
+            {mobile && isOpen && (
+                <button
+                    type="button"
+                    aria-label="Close sermon sidebar"
+                    onClick={onClose}
+                    className="
+                        fixed inset-0 z-40 bg-black/30
+                        backdrop-blur-sm lg:hidden
+                    "
+                />
+            )}
+
             <aside
                 aria-label="Sermon navigation"
                 className={`
-                    fixed inset-y-0 left-0 z-50
-                    flex h-screen flex-col
-                    overflow-hidden
+                    fixed left-0 z-50
+                    flex flex-col overflow-hidden
                     ${colors.background}
                     ${colors.text}
                     ${mobile
-                        ? "w-[min(86vw,320px)] lg:hidden"
-                        : "hidden w-[272px] lg:flex"
+                        ? "inset-y-0 h-screen w-[min(86vw,340px)] lg:hidden"
+                        : "top-[74px] hidden h-[calc(100vh-74px)] w-[272px] lg:flex"
                     }
                     ${isOpen
                         ? "translate-x-0"
                         : "-translate-x-full"
                     }
                     ${isDark
-                        ? "shadow-[18px_0_50px_rgba(0,0,0,0.24)]"
-                        : "shadow-[12px_0_40px_rgba(0,0,0,0.055)]"
+                        ? "shadow-[18px_0_50px_rgba(0,0,0,0.38)]"
+                        : "shadow-[12px_0_40px_rgba(0,0,0,0.14)]"
                     }
                     transition-transform duration-500
                     ease-[cubic-bezier(0.22,1,0.36,1)]
                 `}
             >
-                {/* HEADER */}
-                <div
-                    className={`
-                        flex shrink-0 items-center justify-between
-                        border-b px-5 py-5
-                        ${colors.border}
-                    `}
-                >
-                    <div>
-                        <p
-                            className="
-                                text-[10px] font-semibold
-                                uppercase tracking-[0.18em]
-                                text-[#E31B23]
-                            "
-                        >
-                            Explore
-                        </p>
-
-                        <h2 className="mt-1 text-lg font-semibold tracking-[-0.035em]">
-                            Sermons
-                        </h2>
-                    </div>
-
-                    {onClose && (
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            aria-label="Close sidebar"
-                            className={`
-                                flex h-9 w-9 items-center justify-center
-                                rounded-xl
-                                ${colors.muted}
-                                ${colors.hover}
-                                transition-colors duration-300
-                            `}
-                        >
-                            <i
-                                className={`fa-solid ${mobile
-                                        ? "fa-xmark"
-                                        : "fa-chevron-left"
-                                    } text-sm`}
-                                aria-hidden="true"
-                            />
-                        </button>
-                    )}
-                </div>
-
-                {/* SCROLLABLE CONTENT */}
+                {/* SCROLLABLE CONTENT — sidebar shares the global header */}
                 <div
                     ref={scrollContainerRef}
                     className={`
@@ -298,7 +221,6 @@ function SermonSidebar({
                         overflow-x-hidden overflow-y-auto
                         overscroll-contain
                         px-4 py-6
-                        ${isScrolling ? "is-scrolling" : ""}
                     `}
                 >
                     {/* MAIN NAVIGATION */}

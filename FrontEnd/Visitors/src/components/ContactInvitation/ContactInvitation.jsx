@@ -38,7 +38,7 @@ function ContactInvitation() {
                             delay: 0.25,
                             ease: smoothEase,
                         }}
-                        className="max-w-2xl text-3xl font-extrabold leading-tight tracking-tight text-[#171717] dark:text-white sm:text-4xl md:text-5xl lg:text-6xl"
+                        className="max-w-2xl text-3xl font-extrabold leading-tight tracking-tight text-[#171717] dark:text-white sm:text-4xl lg:text-5xl"
                     >
                         We're here
                         <span className="block text-[#E31B23]">

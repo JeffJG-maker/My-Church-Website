@@ -373,10 +373,11 @@ function FeaturedSermons() {
 
                 <div className="mx-auto mb-10 max-w-3xl text-center">
                     <motion.div
-                        initial={{ opacity: 0, y: 60 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, x: 60 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true, amount: 0.25 }}
                         transition={{
-                            duration: 1.6,
+                            duration: 1.25,
                             ease: [0.22, 1, 0.36, 1],
                         }}>
 
@@ -386,7 +387,7 @@ function FeaturedSermons() {
 
                         </p>
 
-                        <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+                        <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
 
                             Featured Sermons
 
@@ -396,15 +397,16 @@ function FeaturedSermons() {
                     </motion.div>
 
                     <motion.div
-                        initial={{ opacity: 0, y: 40 }}
+                        initial={{ opacity: 0, y: 60 }}
                         whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, amount: 0.25 }}
                         transition={{
                             duration: 1.6,
                             ease: [0.22, 1, 0.36, 1],
                         }}>
 
 
-                        <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-gray-600 dark:text-gray-300 sm:text-base">
+                        <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-gray-600 dark:text-gray-300 sm:text">
 
                             Watch or listen to selected messages that strengthen
 
