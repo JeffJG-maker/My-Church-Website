@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 import Header from "./components/Header/Header";
@@ -11,58 +12,35 @@ import Events from "./pages/Events/Events";
 import EventDetails from "./pages/EventDetails/EventDetails";
 
 import { AuthProvider } from "./context/AuthContext";
-import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function AppContent() {
   const location = useLocation();
 
-  const exactPublicPaths = ["/sermons"];
 
-  const isLoginPage =
-    exactPublicPaths.includes(location.pathname)
-  // location.pathname.startsWith("/events/");
+  const isLoginPage = location.pathname === "/sermons";
 
   return (
     <>
       {!isLoginPage && <Header />}
 
       <Routes>
+        {/* Home Page */}
+        <Route path="/" element={<Home />} />
 
-        <Route
-          path="/"
-          element={<Home />}
-        />
+        {/* About Page */}
+        <Route path="/about" element={<About />} />
 
-        <Route
-          path="/about"
-          element={<About />}
-        />
+        {/* Contact Page */}
+        <Route path="/contact" element={<Contact />} />
 
-        <Route
-          path="/contact"
-          element={<Contact />}
-        />
+        {/* Events Page */}
+        <Route path="/events" element={<Events />} />
 
-        <Route
-          path="/events"
-          element={<Events />}
-        />
+        {/* Event Details Page */}
+        <Route path="/events/:id" element={<EventDetails />} />
 
-
-        <Route
-          path="/events/:id"
-          element={<EventDetails />}
-        />
-
-        <Route
-          path="/sermons"
-          element={
-            <ProtectedRoute>
-              <AllSermons />
-            </ProtectedRoute>
-          }
-        />
-
+        {/* Public Sermons Page */}
+        <Route path="/sermons" element={<AllSermons />} />
       </Routes>
     </>
   );
