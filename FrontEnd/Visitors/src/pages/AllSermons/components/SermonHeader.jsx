@@ -300,10 +300,10 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                         />
 
                         <img
-                            src="/media/Big_Winnersogo.png"
+                            src="/Big_Winnerslogo.png"
                             alt="Living Faith Church Iguosa logo"
                             className={`
-                relative h-9 w-9 rounded-full border object-cover
+                relative h-9 w-8 rounded-full border object-cover
                 transition-transform duration-300 group-hover:scale-[1.04]
                 sm:h-11 sm:w-11
                 ${isDark
