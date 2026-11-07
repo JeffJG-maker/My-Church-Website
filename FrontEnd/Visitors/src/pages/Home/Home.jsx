@@ -8,16 +8,21 @@ import Footer from "../../components/Footer/Footer";
 function Home() {
     return (
         <main className="bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
-            {/* Hero */}
+
+            {/* Hero Section */}
             <HomeHero />
 
             {/* Main Content */}
             <div className="relative z-10">
                 <WelcomeSection />
+
                 <FeaturedSermons />
+
                 <ContactInvitation />
+
                 <Footer />
             </div>
+
         </main>
     );
 }
