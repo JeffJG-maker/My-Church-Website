@@ -350,7 +350,9 @@ export default function Analytics() {
             <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div className={`flex items-start gap-3 rounded-2xl p-4 shadow-[0_4px_20px_rgba(15,23,42,0.04)] transition-shadow ${dark ? "bg-[#141618] shadow-black/20" : "bg-white hover:shadow-[0_8px_28px_rgba(15,23,42,0.07)]"}`}>
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700"><FontAwesomeIcon icon={faShareNodes} /></span>
-                    <div><p className={`font-semibold ${dark ? "text-white" : "text-slate-900"}`}>Sharing activity</p><p className={`mt-1 text-sm ${muted}`}>Shares can help extend the reach of sermons beyond regular visitors.</p></div>
+                    <div>
+                        <p className={`font-semibold ${dark ? "text-white" : "text-slate-900"}`}>Sharing activity</p>
+                        <p className={`mt-1 text-sm ${muted}`}>Shares can help extend the reach of sermons beyond regular visitors.</p></div>
                 </div>
                 <div className={`flex items-start gap-3 rounded-2xl p-4 shadow-[0_4px_20px_rgba(15,23,42,0.04)] transition-shadow ${dark ? "bg-[#141618] shadow-black/20" : "bg-white hover:shadow-[0_8px_28px_rgba(15,23,42,0.07)]"}`}>
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700"><FontAwesomeIcon icon={faMessage} /></span>

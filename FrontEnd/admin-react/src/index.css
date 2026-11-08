@@ -6,52 +6,92 @@
 /* =========================
    LIGHT THEME
 ========================= */
+
 :root {
   color-scheme: light;
-  --active-theme-color: #1a1a4c;
-  --background: #f8fafc;
-  --card-background: #ffffff;
-  --elevated-background: #ffffff;
-  --sidebar-background: #ffffff;
 
+  /* Church accent */
+  --active-theme-color: #C51D27;
+
+  /* Main dashboard and sidebar */
+  --background: #F0EFED;
+  --sidebar-background: #F0EFED;
+
+  /* Cards: slightly lighter than the background */
+  --card-background: #FAF9F8;
+  --elevated-background: #FFFFFF;
+
+  /* Text */
   --text: #171717;
-  --muted-text: #737373;
+  --muted-text: #777572;
 
-  --border-color: #e5e7eb;
-  --input-background: #ffffff;
-  --hover: #f3f4f6;
-  --sidebar-hover: #f3f4f6;
+  /* Borders */
+  --border-color: #E7E5E2;
+  --input-background: #FAF9F8;
 
-  --card-shadow: rgba(129, 140, 248, 0.13);
-  --card-shadow-hover: rgba(129, 140, 248, 0.2);
+  /* Hover states */
+  --hover: #EAE9E6;
+  --sidebar-hover: #E8E6E3;
+
+  /* Shadows */
+  --card-shadow: rgba(0, 0, 0, 0.025);
+  --card-shadow-hover: rgba(0, 0, 0, 0.055);
+
+  /* Button colors */
+  --button-background: #E7E5E2;
+  --button-text: #292929;
+  --button-hover: #DCDAD7;
+
+  --button-primary-background: #292929;
+  --button-primary-text: #FFFFFF;
+
+  --button-danger-background: #F4E8E8;
+  --button-danger-text: #A52A32;
 }
 
 /* =========================
    DARK THEME
 ========================= */
+
 :root.dark {
   color-scheme: dark;
-  --active-theme-color: #1a1a4c;
+
+  --active-theme-color: #C51D27;
+
   --background: #101112;
-  --card-background: #141618;
-  --elevated-background: #181a1d;
   --sidebar-background: #101112;
 
-  --text: #ffffff;
-  --muted-text: #a1a1aa;
+  --card-background: #181A1D;
+  --elevated-background: #1D1F22;
 
-  --border-color: #2a2c30;
-  --input-background: #141618;
-  --hover: #181a1d;
-  --sidebar-hover: #181a1d;
+  --text: #F5F5F5;
+  --muted-text: #A1A1AA;
 
-  --card-shadow: rgba(0, 0, 0, 0.18);
-  --card-shadow-hover: rgba(0, 0, 0, 0.28);
+  --border-color: #2A2C30;
+  --input-background: #181A1D;
+
+  --hover: #202226;
+  --sidebar-hover: #202226;
+
+  --card-shadow: rgba(0, 0, 0, 0.15);
+  --card-shadow-hover: rgba(0, 0, 0, 0.25);
+
+  /* Button colors */
+  --button-background: #292B2E;
+  --button-text: #E5E5E5;
+  --button-hover: #35373A;
+
+  --button-primary-background: #E5E5E5;
+  --button-primary-text: #171717;
+
+  --button-danger-background: #332123;
+  --button-danger-text: #E58A90;
 }
 
 /* =========================
    GENERAL STYLES
 ========================= */
+
 html {
   scroll-behavior: smooth;
 }
@@ -61,6 +101,7 @@ body {
   font-family: Tahoma, Arial, sans-serif;
   background-color: var(--background);
   color: var(--text);
+
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
@@ -76,18 +117,20 @@ a {
 }
 
 ::selection {
-  background: #7c6cff;
-  color: #ffffff;
+  background: #C51D27;
+  color: #FFFFFF;
 }
 
 /* =========================
    MAIN ADMIN LAYOUT
 ========================= */
+
 .admin-app,
 .main-area {
   min-height: 100vh;
   background-color: var(--background);
   color: var(--text);
+
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
@@ -96,13 +139,16 @@ a {
 /* =========================
    DASHBOARD CARDS
 ========================= */
+
 .admin-app .dashboard-card,
 .admin-app .stat-card,
 .admin-app .sermon-card {
   background-color: var(--card-background);
   color: var(--text);
   border-color: var(--border-color);
-  box-shadow: 0 8px 24px var(--card-shadow);
+
+  box-shadow: 0 6px 20px var(--card-shadow);
+
   transition:
     background-color 0.3s ease,
     color 0.3s ease,
@@ -113,30 +159,96 @@ a {
 .admin-app .dashboard-card:hover,
 .admin-app .stat-card:hover,
 .admin-app .sermon-card:hover {
-  box-shadow: 0 10px 28px var(--card-shadow-hover);
+  box-shadow: 0 8px 24px var(--card-shadow-hover);
 }
 
 /* =========================
    SIDEBAR
 ========================= */
+
 .admin-app aside {
   background-color: var(--sidebar-background);
   color: var(--text);
-  border-color: var(--border-color);
+  border-color: transparent;
 }
 
+/* Active navigation */
+
 .admin-app .nav-link.active {
-  background-color: var(--active-theme-color);
-  color: #ffffff;
+  background-color: #E7E4E1;
+  color: #A52A32;
 }
+
+:root.dark .admin-app .nav-link.active {
+  background-color: #292929;
+  color: #E58A90;
+}
+
+/* Navigation hover */
 
 .admin-app .nav-link:not(.active):hover {
   background-color: var(--sidebar-hover);
 }
 
 /* =========================
+   BUTTONS
+========================= */
+
+/* Standard buttons */
+
+.admin-app button {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Neutral buttons */
+
+.admin-app .btn-secondary,
+.admin-app .secondary-button {
+  background-color: var(--button-background);
+  color: var(--button-text);
+  border-color: transparent;
+}
+
+.admin-app .btn-secondary:hover,
+.admin-app .secondary-button:hover {
+  background-color: var(--button-hover);
+}
+
+/* Primary buttons */
+
+.admin-app .btn-primary,
+.admin-app .primary-button {
+  background-color: var(--button-primary-background);
+  color: var(--button-primary-text);
+  border-color: transparent;
+}
+
+.admin-app .btn-primary:hover,
+.admin-app .primary-button:hover {
+  opacity: 0.88;
+}
+
+/* Danger buttons */
+
+.admin-app .btn-danger,
+.admin-app .danger-button {
+  background-color: var(--button-danger-background);
+  color: var(--button-danger-text);
+  border-color: transparent;
+}
+
+.admin-app .btn-danger:hover,
+.admin-app .danger-button:hover {
+  opacity: 0.85;
+}
+
+/* =========================
    FORM FIELDS
 ========================= */
+
 .admin-app input,
 .admin-app select,
 .admin-app textarea {
@@ -153,6 +265,7 @@ a {
 /* =========================
    THEME-AWARE TEXT
 ========================= */
+
 .admin-app .header-welcome h1,
 .admin-app .admin-profile strong,
 .admin-app h1,
@@ -178,6 +291,7 @@ a {
 /* =========================
    THEME-AWARE BORDERS
 ========================= */
+
 .admin-app .border-slate-200,
 .admin-app .border-slate-300,
 .admin-app .border-gray-200,
@@ -188,6 +302,7 @@ a {
 /* =========================
    TABLES
 ========================= */
+
 .admin-app table {
   color: var(--text);
 }
@@ -200,10 +315,10 @@ a {
 /* =========================
    DARK-MODE TABLE HOVER
 ========================= */
+
 :root.dark .admin-app tbody tr:hover {
   background-color: var(--hover);
 }
-
 
 /* =========================
    GLOBAL THIN SCROLLBARS
@@ -214,16 +329,18 @@ a {
   scrollbar-color: transparent transparent;
 }
 
-/* Firefox: show while scrolling */
+/* Firefox */
+
 .is-scrolling {
-  scrollbar-color: #a1a1aa transparent;
+  scrollbar-color: #A1A1AA transparent;
 }
 
 :root.dark .is-scrolling {
-  scrollbar-color: #62626d transparent;
+  scrollbar-color: #62626D transparent;
 }
 
 /* Chrome, Edge and Safari */
+
 *::-webkit-scrollbar {
   width: 3px;
   height: 3px;
@@ -240,10 +357,10 @@ a {
 
 .is-scrolling::-webkit-scrollbar-thumb,
 .is-scrolling *::-webkit-scrollbar-thumb {
-  background: #a1a1aa;
+  background: #A1A1AA;
 }
 
 :root.dark .is-scrolling::-webkit-scrollbar-thumb,
 :root.dark .is-scrolling *::-webkit-scrollbar-thumb {
-  background: #62626d;
+  background: #62626D;
 }

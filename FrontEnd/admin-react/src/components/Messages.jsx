@@ -19,7 +19,7 @@ import {
     faFilter,
 
     faCheck,
-
+ 
     faCheckDouble,
 
     faReply,

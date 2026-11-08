@@ -12,7 +12,6 @@ import Messages from "./components/Messages";
 import Analytics from "./components/Analytics";
 import Settings from "./components/Settings";
 import AdminLogin from "./components/AdminLogin";
-import "./App.css";
 
 const defaultCategories = [
     "Faith",

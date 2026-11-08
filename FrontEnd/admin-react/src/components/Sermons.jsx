@@ -408,7 +408,7 @@ const Sermons = ({
                     {/* PAGE HEADING */}
                     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                         <div>
-                            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--active-theme-color)]">
+                            <div className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#A52A32]">
                                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--active-theme-color)]" />
                                 Content management
                             </div>
@@ -467,7 +467,7 @@ const Sermons = ({
                                                     </div>
                                                 )}
                                             </div>
-                                            {recentActivities.length > 5 && <button type="button" onClick={() => setShowActivityHistory((current) => !current)} className="w-full border-t border-[var(--border-color)] px-4 py-3 text-xs font-semibold text-[var(--active-theme-color)] transition hover:bg-[var(--hover)]">{showActivityHistory ? "Show latest 5 updates" : "View all activity · last 14 days"}</button>}
+                                            {recentActivities.length > 5 && <button type="button" onClick={() => setShowActivityHistory((current) => !current)} className="w-full border-t border-[var(--border-color)] px-4 py-3 text-xs font-semibold text-[#A52A32] transition hover:bg-[var(--hover)]">{showActivityHistory ? "Show latest 5 updates" : "View all activity · last 14 days"}</button>}
                                         </div>
                                     </>
                                 )}
@@ -475,7 +475,7 @@ const Sermons = ({
                             <button
                                 type="button"
                                 onClick={openAddModal}
-                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--active-theme-color)] px-5 py-3 text-sm font-semibold text-white shadow-md shadow-black/10 transition duration-200 hover:-translate-y-0.5 hover:opacity-95"
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--button-primary-background)] px-5 py-3 text-sm font-semibold text-[var(--button-primary-text)] shadow-sm transition duration-200 hover:-translate-y-0.5 hover:opacity-90"
                             >
                                 <FontAwesomeIcon icon={faPlus} />
                                 Add Sermon
@@ -576,7 +576,7 @@ const Sermons = ({
                         </div>
                         <div className="flex flex-col gap-3 border-t border-[var(--border-color)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
                             <div className="flex flex-wrap items-center gap-2">
-                                <span className="inline-flex items-center rounded-full bg-[var(--active-theme-color)] px-3 py-1.5 text-xs font-semibold text-white">All sermons</span>
+                                <span className="inline-flex items-center rounded-full bg-[var(--button-background)] px-3 py-1.5 text-xs font-semibold text-[var(--button-text)]">All sermons</span>
                                 <span className="text-sm text-[var(--muted-text)]"><strong className="font-semibold text-[var(--text)]">{filteredSermons.length}</strong> result{filteredSermons.length === 1 ? "" : "s"}</span>
                                 {(appliedSearchTerm || categoryFilter !== "all" || speakerFilter !== "all") && <button type="button" onClick={() => { setSearchTerm(""); setAppliedSearchTerm(""); setCategoryFilter("all"); setSpeakerFilter("all"); setCurrentPage(1); }} className="rounded-md px-2 py-1 text-xs font-semibold text-[var(--muted-text)] hover:bg-[var(--hover)]">Clear filters</button>}
                             </div>
@@ -1001,7 +1001,7 @@ const Sermons = ({
                                 <button
                                     type="submit"
                                     disabled={saving}
-                                    className="rounded-lg bg-[var(--active-theme-color)] px-5 py-3 text-sm font-semibold text-white hover:opacity-90"
+                                    className="rounded-lg bg-[var(--button-primary-background)] px-5 py-3 text-sm font-semibold text-[var(--button-primary-text)] transition hover:opacity-90"
                                 >
                                     {saving ? "Saving..." : editingId !== null ? "Save changes" : "Add sermon"}
                                 </button>
@@ -1112,7 +1112,7 @@ const Sermons = ({
                                         setViewingSermon(null);
                                         openEditModal(sermon);
                                     }}
-                                    className="rounded-lg bg-[var(--active-theme-color)] px-4 py-2 text-sm font-semibold text-white"
+                                    className="rounded-lg bg-[var(--button-primary-background)] px-4 py-2 text-sm font-semibold text-[var(--button-primary-text)] transition hover:opacity-90"
                                 >
                                     Edit sermon
                                 </button>
