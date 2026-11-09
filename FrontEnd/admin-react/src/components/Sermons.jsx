@@ -475,7 +475,7 @@ const Sermons = ({
                             <button
                                 type="button"
                                 onClick={openAddModal}
-                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--button-primary-background)] px-5 py-3 text-sm font-semibold text-[var(--button-primary-text)] shadow-sm transition duration-200 hover:-translate-y-0.5 hover:opacity-90"
+                                className="inline-flex items-center justify-center gap-2 rounded-md bg-[var(--button-primary-background)] px-4 py-[10px] text-[13px] font-semibold text-[var(--button-primary-text)] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:opacity-90 cursor-pointer"
                             >
                                 <FontAwesomeIcon icon={faPlus} />
                                 Add Sermon

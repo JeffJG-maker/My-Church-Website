@@ -263,7 +263,7 @@ const Media = ({ token }) => {
     };
 
     const cardClass =
-        "shadow-xl shadow-[#e1dfdf] bg-[var(--card-background)]";
+        "shadow-xl shadow-[var(--card-shadow)] bg-[var(--card-background)]";
 
     const buttonClass =
         "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";

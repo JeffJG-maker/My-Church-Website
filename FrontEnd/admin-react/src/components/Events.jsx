@@ -43,11 +43,10 @@ const emptyEventForm = {
 };
 
 const SERVER_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+
 const API_BASE_URL = `${SERVER_URL}/api/events`;
 
 const MEDIA_API_URL = `${SERVER_URL}/api/media`;
-
-
 
 const toDateInputValue = (value) => {
 
@@ -456,7 +455,9 @@ const Events = ({ token }) => {
             const response = await fetch(`${API_BASE_URL}/${eventItem.id}`, {
 
                 method: "DELETE",
+
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
+
             });
 
             const data = await response.json();
@@ -511,7 +512,7 @@ const Events = ({ token }) => {
 
                     onClick={openAddModal}
 
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-teal-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-teal-800 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:bg-teal-300 dark:text-slate-950 dark:hover:bg-teal-200"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-[#C51D27] px-5 py-3 text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-[#A81720] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C51D27] focus-visible:ring-offset-2 dark:bg-[#E45A61] dark:text-slate-950 dark:hover:bg-[#F0787E]"
 
                 >
 
@@ -529,13 +530,13 @@ const Events = ({ token }) => {
 
                     role="status"
 
-                    className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200/70 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 shadow-sm dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
+                    className="flex items-center justify-between gap-3 rounded-lg  bg-emerald-50 px-4 py-3 text-sm text-emerald-800 shadow-sm  dark:bg-emerald-950/40 dark:text-emerald-200"
 
                 >
 
                     <span>{notice}</span>
 
-                    <button type="button" onClick={() => setNotice("")} aria-label="Dismiss notification">
+                    <button type="button" onClick={() => setNotice("")} aria-label="Dismiss notification" className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E7E5E3] text-[#333333] transition-all duration-300 hover:-translate-y-0.5 hover:text-[#C51D27] dark:bg-[#202124] dark:text-[#EAEAEA] dark:hover:text-[#F0787E]">
 
                         <FontAwesomeIcon icon={faTimes} />
 
@@ -555,17 +556,17 @@ const Events = ({ token }) => {
 
                 aria-label="Event calendar overview"
 
-                className="overflow-hidden rounded-2xl border border-[var(--border-color)]/70 bg-[var(--card-background)] shadow-[0_5px_24px_var(--card-shadow)]"
+                className="overflow-hidden rounded-lg bg-[var(--card-background)] shadow-[0_8px_28px_var(--card-shadow)]"
 
             >
 
-                <div className="grid grid-cols-1 divide-y divide-[var(--border-color)]/70 sm:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)] sm:divide-x sm:divide-y-0">
+                <div className="grid grid-cols-1  sm:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)] ">
 
                     <div className="relative flex min-h-36 items-center gap-4 overflow-hidden p-5 sm:p-6">
 
-                        <div className="pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full border-[18px] border-[#1a1a4c]/[0.04] dark:border-white/[0.04]" />
+                        <div className="pointer-events-none absolute -right-6 -top-8 h-32 w-32 rounded-full border-[18px] border-[#C51D27]/[0.04] dark:border-white/[0.04]" />
 
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1a1a4c] text-white shadow-sm dark:bg-violet-200 dark:text-[#1a1a4c]">
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#C51D27] text-white shadow-sm dark:bg-violet-200 dark:text-[#C51D27]">
 
                             <FontAwesomeIcon icon={faCalendarAlt} className="text-lg" />
 
@@ -587,7 +588,7 @@ const Events = ({ token }) => {
 
                     </div>
 
-                    <div className="grid grid-cols-2 divide-x divide-[var(--border-color)]/70">
+                    <div className="grid grid-cols-2 ">
 
                         <div className="flex min-w-0 flex-col justify-center p-5 sm:p-6">
 
@@ -627,7 +628,7 @@ const Events = ({ token }) => {
 
             </motion.section>
 
-            <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border-color)]/60 bg-[var(--card-background)] p-3 shadow-[0_5px_24px_var(--card-shadow)] sm:flex-row sm:items-center sm:p-4">
+            <div className="flex flex-col gap-3 rounded-lg bg-[var(--card-background)] p-3 shadow-[0_5px_24px_var(--card-shadow)] sm:flex-row sm:items-center sm:p-4">
 
                 <div className="relative min-w-0 flex-1">
 
@@ -651,7 +652,7 @@ const Events = ({ token }) => {
 
                         aria-label="Search events"
 
-                        className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] pl-9 pr-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                        className="h-11 w-full rounded-lg bg-[var(--input-background)] pl-9 pr-3 text-sm outline-none transition focus:border-[#C51D27] focus:ring-2 focus:ring-[#C51D27]/15"
 
                     />
 
@@ -669,7 +670,7 @@ const Events = ({ token }) => {
 
                         aria-label="Filter events by status"
 
-                        className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15 sm:w-auto"
+                        className="h-11 w-full rounded-lg bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#C51D27] focus:ring-2 focus:ring-[#C51D27]/15 sm:w-auto"
 
                     >
 
@@ -687,7 +688,7 @@ const Events = ({ token }) => {
 
             {isLoading ? (
 
-                <div className="rounded-2xl border border-[var(--border-color)]/60 bg-[var(--card-background)] px-5 py-14 text-center text-sm text-[var(--muted-text)] shadow-[0_5px_24px_var(--card-shadow)]">
+                <div className="rounded-lg bg-[var(--card-background)] px-5 py-14 text-center text-sm text-[var(--muted-text)] shadow-[0_5px_24px_var(--card-shadow)]">
 
                     Loading events...
 
@@ -695,11 +696,21 @@ const Events = ({ token }) => {
 
             ) : filteredEvents.length > 0 ? (
 
-                <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+                <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 2xl:grid-cols-3">
 
                     {filteredEvents.map((eventItem) => {
 
                         const isPast = getEventStatus(eventItem.date) === "Completed";
+
+                        const eventImageUrl = eventItem.image
+
+                            ? eventItem.image.startsWith("http")
+
+                                ? eventItem.image
+
+                                : `${SERVER_URL}${eventItem.image.startsWith("/") ? "" : "/"}${eventItem.image}`
+
+                            : "";
 
                         return (
 
@@ -713,129 +724,175 @@ const Events = ({ token }) => {
 
                                 transition={{ duration: 0.28, ease: "easeOut" }}
 
-                                whileHover={reduceMotion ? undefined : { y: -3 }}
+                                whileHover={reduceMotion ? undefined : { y: -4 }}
 
                                 layout={!reduceMotion}
 
-                                className="min-w-0 rounded-2xl border border-[var(--border-color)]/60 bg-[var(--card-background)] p-4 shadow-[0_5px_24px_var(--card-shadow)] transition-shadow duration-200 hover:shadow-md sm:p-5"
+                                className="group flex min-w-0 flex-col overflow-hidden rounded-md bg-[var(--card-background)] shadow-[0_5px_20px_var(--card-shadow)] transition-shadow duration-300 hover:shadow-[0_10px_28px_var(--card-shadow)]"
 
                             >
 
-                                {eventItem.image && (
+                                {/* Event image: consistent landscape crop across the grid */}
 
-                                    <div className="mb-4 overflow-hidden rounded-xl bg-[var(--hover)]">
+                                <div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--hover)]">
+
+                                    {eventImageUrl ? (
 
                                         <img
 
-                                            src={eventItem.image.startsWith("http") ? eventItem.image : `${SERVER_URL}${eventItem.image.startsWith("/") ? "" : "/"}${eventItem.image}`}
+                                            src={eventImageUrl}
 
                                             alt={eventItem.title}
 
                                             loading="lazy"
 
-                                            className="h-44 w-full object-cover"
+                                            className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.04]"
 
-                                            onError={(event) => { event.currentTarget.style.display = "none"; }}
+                                            onError={(event) => {
+
+                                                event.currentTarget.style.display = "none";
+
+                                            }}
 
                                         />
 
-                                    </div>
+                                    ) : (
 
-                                )}
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-[#C51D27]/10 via-[var(--card-background)] to-[var(--hover)] p-6 text-center">
 
-                                <div className="flex items-start justify-between gap-3">
+                                            <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-[#C51D27]/10 text-[#C51D27] shadow-sm dark:bg-[#E45A61]/15 dark:text-[#F0787E]">
 
-                                    <div className="flex min-w-0 items-start gap-3">
+                                                <FontAwesomeIcon icon={faCalendarAlt} className="text-2xl" />
 
-                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1a1a4c]/10 text-[#1a1a4c] dark:bg-violet-300/10 dark:text-violet-200">
+                                            </div>
 
-                                            <FontAwesomeIcon icon={faCalendarAlt} className="text-lg" />
+                                            <span className="mt-3 text-xs font-bold uppercase tracking-[0.2em] text-[var(--muted-text)]">
 
-                                        </div>
+                                                Church event
 
-                                        <div className="min-w-0">
-
-                                            <h3 className="break-words font-bold">{eventItem.title}</h3>
-
-                                            <p className="mt-1 text-sm text-[var(--muted-text)]">
-
-                                                {formatEventDate(eventItem.date)} · {eventItem.time}
-
-                                            </p>
+                                            </span>
 
                                         </div>
 
+                                    )}
+
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+
+                                    <div className="absolute left-4 top-4">
+
+                                        <span className={`inline-flex items-center rounded-full px-3 py-1.5 text-xs font-semibold shadow-sm backdrop-blur-md ${isPast
+
+                                            ? "bg-white/90 text-slate-700"
+
+                                            : "bg-emerald-100/95 text-emerald-800"
+
+                                            }`}>
+
+                                            <span className={`mr-2 h-1.5 w-1.5 rounded-full ${isPast ? "bg-slate-500" : "bg-emerald-600"}`} />
+
+                                            {isPast ? "Completed" : "Upcoming"}
+
+                                        </span>
+
                                     </div>
 
-                                    <span
-
-                                        className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${isPast
-
-                                            ? "bg-slate-100 text-slate-600"
-
-                                            : "bg-emerald-100 text-emerald-700"
-
-                                            }`}
-
-                                    >
-
-                                        {isPast ? "Completed" : "Upcoming"}
-
-                                    </span>
-
                                 </div>
 
-                                {eventItem.description && (
+                                {/* Event details */}
 
-                                    <p className="mt-4 text-sm leading-6 text-[var(--muted-text)]">
+                                <div className="flex flex-1 min-w-0 flex-col p-5">
 
-                                        {eventItem.description}
+                                    <div className="min-w-0">
 
-                                    </p>
+                                        <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#C51D27] dark:text-[#F0787E]">
 
-                                )}
+                                            Event programme
 
-                                <div className="mt-4 flex items-center gap-2 text-sm text-[var(--muted-text)]">
+                                        </p>
 
-                                    <FontAwesomeIcon icon={faMapMarkerAlt} />
+                                        <h3 className="break-words text-lg font-bold tracking-tight text-[var(--text)] sm:text-xl">
 
-                                    <span className="break-words">{eventItem.location}</span>
+                                            {eventItem.title}
 
-                                </div>
+                                        </h3>
 
-                                <div className="mt-5 flex justify-end gap-2 border-t border-[var(--border-color)] pt-4">
+                                    </div>
 
-                                    <button
+                                    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-[var(--muted-text)]">
 
-                                        type="button"
+                                        <span className="inline-flex items-center gap-2">
 
-                                        onClick={() => openEditModal(eventItem)}
+                                            <FontAwesomeIcon icon={faCalendarAlt} className="text-[#C51D27] dark:text-[#F0787E]" />
 
-                                        className="inline-flex items-center gap-2 rounded-lg border border-[var(--border-color)] px-3 py-2 text-sm hover:bg-[var(--hover)]"
+                                            {formatEventDate(eventItem.date)}
 
-                                    >
+                                        </span>
 
-                                        <FontAwesomeIcon icon={faPen} />
+                                        {eventItem.time && (
 
-                                        Edit
+                                            <span className="rounded-md bg-[var(--hover)] px-2.5 py-1 text-xs font-semibold text-[var(--text)]">
 
-                                    </button>
+                                                {eventItem.time}
 
-                                    <button
+                                            </span>
 
-                                        type="button"
+                                        )}
 
-                                        onClick={() => handleDelete(eventItem)}
+                                    </div>
 
-                                        className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-rose-600 hover:bg-rose-50"
+                                    {eventItem.description && (
 
-                                    >
+                                        <p className="mt-3 line-clamp-3 min-h-[4.5rem] text-sm leading-6 text-[var(--muted-text)]">
 
-                                        <FontAwesomeIcon icon={faTrash} />
+                                            {eventItem.description}
 
-                                        Delete
+                                        </p>
 
-                                    </button>
+                                    )}
+
+                                    <div className="mt-3 flex items-start gap-2 text-sm text-[var(--muted-text)]">
+
+                                        <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-0.5 shrink-0 text-[#C51D27] dark:text-[#F0787E]" />
+
+                                        <span className="line-clamp-2 break-words">{eventItem.location}</span>
+
+                                    </div>
+
+                                    <div className="mt-auto flex justify-end gap-1.5 pt-5">
+
+                                        <button
+
+                                            type="button"
+
+                                            onClick={() => openEditModal(eventItem)}
+
+                                            className="inline-flex items-center gap-2 rounded-full bg-[#E7E5E3] px-4 py-2.5 text-sm font-semibold text-[#333333] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-[#C51D27] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C51D27] dark:bg-[#202124] dark:text-[#EAEAEA] dark:hover:text-[#F0787E]"
+
+                                        >
+
+                                            <FontAwesomeIcon icon={faPen} />
+
+                                            Edit
+
+                                        </button>
+
+                                        <button
+
+                                            type="button"
+
+                                            onClick={() => handleDelete(eventItem)}
+
+                                            className="inline-flex items-center gap-2 rounded-full bg-rose-500/10 px-4 py-2.5 text-sm font-semibold text-rose-600 transition-all duration-300 hover:-translate-y-0.5 hover:bg-rose-500/15 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:text-rose-400"
+
+                                        >
+
+                                            <FontAwesomeIcon icon={faTrash} />
+
+                                            Delete
+
+                                        </button>
+
+                                    </div>
 
                                 </div>
 
@@ -849,9 +906,9 @@ const Events = ({ token }) => {
 
             ) : (
 
-                <div className="rounded-2xl border border-[var(--border-color)]/60 bg-[var(--card-background)] px-5 py-14 text-center shadow-[0_5px_24px_var(--card-shadow)]">
+                <div className="rounded-lg bg-[var(--card-background)] px-5 py-14 text-center shadow-[0_5px_24px_var(--card-shadow)]">
 
-                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1a1a4c]/10 text-[#1a1a4c] dark:bg-violet-300/10 dark:text-violet-200">
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-[#C51D27]/10 text-[#C51D27] dark:bg-[#E45A61]/10 dark:text-[#F0787E]">
 
                         <FontAwesomeIcon icon={faCalendarAlt} className="text-xl" />
 
@@ -881,7 +938,7 @@ const Events = ({ token }) => {
 
                             onClick={openAddModal}
 
-                            className="mt-5 rounded-lg bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-teal-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:bg-teal-300 dark:text-slate-950 dark:hover:bg-teal-200"
+                            className="mt-5 rounded-lg bg-[#C51D27] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#A81720] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C51D27] focus-visible:ring-offset-2 dark:bg-[#E45A61] dark:text-slate-950 dark:hover:bg-[#F0787E]"
 
                         >
 
@@ -935,11 +992,11 @@ const Events = ({ token }) => {
 
                             aria-labelledby="event-modal-title"
 
-                            className="max-h-[92dvh] w-full max-w-xl overflow-y-auto rounded-2xl border border-[var(--border-color)]/70 bg-[var(--card-background)] text-[var(--text)] shadow-2xl"
+                            className="max-h-[92dvh] w-full max-w-xl overflow-y-auto rounded-lg bg-[var(--card-background)] text-[var(--text)] shadow-2xl"
 
                         >
 
-                            <div className="flex items-center justify-between border-b border-[var(--border-color)] p-5">
+                            <div className="flex items-center justify-between p-5">
 
                                 <div>
 
@@ -965,7 +1022,7 @@ const Events = ({ token }) => {
 
                                     aria-label="Close event form"
 
-                                    className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-[var(--hover)]"
+                                    className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E7E5E3] text-[#333333] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-[#C51D27] dark:bg-[#202124] dark:text-[#EAEAEA] dark:hover:text-[#F0787E]"
 
                                 >
 
@@ -1011,7 +1068,7 @@ const Events = ({ token }) => {
 
                                         placeholder="e.g. Sunday Worship Service"
 
-                                        className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                        className="h-11 w-full rounded-lg bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#C51D27] focus:ring-2 focus:ring-[#C51D27]/15"
 
                                     />
 
@@ -1041,7 +1098,7 @@ const Events = ({ token }) => {
 
                                             required
 
-                                            className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                            className="h-11 w-full rounded-lg bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#C51D27] focus:ring-2 focus:ring-[#C51D27]/15"
 
                                         />
 
@@ -1069,7 +1126,7 @@ const Events = ({ token }) => {
 
                                             required
 
-                                            className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                            className="h-11 w-full rounded-lg bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#C51D27] focus:ring-2 focus:ring-[#C51D27]/15"
 
                                         />
 
@@ -1099,7 +1156,7 @@ const Events = ({ token }) => {
 
                                         placeholder="e.g. Main Auditorium"
 
-                                        className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                        className="h-11 w-full rounded-lg bg-[var(--input-background)] px-3 text-sm outline-none transition focus:border-[#C51D27] focus:ring-2 focus:ring-[#C51D27]/15"
 
                                     />
 
@@ -1113,7 +1170,7 @@ const Events = ({ token }) => {
 
                                         {form.image && (
 
-                                            <button type="button" onClick={() => setForm((current) => ({ ...current, image: "" }))} className="text-xs font-semibold text-rose-600 hover:text-rose-700">
+                                            <button type="button" onClick={() => setForm((current) => ({ ...current, image: "" }))} className="rounded-full bg-[#E7E5E3] px-3.5 py-2 text-xs font-semibold text-[#333333] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-[#C51D27] dark:bg-[#202124] dark:text-[#EAEAEA] dark:hover:text-[#F0787E]">
 
                                                 Remove image
 
@@ -1125,7 +1182,7 @@ const Events = ({ token }) => {
 
                                     {form.image ? (
 
-                                        <div className="mb-3 overflow-hidden rounded-xl border border-[var(--border-color)]">
+                                        <div className="mb-3 overflow-hidden rounded-lg">
 
                                             <img src={form.image.startsWith("http") ? form.image : `${SERVER_URL}${form.image.startsWith("/") ? "" : "/"}${form.image}`} alt="Selected event" className="h-44 w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} />
 
@@ -1133,7 +1190,7 @@ const Events = ({ token }) => {
 
                                     ) : (
 
-                                        <div className="mb-3 flex min-h-24 items-center justify-center rounded-xl border border-dashed border-[var(--border-color)] bg-[var(--hover)] px-4 text-center text-sm text-[var(--muted-text)]">
+                                        <div className="mb-3 flex min-h-24 items-center justify-center rounded-lg border border-dashed border-[var(--muted-text)]/30 bg-[var(--hover)] px-4 text-center text-sm text-[var(--muted-text)]">
 
                                             No image selected. Choose a photo below, or leave this empty.
 
@@ -1151,11 +1208,11 @@ const Events = ({ token }) => {
 
                                     ) : mediaImages.length > 0 ? (
 
-                                        <div id="event-image-picker" className="grid max-h-56 grid-cols-2 gap-3 overflow-y-auto rounded-xl border border-[var(--border-color)] p-2 sm:grid-cols-3">
+                                        <div id="event-image-picker" className="grid max-h-56 grid-cols-2 gap-3 overflow-y-auto rounded-lg p-2 sm:grid-cols-3">
 
                                             {mediaImages.map((image) => (
 
-                                                <button key={image.id} type="button" onClick={() => setForm((current) => ({ ...current, image: image.url }))} aria-pressed={form.image === image.url} title={`Select ${image.name || "image"}`} className={`overflow-hidden rounded-lg border-2 text-left transition ${form.image === image.url ? "border-[#4545a0] ring-2 ring-[#4545a0]/20" : "border-transparent hover:border-[var(--border-color)]"}`}>
+                                                <button key={image.id} type="button" onClick={() => setForm((current) => ({ ...current, image: image.url }))} aria-pressed={form.image === image.url} title={`Select ${image.name || "image"}`} className={`overflow-hidden rounded-md text-left transition ${form.image === image.url ? "ring-2 ring-[#C51D27]/70 ring-offset-2 ring-offset-[var(--card-background)]" : "hover:shadow-md"}`}>
 
                                                     <img src={image.url} alt={image.name || "Media library image"} loading="lazy" className="h-24 w-full object-cover" />
 
@@ -1197,13 +1254,13 @@ const Events = ({ token }) => {
 
                                         placeholder="Add details about this event..."
 
-                                        className="w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] p-3 text-sm outline-none transition focus:border-[#7777bd] focus:ring-2 focus:ring-[#7777bd]/15"
+                                        className="w-full rounded-lg bg-[var(--input-background)] p-3 text-sm outline-none transition focus:border-[#C51D27] focus:ring-2 focus:ring-[#C51D27]/15"
 
                                     />
 
                                 </div>
 
-                                <div className="flex flex-col-reverse gap-3 border-t border-[var(--border-color)] pt-4 sm:flex-row sm:justify-end">
+                                <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:justify-end">
 
                                     <button
 
@@ -1211,7 +1268,7 @@ const Events = ({ token }) => {
 
                                         onClick={closeModal}
 
-                                        className="rounded-lg border border-[var(--border-color)] px-5 py-3 text-sm font-semibold hover:bg-[var(--hover)]"
+                                        className="rounded-full bg-[#E7E5E3] px-5 py-3 text-sm font-semibold text-[#333333] shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:text-[#C51D27] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C51D27] dark:bg-[#202124] dark:text-[#EAEAEA] dark:hover:text-[#F0787E]"
 
                                     >
 
@@ -1225,7 +1282,7 @@ const Events = ({ token }) => {
 
                                         disabled={isSaving}
 
-                                        className="rounded-lg bg-teal-700 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-teal-300 dark:text-slate-950 dark:hover:bg-teal-200"
+                                        className="rounded-lg bg-[#C51D27] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#A81720] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C51D27] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-[#E45A61] dark:text-slate-950 dark:hover:bg-[#F0787E]"
 
                                     >
 
