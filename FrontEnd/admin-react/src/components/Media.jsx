@@ -1,891 +1,770 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import {
-
     faPhotoVideo,
-
     faSearch,
-
     faUpload,
-
     faImage,
-
     faVideo,
-
     faTrash,
-
     faTimes,
-
     faFile,
-
+    faFolderOpen,
+    faCloudArrowUp,
+    faArrowUpRightFromSquare,
+    faRefresh,
 } from "@fortawesome/free-solid-svg-icons";
 
-const SERVER_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(/\/+$/, "");
+const SERVER_URL = (
+    import.meta.env.VITE_API_URL || "http://localhost:5000"
+).replace(/\/+$/, "");
+
 const API_URL = `${SERVER_URL}/api/media`;
 
 const formatSize = (bytes) => {
-
-    if (!Number.isFinite(Number(bytes)) || Number(bytes) < 0) return "—";
+    if (!Number.isFinite(Number(bytes)) || Number(bytes) < 0) {
+        return "—";
+    }
 
     if (Number(bytes) < 1024 * 1024) {
-
         return `${Math.max(1, Math.round(Number(bytes) / 1024))} KB`;
-
     }
 
     return `${(Number(bytes) / (1024 * 1024)).toFixed(1)} MB`;
+};
 
+const getMediaKind = (item) => {
+    if (item.kind) return item.kind;
+
+    const type = item.type || item.mimetype || "";
+    const name = item.name || item.filename || "";
+
+    if (type.startsWith("image/") || /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(name)) {
+        return "image";
+    }
+
+    if (type.startsWith("video/") || /\.(mp4|mov|webm|avi|mkv)$/i.test(name)) {
+        return "video";
+    }
+
+    return "other";
 };
 
 const Media = ({ token }) => {
-
     const shouldReduceMotion = useReducedMotion();
     const fileInputRef = useRef(null);
 
     const [mediaItems, setMediaItems] = useState([]);
-
     const [searchTerm, setSearchTerm] = useState("");
-
     const [typeFilter, setTypeFilter] = useState("all");
 
     const [notice, setNotice] = useState("");
+    const [noticeType, setNoticeType] = useState("success");
 
     const [previewItem, setPreviewItem] = useState(null);
 
     const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState("");
 
     const [isUploading, setIsUploading] = useState(false);
-
     const [isDragging, setIsDragging] = useState(false);
+    const [deletingId, setDeletingId] = useState(null);
+
+    const motionDuration = shouldReduceMotion ? 0 : 0.35;
+
+    const requestHeaders = {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+
+    const showNotice = (message, type = "success") => {
+        setNotice(message);
+        setNoticeType(type);
+    };
 
     const loadMedia = async () => {
+        setIsLoading(true);
+        setLoadError("");
 
         try {
+            const response = await fetch(API_URL, {
+                headers: requestHeaders,
+            });
 
-            const response = await fetch(API_URL);
-
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok || data.success === false) {
-
                 throw new Error(data.message || "Could not load media files.");
-
             }
 
-            const items = Array.isArray(data) ? data : (data.items || data.media || data.data || []);
+            const items = Array.isArray(data)
+                ? data
+                : data.items || data.media || data.data || [];
 
-            setMediaItems(
+            const normalizedItems = items.map((item) => {
+                const fileUrl = item.url || item.path || "";
 
-                (items || []).map((item) => ({
-
+                return {
                     ...item,
-
                     id: item._id || item.id,
+                    name: item.name || item.filename || "Untitled file",
+                    kind: getMediaKind(item),
+                    url: fileUrl.startsWith("http")
+                        ? fileUrl
+                        : `${SERVER_URL}${fileUrl.startsWith("/") ? "" : "/"}${fileUrl}`,
+                };
+            });
 
-                    url: item.url?.startsWith("http")
-
-                        ? item.url
-
-                        : `${SERVER_URL}${item.url?.startsWith("/") ? "" : "/"}${item.url || ""}`,
-
-                }))
-
-            );
-
+            setMediaItems(normalizedItems);
         } catch (error) {
-
-            setNotice(error.message || "Unable to connect to the media server.");
-
+            setLoadError(error.message || "Unable to connect to the media server.");
         } finally {
-
             setIsLoading(false);
-
         }
-
     };
 
     useEffect(() => {
-
         loadMedia();
+    }, [token]);
 
-    }, []);
+    useEffect(() => {
+        if (!previewItem) return;
+
+        const handleEscape = (event) => {
+            if (event.key === "Escape") {
+                setPreviewItem(null);
+            }
+        };
+
+        window.addEventListener("keydown", handleEscape);
+
+        return () => window.removeEventListener("keydown", handleEscape);
+    }, [previewItem]);
 
     const filteredItems = useMemo(() => {
-
         const query = searchTerm.trim().toLowerCase();
 
         return mediaItems.filter((item) => {
+            const searchableText = [
+                item.name,
+                item.type,
+                item.kind,
+            ]
+                .join(" ")
+                .toLowerCase();
 
-            const matchesSearch = (item.name || "").toLowerCase().includes(query);
+            const matchesSearch = searchableText.includes(query);
 
             const matchesType =
-
                 typeFilter === "all" ||
-
                 (typeFilter === "images" && item.kind === "image") ||
-
                 (typeFilter === "videos" && item.kind === "video") ||
-
                 (typeFilter === "other" && item.kind === "other");
 
             return matchesSearch && matchesType;
-
         });
-
     }, [mediaItems, searchTerm, typeFilter]);
 
-    const imageCount = mediaItems.filter((item) => item.kind === "image").length;
+    const imageCount = mediaItems.filter(
+        (item) => item.kind === "image"
+    ).length;
 
-    const videoCount = mediaItems.filter((item) => item.kind === "video").length;
+    const videoCount = mediaItems.filter(
+        (item) => item.kind === "video"
+    ).length;
 
     const uploadFiles = async (files) => {
-
-        if (!files.length) return;
+        if (!files.length || isUploading) return;
 
         const formData = new FormData();
 
-        files.forEach((file) => formData.append("files", file));
+        files.forEach((file) => {
+            formData.append("files", file);
+        });
 
         setIsUploading(true);
-
         setNotice("");
+        setLoadError("");
 
         try {
-
             const response = await fetch(API_URL, {
-
                 method: "POST",
-
-                headers: token ? { Authorization: `Bearer ${token}` } : {},
+                headers: requestHeaders,
                 body: formData,
-
             });
 
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok || data.success === false) {
-
                 throw new Error(data.message || "Media upload failed.");
-
             }
 
             await loadMedia();
 
-            setNotice(`${files.length} file${files.length === 1 ? "" : "s"} uploaded successfully.`);
-
+            showNotice(
+                `${files.length} file${files.length === 1 ? "" : "s"} uploaded successfully.`
+            );
         } catch (error) {
-
-            setNotice(error.message || "Unable to upload the selected files.");
-
+            showNotice(
+                error.message || "Unable to upload the selected files.",
+                "error"
+            );
         } finally {
-
             setIsUploading(false);
-
         }
-
     };
 
     const handleFiles = async (event) => {
-
         await uploadFiles(Array.from(event.target.files || []));
-
         event.target.value = "";
-
     };
 
     const handleDelete = async (item) => {
+        const confirmed = window.confirm(
+            `Permanently delete "${item.name}" from your media library?`
+        );
 
-        const confirmed = window.confirm(`Remove "${item.name}" from the media library?`);
+        if (!confirmed || deletingId) return;
 
-        if (!confirmed) return;
+        setDeletingId(item.id);
+        setNotice("");
 
         try {
+            const response = await fetch(`${API_URL}/${item.id}`, {
+                method: "DELETE",
+                headers: requestHeaders,
+            });
 
-            const response = await fetch(`${API_URL}/${item.id}`, { method: "DELETE", headers: token ? { Authorization: `Bearer ${token}` } : {} });
-
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
 
             if (!response.ok || data.success === false) {
-
                 throw new Error(data.message || "Could not delete this media file.");
-
             }
 
-            setMediaItems((current) => current.filter((media) => media.id !== item.id));
+            setMediaItems((current) =>
+                current.filter((media) => media.id !== item.id)
+            );
 
-            if (previewItem?.id === item.id) setPreviewItem(null);
+            if (previewItem?.id === item.id) {
+                setPreviewItem(null);
+            }
 
-            setNotice(`"${item.name}" was deleted successfully.`);
-
+            showNotice("Media file deleted successfully.");
         } catch (error) {
-
-            setNotice(error.message || "Unable to delete this media file.");
-
+            showNotice(
+                error.message || "Unable to delete this media file.",
+                "error"
+            );
+        } finally {
+            setDeletingId(null);
         }
-
     };
 
-    const stats = [
+    const cardClass =
+        "shadow-xl shadow-[#e1dfdf] bg-[var(--card-background)]";
 
-        {
+    const buttonClass =
+        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2.5 text-xs font-semibold transition disabled:cursor-not-allowed disabled:opacity-50";
 
-            label: "Total files",
+    const secondaryButton =
+        `${buttonClass} bg-[var(--button-background)] text-[var(--button-text)] hover:bg-[var(--button-hover)]`;
 
-            value: mediaItems.length,
-
-            icon: faPhotoVideo,
-
-            iconStyle: "bg-[#1a1a4c]/[0.08] text-[#55558b] dark:bg-indigo-300/10 dark:text-indigo-200",
-
-            detail: "All stored media",
-
-        },
-
-        {
-
-            label: "Images",
-
-            value: imageCount,
-
-            icon: faImage,
-
-            iconStyle: "bg-[#1a1a4c]/[0.08] text-[#55558b] dark:bg-indigo-300/10 dark:text-indigo-200",
-
-            detail: "Photo assets",
-
-        },
-
-        {
-
-            label: "Videos",
-
-            value: videoCount,
-
-            icon: faVideo,
-
-            iconStyle: "bg-[#1a1a4c]/[0.08] text-[#55558b] dark:bg-indigo-300/10 dark:text-indigo-200",
-
-            detail: "Video assets",
-
-        },
-
-    ];
+    const inputClass =
+        "h-10 rounded-md border border-[var(--border-color)] bg-[var(--input-background)] text-sm text-[var(--text)] outline-none transition placeholder:text-[var(--muted-text)] focus:border-[#C51D27]";
 
     return (
-
         <motion.section
-            initial={shouldReduceMotion ? false : { opacity: 0, x: -18 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: shouldReduceMotion ? 0 : 0.45, ease: "easeOut" }}
-            className="min-w-0 space-y-6 pb-8 text-[var(--text)]">
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: motionDuration, ease: "easeOut" }}
+            className="min-w-0 space-y-5 pb-6 text-[var(--text)]"
+        >
+            {/* Page heading */}
 
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#171744] via-[#252568] to-[#4545a0] p-6 text-white shadow-[0_14px_35px_rgba(26,26,76,0.20)] sm:p-8">
-
-                <div className="pointer-events-none absolute -right-12 -top-20 h-64 w-64 rounded-full border-[32px] border-white/5" />
-
-                <div className="pointer-events-none absolute -bottom-24 right-36 h-52 w-52 rounded-full bg-fuchsia-400/10 blur-2xl" />
-
-                <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-center">
-
-                    <div className="max-w-xl">
-
-                        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-semibold tracking-wide text-white/90">
-
-                            <span className="h-2 w-2 rounded-full bg-emerald-300" /> CHURCH MEDIA CENTRE
-
-                        </div>
-
-                        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Media Library</h2>
-
-                        <p className="mt-3 max-w-lg text-sm leading-6 text-indigo-100 sm:text-base">
-
-                            Keep your church photos and videos organised in one place, ready for your website and media team.
-
-                        </p>
-
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                <div>
+                    <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted-text)]">
+                        Content management
                     </div>
 
+                    <h1 className="text-2xl font-bold tracking-tight">
+                        Media Library
+                    </h1>
+
+                    <p className="mt-1 text-sm text-[var(--muted-text)]">
+                        Manage photos and videos for your church website.
+                    </p>
+                </div>
+
+                <div className="flex items-center gap-2">
                     <button
-
                         type="button"
+                        onClick={loadMedia}
+                        disabled={isLoading}
+                        className={secondaryButton}
+                    >
+                        <FontAwesomeIcon
+                            icon={faRefresh}
+                            className={isLoading ? "animate-spin" : ""}
+                        />
+                        Refresh
+                    </button>
 
+                    <button
+                        type="button"
                         onClick={() => fileInputRef.current?.click()}
-
                         disabled={isUploading}
-
-                        className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-bold text-[#202052] shadow-lg transition duration-200 hover:-translate-y-0.5 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-60"
-
+                        className={`${buttonClass} bg-[#292929] text-white hover:bg-[#414141] dark:bg-[#E7E5E2] dark:text-[#171717] dark:hover:bg-white`}
                     >
-
                         <FontAwesomeIcon icon={faUpload} />
-
-                        {isUploading ? "Uploading files..." : "Upload media"}
-
+                        {isUploading ? "Uploading..." : "Upload media"}
                     </button>
-
                 </div>
-
-                <input
-
-                    ref={fileInputRef}
-
-                    type="file"
-
-                    multiple
-
-                    accept="image/*,video/*"
-
-                    className="hidden"
-
-                    onChange={handleFiles}
-
-                />
-
             </div>
 
-            {notice && (
+            <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*,video/*"
+                className="hidden"
+                onChange={handleFiles}
+            />
 
-                <div
+            {/* Compact summary */}
 
-                    role="status"
-
-                    className="flex items-center justify-between gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-[var(--text)]"
-
-                >
-
-                    <span>{notice}</span>
-
-                    <button
-
-                        type="button"
-
-                        onClick={() => setNotice("")}
-
-                        aria-label="Dismiss notification"
-
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition hover:bg-black/5"
-
-                    >
-
-                        <FontAwesomeIcon icon={faTimes} />
-
-                    </button>
-
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-[var(--border-color)] pb-4">
+                <div className="flex items-center gap-2 text-xs">
+                    <FontAwesomeIcon
+                        icon={faPhotoVideo}
+                        className="text-[var(--muted-text)]"
+                    />
+                    <span className="font-semibold">{mediaItems.length}</span>
+                    <span className="text-[var(--muted-text)]">Total files</span>
                 </div>
 
-            )}
+                <span className="hidden h-4 w-px bg-[var(--border-color)] sm:block" />
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="flex items-center gap-2 text-xs">
+                    <FontAwesomeIcon
+                        icon={faImage}
+                        className="text-[var(--muted-text)]"
+                    />
+                    <span className="font-semibold">{imageCount}</span>
+                    <span className="text-[var(--muted-text)]">Images</span>
+                </div>
 
-                {stats.map((stat) => (
+                <span className="hidden h-4 w-px bg-[var(--border-color)] sm:block" />
 
-                    <motion.article
+                <div className="flex items-center gap-2 text-xs">
+                    <FontAwesomeIcon
+                        icon={faVideo}
+                        className="text-[var(--muted-text)]"
+                    />
+                    <span className="font-semibold">{videoCount}</span>
+                    <span className="text-[var(--muted-text)]">Videos</span>
+                </div>
+            </div>
 
-                        key={stat.label}
-                        initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.2 }}
-                        transition={{ duration: shouldReduceMotion ? 0 : 0.4, ease: "easeOut" }}
+            {/* Notification */}
 
-                        className={`group relative isolate flex items-center gap-4 overflow-hidden rounded-3xl border border-[var(--border-color)]/60 bg-[var(--card-background)] p-5 shadow-[0_8px_28px_var(--card-shadow)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_38px_var(--card-shadow)] ${"before:absolute before:inset-x-0 before:top-0 before:h-1 before:bg-[#1a1a4c]/70 dark:before:bg-indigo-300/60"
-
+            <AnimatePresence>
+                {(notice || loadError) && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0, y: -5 }}
+                        animate={{ opacity: 1, height: "auto", y: 0 }}
+                        exit={{ opacity: 0, height: 0, y: -5 }}
+                        className={`flex items-center justify-between gap-3 rounded-md border px-4 py-3 text-xs ${loadError || noticeType === "error"
+                                ? "border-red-200 bg-red-50 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300"
+                                : "border-[var(--border-color)] bg-[var(--card-background)] text-[var(--text)]"
                             }`}
-
                     >
+                        <span>{loadError || notice}</span>
 
-                        <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg shadow-inner transition duration-300 group-hover:rotate-3 group-hover:scale-105 ${stat.iconStyle}`}>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setNotice("");
+                                setLoadError("");
+                            }}
+                            aria-label="Dismiss notification"
+                            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md hover:bg-black/5"
+                        >
+                            <FontAwesomeIcon icon={faTimes} />
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                            <FontAwesomeIcon icon={stat.icon} />
+            {/* Upload area */}
 
-                        </div>
-
-                        <div className="min-w-0 flex-1">
-
-                            <p className="text-sm font-semibold text-[var(--muted-text)]">{stat.label}</p>
-
-                            <div className="mt-1 flex items-end justify-between gap-2">
-
-                                <p className="text-3xl font-extrabold tracking-tight">{stat.value}</p>
-
-                                <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${stat.iconStyle}`}>{stat.detail}</span>
-
-                            </div>
-
-                        </div>
-
-                    </motion.article>
-
-                ))}
-
-            </div>
-
-            <div
-
+            <motion.div
+                initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: motionDuration, delay: 0.05 }}
                 onDragEnter={(event) => {
-
                     event.preventDefault();
-
                     setIsDragging(true);
-
                 }}
-
                 onDragOver={(event) => event.preventDefault()}
-
                 onDragLeave={(event) => {
-
-                    if (event.currentTarget === event.target) setIsDragging(false);
-
+                    if (event.currentTarget === event.target) {
+                        setIsDragging(false);
+                    }
                 }}
-
                 onDrop={async (event) => {
-
                     event.preventDefault();
-
                     setIsDragging(false);
 
-                    await uploadFiles(Array.from(event.dataTransfer.files || []));
-
+                    await uploadFiles(
+                        Array.from(event.dataTransfer.files || [])
+                    );
                 }}
-
-                className={`group/upload relative overflow-hidden rounded-3xl border-2 border-dashed p-6 shadow-[0_12px_30px_var(--card-shadow)] transition duration-300 sm:p-7 ${isDragging
-
-                    ? "border-[#4545a0] bg-[#1a1a4c]/[0.045] shadow-md dark:border-indigo-300/60 dark:bg-indigo-300/[0.06]"
-
-                    : "border-[var(--border-color)] bg-[var(--card-background)] hover:border-[#4545a0]/50 hover:shadow-[0_18px_38px_var(--card-shadow)]"
-
+                className={`flex flex-col items-center justify-center gap-3 rounded-md border border-dashed px-5 py-5 text-center transition sm:flex-row sm:text-left ${isDragging
+                        ? "border-[#C51D27] bg-[#C51D27]/5"
+                        : "border-[var(--border-color)] bg-[var(--card-background)] hover:border-[var(--muted-text)]"
                     }`}
-
             >
-
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#1a1a4c]/[0.07] text-xl text-[#4545a0] shadow-sm ring-1 ring-[#1a1a4c]/10 dark:bg-indigo-300/10 dark:text-indigo-200 dark:ring-indigo-300/10 transition duration-300 group-hover/upload:rotate-3 group-hover/upload:scale-105">
-
-                        <FontAwesomeIcon icon={faUpload} />
-
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-
-                        <p className="font-semibold">Add new media</p>
-
-                        <p className="mt-1 text-sm text-[var(--muted-text)]">
-
-                            Drag and drop image or video files here, or browse your device. Files are saved to your media library.
-
-                        </p>
-
-                    </div>
-
-                    <button
-
-                        type="button"
-
-                        onClick={() => fileInputRef.current?.click()}
-
-                        disabled={isUploading}
-
-                        className="shrink-0 rounded-xl bg-gradient-to-r from-[#252568] to-[#4545a0] px-5 py-3 text-sm font-bold text-white shadow-md transition duration-200 hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-60"
-
-                    >
-
-                        Browse files
-
-                    </button>
-
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-[var(--hover)] text-[var(--muted-text)]">
+                    <FontAwesomeIcon icon={faCloudArrowUp} />
                 </div>
 
-            </div>
+                <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold">
+                        {isDragging ? "Drop files to upload" : "Add media to your library"}
+                    </p>
 
-            <div className="overflow-hidden rounded-3xl border border-[var(--border-color)]/60 bg-[var(--card-background)] shadow-[0_12px_34px_var(--card-shadow)] transition duration-300 hover:shadow-[0_18px_42px_var(--card-shadow)]">
+                    <p className="mt-1 text-xs text-[var(--muted-text)]">
+                        Drag files here or browse your device. Images and videos are supported.
+                    </p>
+                </div>
 
-                <div className="flex flex-col gap-4 border-b border-[var(--border-color)] bg-[#1a1a4c]/[0.035] dark:bg-white/[0.025] p-5 sm:flex-row sm:items-center sm:justify-between">
+                <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className={`${secondaryButton} shrink-0`}
+                >
+                    Browse files
+                </button>
+            </motion.div>
 
+            {/* Collection */}
+
+            <div className={`overflow-hidden rounded-md ${cardClass}`}>
+                <div className="flex flex-col justify-between gap-3 border-b border-[var(--border-color)] px-4 py-4 sm:flex-row sm:items-center">
                     <div>
+                        <h2 className="text-sm font-semibold">
+                            Your collection
+                        </h2>
 
-                        <h3 className="text-lg font-extrabold tracking-tight">Your collection</h3>
-
-                        <p className="mt-1 text-sm text-[var(--muted-text)]">
-
-                            {filteredItems.length} {filteredItems.length === 1 ? "file" : "files"} shown
-
-                            {searchTerm ? ` for “${searchTerm}”` : " in your library"}
-
+                        <p className="mt-1 text-xs text-[var(--muted-text)]">
+                            {filteredItems.length}{" "}
+                            {filteredItems.length === 1 ? "file" : "files"}
+                            {" "}shown
                         </p>
-
                     </div>
 
-                    <div className="flex flex-col gap-3 sm:flex-row">
-
-                        <div className="relative min-w-0 sm:w-64">
-
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                        <div className="relative sm:w-60">
                             <FontAwesomeIcon
-
                                 icon={faSearch}
-
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[var(--muted-text)]"
-
+                                className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[var(--muted-text)]"
                             />
 
                             <input
-
                                 type="search"
-
                                 value={searchTerm}
-
                                 onChange={(event) => setSearchTerm(event.target.value)}
-
                                 placeholder="Search media..."
-
                                 aria-label="Search media files"
-
-                                className="h-11 w-full rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] pl-9 pr-3 text-sm shadow-sm transition duration-200 outline-none hover:border-indigo-400/60 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-
+                                className={`${inputClass} w-full pl-9 pr-3`}
                             />
-
                         </div>
 
                         <select
-
                             value={typeFilter}
-
                             onChange={(event) => setTypeFilter(event.target.value)}
-
                             aria-label="Filter media by type"
-
-                            className="h-11 rounded-xl border border-[var(--border-color)] bg-[var(--input-background)] px-3 text-sm shadow-sm transition duration-200 outline-none hover:border-indigo-400/60 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10"
-
+                            className={`${inputClass} px-3`}
                         >
-
                             <option value="all">All media</option>
-
                             <option value="images">Images</option>
-
                             <option value="videos">Videos</option>
-
                             <option value="other">Other files</option>
-
                         </select>
-
                     </div>
-
                 </div>
 
-                <div className="bg-[var(--card-background)] p-5">
-
+                <div className="p-4">
                     {isLoading ? (
-
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-
                             {[1, 2, 3].map((item) => (
-
-                                <div key={item} className="animate-pulse overflow-hidden rounded-2xl border border-[var(--border-color)]">
-
-                                    <div className="h-48 bg-[var(--hover)]" />
-
-                                    <div className="space-y-2 p-4">
-
-                                        <div className="h-3 w-3/4 rounded bg-[var(--hover)]" />
-
-                                        <div className="h-3 w-1/3 rounded bg-[var(--hover)]" />
-
-                                    </div>
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    ) : filteredItems.length > 0 ? (
-
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-
-                            {filteredItems.map((item) => (
-
-                                <motion.article
-
-                                    key={item.id}
-                                    initial={shouldReduceMotion ? false : { opacity: 0, x: -14, y: 8 }}
-                                    whileInView={{ opacity: 1, x: 0, y: 0 }}
-                                    viewport={{ once: true, amount: 0.15 }}
-                                    transition={{ duration: shouldReduceMotion ? 0 : 0.38, ease: "easeOut" }}
-
-                                    className="group relative min-w-0 overflow-hidden rounded-3xl border border-[var(--border-color)] bg-[var(--card-background)] shadow-[0_8px_24px_var(--card-shadow)] transition duration-300 hover:-translate-y-1 hover:border-[#4545a0]/50 hover:shadow-[0_18px_38px_var(--card-shadow)]"
-
+                                <div
+                                    key={item}
+                                    className="animate-pulse overflow-hidden rounded-md border border-[var(--border-color)]"
                                 >
+                                    <div className="aspect-[4/3] bg-[var(--hover)]" />
 
+                                    <div className="space-y-2 p-3">
+                                        <div className="h-3 w-3/4 rounded bg-[var(--hover)]" />
+                                        <div className="h-3 w-1/3 rounded bg-[var(--hover)]" />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : filteredItems.length > 0 ? (
+                        <motion.div
+                            initial="hidden"
+                            animate="visible"
+                            variants={{
+                                hidden: {},
+                                visible: {
+                                    transition: {
+                                        staggerChildren: shouldReduceMotion ? 0 : 0.045,
+                                    },
+                                },
+                            }}
+                            className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3"
+                        >
+                            {filteredItems.map((item) => (
+                                <motion.article
+                                    key={item.id}
+                                    variants={{
+                                        hidden: { opacity: 0, y: 8 },
+                                        visible: { opacity: 1, y: 0 },
+                                    }}
+                                    transition={{ duration: motionDuration }}
+                                    className={`group min-w-0 overflow-hidden rounded-md border border-[var(--border-color)] bg-[var(--card-background)] transition duration-200 hover:border-[var(--muted-text)] ${deletingId === item.id ? "opacity-50" : ""
+                                        }`}
+                                >
                                     <button
-
                                         type="button"
-
                                         onClick={() => setPreviewItem(item)}
-
-                                        className="relative flex h-56 w-full items-center justify-center overflow-hidden bg-[var(--hover)]"
-
+                                        className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-[var(--hover)]"
                                         aria-label={`Preview ${item.name}`}
-
                                     >
-
                                         {item.kind === "image" ? (
-
                                             <img
-
                                                 src={item.url}
-
                                                 alt={item.name}
-
                                                 loading="lazy"
-
-                                                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-
+                                                className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.025]"
                                             />
-
                                         ) : item.kind === "video" ? (
+                                            <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-[var(--muted-text)]">
+                                                <FontAwesomeIcon
+                                                    icon={faVideo}
+                                                    className="text-3xl"
+                                                />
 
-                                            <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#1a1a4c]/[0.045] dark:bg-indigo-300/[0.06] text-[var(--muted-text)]">
-
-                                                <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--card-background)] text-2xl shadow-lg transition group-hover:scale-110">
-
-                                                    <FontAwesomeIcon icon={faVideo} />
-
+                                                <span className="text-xs font-medium">
+                                                    Video
                                                 </span>
-
-                                                <span className="text-xs font-semibold uppercase tracking-[0.18em]">Video file</span>
-
                                             </div>
-
                                         ) : (
-
-                                            <FontAwesomeIcon icon={faFile} className="text-4xl text-[var(--muted-text)]" />
-
+                                            <FontAwesomeIcon
+                                                icon={faFile}
+                                                className="text-3xl text-[var(--muted-text)]"
+                                            />
                                         )}
 
-                                        <span className="absolute left-3 top-3 rounded-full border border-white/20 bg-black/55 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur">
-
-                                            {item.kind === "image" ? "Image" : item.kind === "video" ? "Video" : "File"}
-
+                                        <span className="absolute left-2.5 top-2.5 rounded-sm bg-black/60 px-2 py-1 text-[9px] font-semibold uppercase tracking-wide text-white">
+                                            {item.kind === "image"
+                                                ? "Image"
+                                                : item.kind === "video"
+                                                    ? "Video"
+                                                    : "File"}
                                         </span>
 
-                                        <span className="absolute bottom-3 right-3 rounded-lg bg-black/55 px-2.5 py-1 text-xs font-medium text-white opacity-0 backdrop-blur transition group-hover:opacity-100">
-
-                                            Click to preview
-
+                                        <span className="absolute bottom-2.5 right-2.5 rounded-sm bg-black/60 px-2 py-1 text-[10px] text-white opacity-0 transition group-hover:opacity-100">
+                                            Preview
                                         </span>
-
                                     </button>
 
-                                    <div className="border-t border-[var(--border-color)] bg-[var(--card-background)] p-4">
-
-                                        <div className="flex items-start justify-between gap-3">
-
-                                            <div className="min-w-0 flex-1">
-
-                                                <p className="truncate text-sm font-extrabold tracking-tight" title={item.name}>{item.name}</p>
-
-                                                <p className="mt-1.5 text-xs text-[var(--muted-text)]">
-
-                                                    {formatSize(item.size)} <span className="mx-1.5">·</span> {item.type || (item.kind === "image" ? "Image" : "Video")}
-
-                                                </p>
-
-                                            </div>
-
-                                            <button
-
-                                                type="button"
-
-                                                onClick={() => handleDelete(item)}
-
-                                                title={`Delete ${item.name}`}
-
-                                                aria-label={`Delete ${item.name}`}
-
-                                                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[var(--muted-text)] transition hover:bg-rose-500/10 hover:text-rose-500"
-
+                                    <div className="flex items-center justify-between gap-3 border-t border-[var(--border-color)] px-3 py-3">
+                                        <div className="min-w-0 flex-1">
+                                            <p
+                                                className="truncate text-xs font-semibold"
+                                                title={item.name}
                                             >
+                                                {item.name}
+                                            </p>
 
-                                                <FontAwesomeIcon icon={faTrash} />
-
-                                            </button>
-
+                                            <p className="mt-1 text-[10px] text-[var(--muted-text)]">
+                                                {formatSize(item.size)}
+                                                <span className="mx-1.5">·</span>
+                                                {item.type || item.kind}
+                                            </p>
                                         </div>
 
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDelete(item)}
+                                            disabled={deletingId === item.id}
+                                            title={`Delete ${item.name}`}
+                                            aria-label={`Delete ${item.name}`}
+                                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-[var(--muted-text)] transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+                                        >
+                                            <FontAwesomeIcon icon={faTrash} />
+                                        </button>
                                     </div>
-
                                 </motion.article>
-
                             ))}
-
-                        </div>
-
+                        </motion.div>
                     ) : (
-
-                        <div className="relative overflow-hidden rounded-3xl border-2 border-dashed border-[var(--border-color)] bg-[var(--card-background)] px-5 py-16 text-center shadow-inner transition duration-300 hover:border-[#4545a0]/50">
-
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-[#1a1a4c]/[0.07] text-2xl text-[#4545a0] shadow-inner dark:bg-indigo-300/10 dark:text-indigo-200">
-
-                                <FontAwesomeIcon icon={faPhotoVideo} />
-
+                        <div className="flex flex-col items-center justify-center px-5 py-12 text-center">
+                            <div className="mb-3 grid h-11 w-11 place-items-center rounded-md bg-[var(--hover)] text-[var(--muted-text)]">
+                                <FontAwesomeIcon icon={faFolderOpen} />
                             </div>
 
-                            <h3 className="text-lg font-bold">
-
-                                {mediaItems.length === 0 ? "Your library is ready for its first upload" : "No matching media found"}
-
+                            <h3 className="text-sm font-semibold">
+                                {mediaItems.length === 0
+                                    ? "Your media library is empty"
+                                    : "No matching media"}
                             </h3>
 
-                            <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[var(--muted-text)]">
-
+                            <p className="mt-1.5 max-w-sm text-xs leading-5 text-[var(--muted-text)]">
                                 {mediaItems.length === 0
-
-                                    ? "Upload church photos and videos to build your collection. Your saved files will appear here."
-
-                                    : "Try a different search term or switch the media filter."}
-
+                                    ? "Upload photos and videos to get started."
+                                    : "Try a different search term or filter."}
                             </p>
 
                             {mediaItems.length === 0 ? (
-
                                 <button
-
                                     type="button"
-
                                     onClick={() => fileInputRef.current?.click()}
-
-                                    className="mt-5 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#252568] to-[#4545a0] px-5 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:shadow-xl"
-
+                                    className={`${buttonClass} mt-4 bg-[#292929] text-white hover:bg-[#414141] dark:bg-[#E7E5E2] dark:text-[#171717]`}
                                 >
-
-                                    <FontAwesomeIcon icon={faUpload} /> Upload your first file
-
+                                    <FontAwesomeIcon icon={faUpload} />
+                                    Upload media
                                 </button>
-
                             ) : (
-
                                 <button
-
                                     type="button"
-
-                                    onClick={() => { setSearchTerm(""); setTypeFilter("all"); }}
-
-                                    className="mt-5 rounded-xl border border-[#4545a0]/25 bg-[#1a1a4c]/[0.04] px-4 py-2.5 text-sm font-bold transition hover:bg-[#1a1a4c]/[0.08]"
-
+                                    onClick={() => {
+                                        setSearchTerm("");
+                                        setTypeFilter("all");
+                                    }}
+                                    className={`${secondaryButton} mt-4`}
                                 >
-
                                     Clear filters
-
                                 </button>
-
                             )}
-
                         </div>
-
                     )}
-
                 </div>
-
             </div>
 
-            {previewItem && (
+            {/* Media preview */}
 
-                <div
-
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md"
-
-                    onMouseDown={(event) => {
-
-                        if (event.target === event.currentTarget) setPreviewItem(null);
-
-                    }}
-
-                >
-
-                    <div
-
-                        role="dialog"
-
-                        aria-modal="true"
-
-                        aria-labelledby="media-preview-title"
-
-                        className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-3xl border border-indigo-400/20 bg-[var(--card-background)] text-[var(--text)] shadow-[0_30px_100px_rgba(0,0,0,0.35)]"
-
+            <AnimatePresence>
+                {previewItem && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 backdrop-blur-sm sm:p-5"
+                        onMouseDown={(event) => {
+                            if (event.target === event.currentTarget) {
+                                setPreviewItem(null);
+                            }
+                        }}
                     >
+                        <motion.div
+                            initial={shouldReduceMotion ? false : { opacity: 0, y: 12, scale: 0.99 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 8, scale: 0.99 }}
+                            transition={{ duration: motionDuration }}
+                            role="dialog"
+                            aria-modal="true"
+                            aria-labelledby="media-preview-title"
+                            className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-md border border-[var(--border-color)] bg-[var(--card-background)] text-[var(--text)] shadow-2xl"
+                        >
+                            <div className="flex items-center justify-between gap-3 border-b border-[var(--border-color)] px-4 py-3">
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted-text)]">
+                                        Media preview
+                                    </p>
 
-                        <div className="flex items-center justify-between gap-3 border-b border-[var(--border-color)] bg-[#1a1a4c]/[0.035] dark:bg-white/[0.025] p-4 sm:p-5">
-
-                            <div className="min-w-0">
-
-                                <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#55558b] dark:text-indigo-200">Media preview</p>
-
-                                <h3 id="media-preview-title" className="mt-1 truncate font-bold">{previewItem.name}</h3>
-
-                            </div>
-
-                            <button
-
-                                type="button"
-
-                                onClick={() => setPreviewItem(null)}
-
-                                aria-label="Close preview"
-
-                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition hover:bg-[var(--hover)]"
-
-                            >
-
-                                <FontAwesomeIcon icon={faTimes} />
-
-                            </button>
-
-                        </div>
-
-                        <div className="flex max-h-[75vh] items-center justify-center overflow-auto bg-black/10 p-4 sm:p-6">
-
-                            {previewItem.kind === "image" ? (
-
-                                <img src={previewItem.url} alt={previewItem.name} className="max-h-[65vh] max-w-full rounded-lg object-contain" />
-
-                            ) : previewItem.kind === "video" ? (
-
-                                <video src={previewItem.url} controls className="max-h-[65vh] max-w-full rounded-lg" />
-
-                            ) : (
-
-                                <div className="py-12 text-center">
-
-                                    <FontAwesomeIcon icon={faFile} className="mb-3 text-4xl text-[var(--muted-text)]" />
-
-                                    <p className="text-sm text-[var(--muted-text)]">Preview is not available for this file type.</p>
-
+                                    <h3
+                                        id="media-preview-title"
+                                        className="mt-1 truncate text-sm font-semibold"
+                                    >
+                                        {previewItem.name}
+                                    </h3>
                                 </div>
 
-                            )}
+                                <div className="flex items-center gap-1">
+                                    <a
+                                        href={previewItem.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        title="Open media in new tab"
+                                        className="grid h-8 w-8 place-items-center rounded-md text-[var(--muted-text)] transition hover:bg-[var(--hover)]"
+                                    >
+                                        <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
+                                    </a>
 
-                        </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPreviewItem(null)}
+                                        aria-label="Close preview"
+                                        className="grid h-8 w-8 place-items-center rounded-md text-[var(--muted-text)] transition hover:bg-[var(--hover)]"
+                                    >
+                                        <FontAwesomeIcon icon={faTimes} />
+                                    </button>
+                                </div>
+                            </div>
 
-                        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[var(--border-color)] bg-[#1a1a4c]/[0.025] dark:bg-white/[0.02] p-4 text-xs text-[var(--muted-text)] sm:px-5">
+                            <div className="flex max-h-[75vh] items-center justify-center overflow-auto bg-black/5 p-3 sm:p-5">
+                                {previewItem.kind === "image" ? (
+                                    <img
+                                        src={previewItem.url}
+                                        alt={previewItem.name}
+                                        className="max-h-[65vh] max-w-full object-contain"
+                                    />
+                                ) : previewItem.kind === "video" ? (
+                                    <video
+                                        src={previewItem.url}
+                                        controls
+                                        className="max-h-[65vh] max-w-full"
+                                    />
+                                ) : (
+                                    <div className="py-12 text-center">
+                                        <FontAwesomeIcon
+                                            icon={faFile}
+                                            className="mb-3 text-3xl text-[var(--muted-text)]"
+                                        />
 
-                            <span>{previewItem.type || "Media file"}</span>
+                                        <p className="text-sm text-[var(--muted-text)]">
+                                            Preview is not available for this file type.
+                                        </p>
 
-                            <span>{formatSize(previewItem.size)}</span>
+                                        <a
+                                            href={previewItem.url}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="mt-3 inline-block text-xs font-semibold text-[#C51D27] hover:underline"
+                                        >
+                                            Open file
+                                        </a>
+                                    </div>
+                                )}
+                            </div>
 
-                        </div>
-
-                    </div>
-
-                </div>
-
-            )}
-
+                            <div className="flex items-center justify-between gap-3 border-t border-[var(--border-color)] px-4 py-3 text-xs text-[var(--muted-text)]">
+                                <span>{previewItem.type || "Media file"}</span>
+                                <span>{formatSize(previewItem.size)}</span>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.section>
-
     );
-
 };
 
 export default Media;
