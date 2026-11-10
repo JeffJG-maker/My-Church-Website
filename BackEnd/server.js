@@ -4,7 +4,6 @@ dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 require("dotenv").config();
 
-
 const path = require("path");
 const cors = require("cors");
 const express = require("express");
@@ -15,20 +14,12 @@ const contactRoutes = require("./routes/contactRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const mediaRoutes = require("./routes/mediaRoutes");
 const adminAuthRoutes = require("./routes/adminAuthRoutes");
+const adminUserRoutes = require("./routes/adminUserRoutes");
 
 const protectAdmin = require("./middleware/adminAuth");
+const authorizeRoles = require("./middleware/authorizeRoles");
 
 const app = express();
-
-// app.use(
-//   cors({
-//     origin: process.env.ADMIN_FRONTEND_URL || "http://localhost:3000",
-//     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
-
-
 
 const allowedOrigins = [
   "http://localhost:3000",
@@ -53,15 +44,15 @@ app.use(
   })
 );
 
-
 app.use(express.json({ limit: "1mb" }));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/media", express.static(path.join(__dirname, "media")));
 app.use("/churchData", express.static(path.join(__dirname, "churchData")));
 
-// Admin authentication endpoints
+// Authentication and administrator management endpoints
 app.use("/api/admin-auth", adminAuthRoutes);
+app.use("/api/admin-users", adminUserRoutes);
 
 // Protect sermon creation, editing and deletion.
 // Public sermon viewing and downloads remain available.
@@ -69,7 +60,10 @@ app.use(
   "/api/sermons",
   (req, res, next) => {
     if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
-      return protectAdmin(req, res, next);
+      return protectAdmin(req, res, (error) => {
+        if (error) return next(error);
+        return authorizeRoles("admin", "editor")(req, res, next);
+      });
     }
 
     next();
@@ -83,7 +77,10 @@ app.use(
   "/api/events",
   (req, res, next) => {
     if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
-      return protectAdmin(req, res, next);
+      return protectAdmin(req, res, (error) => {
+        if (error) return next(error);
+        return authorizeRoles("admin", "editor")(req, res, next);
+      });
     }
 
     next();
@@ -92,12 +89,15 @@ app.use(
 );
 
 // Contact submission remains public.
-// Reading, marking as read, and deleting messages require admin login.
+// Reading, marking as read, and deleting messages require Admin access.
 app.use(
   "/api/contact",
   (req, res, next) => {
     if (req.method !== "POST") {
-      return protectAdmin(req, res, next);
+      return protectAdmin(req, res, (error) => {
+        if (error) return next(error);
+        return authorizeRoles("admin")(req, res, next);
+      });
     }
 
     next();
@@ -105,11 +105,24 @@ app.use(
   contactRoutes
 );
 
-// Keep existing media routes available.
-// We will secure media-management operations separately once we
-// confirm the current mediaRoutes.js implementation.
-app.use("/api/media", mediaRoutes);
+// Media Library reads remain available to existing dashboard flows.
+// Creating, updating and deleting media requires Admin or Editor access.
+app.use(
+  "/api/media",
+  (req, res, next) => {
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
+      return protectAdmin(req, res, (error) => {
+        if (error) return next(error);
+        return authorizeRoles("admin", "editor")(req, res, next);
+      });
+    }
 
+    next();
+  },
+  mediaRoutes
+);
+
+// Backend health check
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     success: true,

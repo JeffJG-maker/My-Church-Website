@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const adminSchema = new mongoose.Schema(
@@ -10,21 +9,26 @@ const adminSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+
     password: {
       type: String,
       required: true,
       select: false,
     },
+
     name: {
       type: String,
       required: true,
       trim: true,
     },
+
     role: {
       type: String,
-      enum: ["admin"],
+      enum: ["admin", "editor", "viewer"],
       default: "admin",
+      lowercase: true,
     },
+
     isActive: {
       type: Boolean,
       default: true,

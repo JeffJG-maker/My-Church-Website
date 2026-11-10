@@ -192,4 +192,84 @@ router.delete("/:id", async (req, res) => {
     }
 });
 
+// POST: Reply to a contact message
+router.post("/:id/reply", async (req, res) => {
+    try {
+        const { reply } = req.body;
+
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid message ID.",
+            });
+        }
+
+        if (typeof reply !== "string" || !reply.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Please enter a reply message.",
+            });
+        }
+
+        const originalMessage = await Message.findById(req.params.id);
+
+        if (!originalMessage) {
+            return res.status(404).json({
+                success: false,
+                message: "Message not found.",
+            });
+        }
+
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+            return res.status(500).json({
+                success: false,
+                message: "Email service is not configured.",
+            });
+        }
+
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+
+        await transporter.sendMail({
+            from: `"Living Faith Church" <${process.env.EMAIL_USER}>`,
+            to: originalMessage.email,
+            replyTo: process.env.EMAIL_USER,
+            subject: `Re: ${originalMessage.subject || "Your message to Living Faith Church"}`,
+            text: reply.trim(),
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.7;">
+                    <h2>Living Faith Church</h2>
+
+                    <p>Dear ${escapeHtml(originalMessage.name)},</p>
+
+                    <p>${escapeHtml(reply.trim()).replace(/\n/g, "<br>")}</p>
+
+                    <br />
+
+                    <p>God bless you.</p>
+                    <p><strong>Living Faith Church</strong></p>
+                </div>
+            `,
+        });
+
+        res.json({
+            success: true,
+            message: "Reply sent successfully.",
+    });
+
+    } catch (error) {
+        console.error("Send message reply error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to send reply. Please try again.",
+        });
+    }
+});
+
 module.exports = router;

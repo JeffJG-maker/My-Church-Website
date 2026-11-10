@@ -1,4 +1,3 @@
-
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Admin = require("../models/Admin");
@@ -43,7 +42,10 @@ const loginAdmin = async (req, res, next) => {
         }
 
         const token = jwt.sign(
-            { adminId: admin._id.toString(), role: admin.role },
+            {
+                adminId: admin._id.toString(),
+                role: admin.role,
+            },
             process.env.JWT_SECRET,
             { expiresIn: "8h" }
         );
@@ -57,7 +59,7 @@ const loginAdmin = async (req, res, next) => {
                 id: admin._id,
                 name: admin.name,
                 email: admin.email,
-                role: admin.role,
+                role: String(admin.role || "admin").toLowerCase(),
             },
         });
     } catch (error) {
