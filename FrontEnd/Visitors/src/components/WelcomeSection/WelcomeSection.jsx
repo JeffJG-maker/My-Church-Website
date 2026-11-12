@@ -273,7 +273,7 @@ function WelcomeSection() {
 
             {/* Gilead Medical Care */}
             <motion.div
-                initial={{ opacity: 0, y: 25 }}
+                initial={{ opacity: 0, y: 60 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.15 }}
                 transition={{
@@ -298,13 +298,22 @@ function WelcomeSection() {
                             Gilead Medical Care
                         </h2>
 
-                        <p className="mt-5 text-base leading-7 text-gray-600 dark:text-gray-300 sm:text-lg sm:leading-8">
+                        <motion.p className="mt-5 text-base leading-7 text-gray-600 dark:text-gray-300 sm:text-lg sm:leading-8"
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.25}}
+                            transition={{
+                                duration: 0.8,
+                                delay: 0.1,
+                                ease: smoothEase,
+                            }}
+                        >
                             Your health matters to us. Gilead Medical Care
                             offers basic health checks, including blood
                             pressure and blood sugar testing, alongside
                             first-aid support for immediate minor health
                             needs.
-                        </p>
+                        </motion.p>
 
                         <p className="mt-4 text-sm leading-6 text-gray-500 dark:text-gray-400">
                             Interested in learning more? Contact us, and
@@ -318,12 +327,12 @@ function WelcomeSection() {
                         <button
                             type="button"
                             onClick={() => navigate("/contact")}
-                            className="group inline-flex w-fit items-center gap-3 rounded-full bg-[#D91620] px-6 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-[#B9121B] focus:outline-none focus:ring-2 focus:ring-[#D91620] focus:ring-offset-2 dark:focus:ring-offset-[#101112]"
+                            className="group inline-flex w-fit items-center gap-3 rounded-full bg-[#ececec] px-6 py-3.5 text-sm font-semibold text-[#D91620] transition-all duration-300 hover:-translate-y-1 hover:bg-[lightgrey] focus:outline-none focus:ring-2 focus:ring-[#D91620] focus:ring-offset-2 dark:focus:ring-offset-[#101112] dark:text-white dark:bg-[#2b2b2b]"
                         >
                             Contact Us to Learn More
 
                             <span
-                                className="inline-block transition-transform duration-300 group-hover:translate-x-1"
+                                className="inline-block transition-transform duration-300 group-hover:translate-x-1 dark:text-[#D91620]"
                                 aria-hidden="true"
                             >
                                 →

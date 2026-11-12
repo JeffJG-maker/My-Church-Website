@@ -10,6 +10,7 @@
 html {
   scroll-behavior: smooth;
   scrollbar-width: none;
+background-color: #ececec;
 }
 
 body {

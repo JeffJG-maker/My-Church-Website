@@ -24,23 +24,19 @@ function AppContent() {
       {!isLoginPage && <Header />}
 
       <Routes>
-        {/* Home Page */}
+    
         <Route path="/" element={<Home />} />
 
-        {/* About Page */}
         <Route path="/about" element={<About />} />
 
-        {/* Contact Page */}
         <Route path="/contact" element={<Contact />} />
 
-        {/* Events Page */}
         <Route path="/events" element={<Events />} />
 
-        {/* Event Details Page */}
         <Route path="/events/:id" element={<EventDetails />} />
 
-        {/* Public Sermons Page */}
         <Route path="/sermons" element={<AllSermons />} />
+        
       </Routes>
     </>
   );

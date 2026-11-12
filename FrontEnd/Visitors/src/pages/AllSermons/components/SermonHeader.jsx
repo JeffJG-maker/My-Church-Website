@@ -382,7 +382,7 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                             aria-label="Search sermons"
                             aria-expanded={showSuggestions}
                             className={`
-                h-10 w-full rounded-xl border py-2 pl-10 pr-10
+                h-10 w-full rounded-full py-2 pl-10 pr-10
                 text-sm outline-none transition-all duration-300
                 sm:h-11 sm:pl-11 sm:pr-12
                 ${isDark
@@ -395,7 +395,7 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
                       focus:ring-4 focus:ring-white/[0.06]
                     `
                                     : `
-                      border-black/[0.08] bg-black/[0.025]
+                      border-black/[0.08] bg-[#ececec]
                       text-[#171717] placeholder:text-gray-400
                       hover:border-black/[0.15]
                       focus:border-gray-400
@@ -620,8 +620,8 @@ function SermonHeader({ onSearchSelect, onMenuClick }) {
               ${controlBase}
               ${showNotifications
                                 ? isDark
-                                    ? "border-white/[0.18] bg-white/[0.07] text-white"
-                                    : "border-black/[0.14] bg-black/[0.035] text-gray-800"
+                                    ? "bg-white/[0.07] text-white"
+                                    : "bg-black/[0.035] text-gray-800"
                                 : controlTheme
                             }
             `}
