@@ -244,7 +244,7 @@ function About() {
                     >
                         <div className="overflow-hidden rounded-2xl bg-gray-100 dark:bg-[#181a1d]">
                             <img
-                                src="/media/AboutUsImage.png"
+                                src="/media/B.D.O_About_Us.png"
                                 alt="Living Faith Church Iguosa"
                                 loading="lazy"
                                 className="h-[380px] w-full object-cover transition-transform duration-700 hover:scale-[1.03] sm:h-[480px] lg:h-[540px]"

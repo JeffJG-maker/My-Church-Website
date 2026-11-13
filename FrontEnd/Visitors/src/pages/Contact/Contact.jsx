@@ -119,7 +119,7 @@ function Contact() {
     };
 
     const fieldClass =
-        "w-full rounded-xl border-0 bg-white px-4 py-3.5 text-sm text-[#171717] outline-none ring-1 ring-black/[0.07] transition duration-200 placeholder:text-gray-400 focus:ring-2 focus:ring-[#E31B23]/50 dark:bg-[#101112] dark:text-white dark:ring-white/[0.08] dark:focus:ring-[#E31B23]/70";
+        "w-full rounded-sm border-0 bg-white px-4 py-3.5 text-sm text-[#171717] outline-none ring-0 transition duration-200 placeholder:text-gray-400 focus:outline-none focus:ring-0 dark:bg-[#101112] dark:text-white";
 
     return (
         <main className="min-h-screen overflow-hidden bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
@@ -128,7 +128,7 @@ function Contact() {
                 className="relative flex min-h-[390px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-24 sm:min-h-[440px]"
                 style={{
                     backgroundImage:
-                        "linear-gradient(90deg, rgba(12,12,12,0.78), rgba(12,12,12,0.58)), url('/media/contactBackground.png')",
+                        "linear-gradient(90deg, rgba(12,12,12,0.78), rgba(12,12,12,0.58)), url('media/Living_Faith_Church_CanaanLand.png')",
                 }}
             >
                 <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#E31B23]/20 blur-3xl" />
@@ -216,7 +216,7 @@ function Contact() {
                             ))}
                         </motion.div>
 
-                        <motion.p
+                        {/* <motion.p
                             variants={fadeUp}
                             className="mt-6 flex items-start gap-3 px-1 text-sm leading-6 text-gray-500 dark:text-gray-400"
                         >
@@ -224,7 +224,7 @@ function Contact() {
                             <span>
                                 You are welcome here. We look forward to connecting with you.
                             </span>
-                        </motion.p>
+                        </motion.p> */}
                     </motion.div>
 
                     <motion.div
@@ -295,10 +295,7 @@ function Contact() {
                                         Your Name
                                     </label>
                                     <div className="relative">
-                                        <i
-                                            className="fa-solid fa-user pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"
-                                            aria-hidden="true"
-                                        />
+                                        
                                         <input
                                             id="name"
                                             name="name"
@@ -308,7 +305,7 @@ function Contact() {
                                             onChange={handleChange}
                                             placeholder="Enter your name"
                                             required
-                                            className={`${fieldClass} pl-11`}
+                                            className={`${fieldClass}`}
                                         />
                                     </div>
                                 </div>
@@ -321,10 +318,7 @@ function Contact() {
                                         Email Address
                                     </label>
                                     <div className="relative">
-                                        <i
-                                            className="fa-solid fa-envelope pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"
-                                            aria-hidden="true"
-                                        />
+                                        
                                         <input
                                             id="email"
                                             name="email"
@@ -334,7 +328,7 @@ function Contact() {
                                             onChange={handleChange}
                                             placeholder="Enter your email"
                                             required
-                                            className={`${fieldClass} pl-11`}
+                                            className={`${fieldClass}`}
                                         />
                                     </div>
                                 </div>
@@ -348,10 +342,7 @@ function Contact() {
                                     Subject
                                 </label>
                                 <div className="relative">
-                                    <i
-                                        className="fa-solid fa-tag pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400"
-                                        aria-hidden="true"
-                                    />
+
                                     <input
                                         id="subject"
                                         name="subject"
@@ -360,7 +351,7 @@ function Contact() {
                                         onChange={handleChange}
                                         placeholder="What would you like to talk about?"
                                         required
-                                        className={`${fieldClass} pl-11`}
+                                        className={`${fieldClass}`}
                                     />
                                 </div>
                             </div>
@@ -373,10 +364,7 @@ function Contact() {
                                     Message
                                 </label>
                                 <div className="relative">
-                                    <i
-                                        className="fa-solid fa-message pointer-events-none absolute left-4 top-4 text-sm text-gray-400"
-                                        aria-hidden="true"
-                                    />
+                
                                     <textarea
                                         id="message"
                                         name="message"
@@ -385,7 +373,7 @@ function Contact() {
                                         placeholder="Write your message here..."
                                         rows={5}
                                         required
-                                        className={`${fieldClass} resize-y pl-11`}
+                                        className={`${fieldClass} resize-y`}
                                     />
                                 </div>
                             </div>
@@ -420,7 +408,7 @@ function Contact() {
             </section>
 
             {/* Closing invitation */}
-            <section className="px-5 pb-16 sm:px-8 sm:pb-20 lg:px-12">
+            {/* <section className="px-5 pb-16 sm:px-8 sm:pb-20 lg:px-12">
                 <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -442,7 +430,7 @@ function Contact() {
                         </p>
                     </div>
                 </motion.div>
-            </section>
+            </section> */}
         </main>
     );
 }

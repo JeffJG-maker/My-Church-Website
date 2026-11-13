@@ -1,6 +1,6 @@
 export const heroSlides = [
     {
-        image: "/media/FirstHomeImage.png",
+        image: "/media/Bishop_David_Oyedepo.png",
         alt: "Living Faith Church Iguosa",
     },
     {
@@ -8,15 +8,11 @@ export const heroSlides = [
         alt: "Welcome toLiving Faith Church Iguosa",
     },
     {
-        image: "/media/Treasuring_Christ.png",
-        alt: "Treasuring Christ",
-    },
-    {
         image: "/media/choirTeamWorship.png",
         alt: "Choir worship team",
     },
     {
-        image: "/media/contactBackground.png",
+        image: "media/Living_Faith_Church_CanaanLand.png",
         alt: "Living Faith Church",
     },
     {
