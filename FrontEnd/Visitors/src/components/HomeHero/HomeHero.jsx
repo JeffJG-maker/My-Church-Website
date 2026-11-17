@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 
+import { useEffect, useState } from "react";
 import {
     motion,
     AnimatePresence,
@@ -14,18 +14,17 @@ function HomeHero() {
 
     const shouldReduceMotion = useReducedMotion();
 
-    // Rotating hero messages
     const heroMessages = [
         "God's Presence",
-        "Word of God",
-        "Beyond the Church",
-        "Grow in Purpose.",
+        "the Word of God",
+        "a Life of Purpose",
+        "a Stronger Faith",
     ];
 
     const activeMessage =
         heroMessages[currentSlide % heroMessages.length];
 
-    // Automatically rotate background and text
+    // Automatic slider
     useEffect(() => {
         if (!heroSlides?.length || shouldReduceMotion) {
             return undefined;
@@ -33,14 +32,12 @@ function HomeHero() {
 
         const slider = setInterval(() => {
             setCurrentSlide((current) =>
-                current === heroSlides.length - 1
-                    ? 0
-                    : current + 1
+                current === heroSlides.length - 1 ? 0 : current + 1
             );
         }, 6000);
 
         return () => clearInterval(slider);
-    }, [shouldReduceMotion, heroSlides.length]);
+    }, [shouldReduceMotion]);
 
     // Modal keyboard and scrolling behavior
     useEffect(() => {
@@ -63,29 +60,23 @@ function HomeHero() {
         };
     }, [showJoinModal]);
 
-    // Previous slide
+    // Slider controls
     const previousSlide = () => {
         if (!heroSlides?.length) return;
 
         setCurrentSlide((current) =>
-            current === 0.
-                ? heroSlides.length - 1
-                : current - 1
+            current === 0 ? heroSlides.length - 1 : current - 1
         );
     };
 
-    // Next slide
     const nextSlide = () => {
         if (!heroSlides?.length) return;
 
         setCurrentSlide((current) =>
-            current === heroSlides.length - 1
-                ? 0
-                : current + 1
+            current === heroSlides.length - 1 ? 0 : current + 1
         );
     };
 
-    // Select slide
     const goToSlide = (index) => {
         setCurrentSlide(index);
     };
@@ -102,7 +93,7 @@ function HomeHero() {
     return (
         <section
             aria-labelledby="home-hero-title"
-            className="relative isolate h-[85vh] min-h-[600px] w-full overflow-hidden bg-[#101112]"
+            className="relative isolate h-[65vh] min-h-[380px] w-full overflow-hidden bg-[#101112] sm:h-[85vh] sm:min-h-[600px]"
         >
             {/* Background Slider */}
             <div
@@ -120,7 +111,7 @@ function HomeHero() {
                                     ? false
                                     : {
                                         opacity: 0,
-                                        scale: 1.02,
+                                        scale: 1.025,
                                     }
                             }
                             animate={{
@@ -133,7 +124,7 @@ function HomeHero() {
                                     : { opacity: 0 }
                             }
                             transition={{
-                                duration: shouldReduceMotion ? 0 : 1,
+                                duration: shouldReduceMotion ? 0 : 1.1,
                                 ease: "easeInOut",
                             }}
                             className="absolute inset-0 h-full w-full object-cover object-center"
@@ -144,71 +135,80 @@ function HomeHero() {
                 )}
             </div>
 
-            {/* Dark Overlay */}
             <div
-                className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#101112]/80 via-[#101112]/45 to-[#101112]/20"
+                className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-[#101112]/95 via-[#101112]/75 to-[#101112]/25"
                 aria-hidden="true"
             />
 
-            {/* Hero Content */}
+            <div
+                className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-1/3 bg-gradient-to-t from-black/45 to-transparent"
+                aria-hidden="true"
+            />
+
             <div className="relative z-20 flex h-full items-center">
-                <div className="mx-auto w-full max-w-[1400px] px-6 pt-24 sm:px-12 md:pt-28 lg:px-16">
+                <div className="mx-auto w-full max-w-[1400px] px-6 sm:px-10 lg:px-13 mt-20">
 
-                    <div className="max-w-[520px]">
+                    <div className="max-w-[620px]">
 
-                        {/* Main Heading */}
-                        <h1
-                            id="home-hero-title"
-                            className="text-3xl font-semibold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl"
-                        >
-                            A Place to Encounter
-                        </h1>
+                        <div className="mb-5 flex items-center gap-4">
+                            <span className="h-[3px] w-8 shrink-0 rounded-full bg-[#D91620]" />
 
-                        {/* Animated Heading */}
-                        <div className="mt-2 min-h-[45px] sm:min-h-[55px]">
-                            <AnimatePresence mode="wait">
-                                <motion.h2
-                                    key={activeMessage}
-                                    initial={
-                                        shouldReduceMotion
-                                            ? false
-                                            : {
-                                                opacity: 0,
-                                                y: 8,
-                                            }
-                                    }
-                                    animate={{
-                                        opacity: 1,
-                                        y: 0,
-                                    }}
-                                    exit={
-                                        shouldReduceMotion
-                                            ? undefined
-                                            : {
-                                                opacity: 0,
-                                                y: -6,
-                                            }
-                                    }
-                                    transition={{
-                                        duration: shouldReduceMotion
-                                            ? 0
-                                            : 0.4,
-                                        ease: "easeOut",
-                                    }}
-                                    className="text-2xl font-medium leading-tight text-[#D9B95B] sm:text-3xl md:text-4xl"
-                                >
-                                    {activeMessage}
-                                </motion.h2>
-                            </AnimatePresence>
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/85 sm:text-xs sm:tracking-[0.18em]">
+                                Welcome to Living Faith Church Iguosa
+                            </p>
                         </div>
 
+                        <h1
+                            id="home-hero-title"
+                            className="max-w-[600px] text-[30px] font-bold leading-[1.15] tracking-tight text-white sm:text-4xl md:text-[42px] lg:text-5xl"
+                        >
+                            A Place to Encounter
+
+                            <span className="block">
+                                <AnimatePresence mode="wait">
+                                    <motion.span
+                                        key={activeMessage}
+                                        initial={
+                                            shouldReduceMotion
+                                                ? false
+                                                : {
+                                                    opacity: 0,
+                                                    y: 8,
+                                                }
+                                        }
+                                        animate={{
+                                            opacity: 1,
+                                            y: 0,
+                                        }}
+                                        exit={
+                                            shouldReduceMotion
+                                                ? undefined
+                                                : {
+                                                    opacity: 0,
+                                                    y: -6,
+                                                }
+                                        }
+                                        transition={{
+                                            duration: shouldReduceMotion ? 0 : 0.35,
+                                            ease: "easeOut",
+                                        }}
+                                        className="inline-block font-light sm:text-3xl md:text-[38px] lg:text-4xl"
+                                    >
+                                        {activeMessage}
+                                    </motion.span>
+                                </AnimatePresence>
+                            </span>
+                        </h1>
+
                         {/* Description */}
-                        <p className="mt-5 max-w-[430px] text-sm leading-6 text-white/85 sm:text-base">
-                            Join us for worship, prayer, and the teaching of God's Word as we grow together in faith.
+                        <p className="mt-4 max-w-[470px] text-[13px] leading-6 text-white/80 sm:text-sm sm:leading-6 md:text-[15px]">
+                            Join us for worship, prayer, and the teaching
+                            of God's Word as we build lives and raise
+                            champions.
                         </p>
 
                         {/* CTA Buttons */}
-                        <div className="mt-7 flex flex-wrap items-center gap-3">
+                        <div className="mt-6 flex flex-wrap items-center gap-3">
 
                             {/* Plan Your Visit */}
                             <motion.button
@@ -224,12 +224,12 @@ function HomeHero() {
                                         ? undefined
                                         : { scale: 0.98 }
                                 }
-                                className="inline-flex items-center justify-center rounded-full bg-[#D9B95B] px-5 py-3 text-sm font-semibold text-[#171717] transition-colors hover:bg-[#C8A747] focus:outline-none focus:ring-2 focus:ring-white/70"
+                                className="inline-flex items-center justify-center rounded-full bg-[#dcdbdb] px-5 py-2.5 text-xs font-bold text-[#171717] shadow-md transition-all duration-300 hover:bg-[#D91620] hover:text-white focus:outline-none focus:ring-2 focus:ring-white/70 sm:px-6 sm:py-3 sm:text-sm"
                             >
                                 Plan Your Visit
 
                                 <i
-                                    className="fas fa-arrow-right ml-2 text-xs"
+                                    className="fas fa-arrow-right ml-2.5 text-xs"
                                     aria-hidden="true"
                                 />
                             </motion.button>
@@ -248,14 +248,14 @@ function HomeHero() {
                                         ? undefined
                                         : { scale: 0.98 }
                                 }
-                                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/70"
+                                className="inline-flex items-center gap-2.5 rounded-full bg-white/5 px-5 py-2.5 text-xs font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:border-[#D91620] hover:bg-[#D91620] focus:outline-none sm:px-6 sm:py-3 sm:text-sm"
                             >
-                                Watch Live
-
                                 <i
-                                    className="far fa-play-circle text-lg"
+                                    className="far fa-play-circle text-base"
                                     aria-hidden="true"
                                 />
+
+                                Watch Live
                             </motion.button>
 
                         </div>
@@ -271,7 +271,7 @@ function HomeHero() {
                         type="button"
                         onClick={previousSlide}
                         aria-label="Previous slide"
-                        className="absolute left-4 top-1/2 z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white transition hover:bg-[#D91620] focus:outline-none focus:ring-2 focus:ring-white/70 sm:left-6"
+                        className="absolute left-3 top-1/2 z-30 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-xs text-white transition hover:bg-[#D91620] focus:outline-none focus:ring-2 focus:ring-white/70 sm:left-5"
                     >
                         <i
                             className="fas fa-chevron-left"
@@ -284,7 +284,7 @@ function HomeHero() {
                         type="button"
                         onClick={nextSlide}
                         aria-label="Next slide"
-                        className="absolute right-4 top-1/2 z-30 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-white transition hover:bg-[#D91620] focus:outline-none focus:ring-2 focus:ring-white/70 sm:right-6"
+                        className="absolute right-3 top-1/2 z-30 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-black/30 text-xs text-white transition hover:bg-[#D91620] focus:outline-none focus:ring-2 focus:ring-white/70 sm:right-5"
                     >
                         <i
                             className="fas fa-chevron-right"
@@ -309,9 +309,9 @@ function HomeHero() {
                                         ? "true"
                                         : undefined
                                 }
-                                className={`h-2 rounded-full transition-all ${currentSlide === index
-                                    ? "w-6 bg-[#D9B95B]"
-                                    : "w-2 bg-white/60 hover:bg-white"
+                                className={`h-2 rounded-full transition-all duration-300 ${currentSlide === index
+                                    ? "w-6 bg-[#D91620]"
+                                    : "w-2 bg-white/70 hover:bg-white"
                                     }`}
                             />
                         ))}
@@ -326,7 +326,7 @@ function HomeHero() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm"
+                        className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/75 p-4 backdrop-blur-sm"
                         onClick={() => setShowJoinModal(false)}
                     >
                         <motion.div
@@ -355,7 +355,7 @@ function HomeHero() {
                             {/* Modal Header */}
                             <div className="flex items-start justify-between gap-4">
                                 <div>
-                                    <span className="text-xs font-bold uppercase tracking-widest text-[#D91620]">
+                                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#D91620]">
                                         You're Welcome
                                     </span>
 
@@ -424,7 +424,7 @@ function HomeHero() {
                             <button
                                 type="button"
                                 onClick={() => setShowJoinModal(false)}
-                                className="mt-7 w-full rounded-full bg-[#D9B95B] px-5 py-3 text-sm font-semibold text-[#171717] transition-colors hover:bg-[#C8A747]"
+                                className="mt-7 w-full rounded-full bg-[#D91620] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#B80F18]"
                             >
                                 See You Sunday
                             </button>

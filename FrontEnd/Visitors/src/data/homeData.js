@@ -1,6 +1,6 @@
 export const heroSlides = [
     {
-        image: "/media/Bishop_David_Oyedepo.png",
+        image: "/media/Living Faith Church Auditorium Stage.png",
         alt: "Living Faith Church Iguosa",
     },
     {
