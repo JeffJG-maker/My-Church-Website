@@ -138,9 +138,6 @@ function Events() {
                             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#E31B23]">
                                 Mark your calendar
                             </p>
-                            <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-                                Upcoming at our church
-                            </h2>
                         </div>
                         {!loading && !error && events.length > 0 && (
                             <p className="text-sm text-[#777773] dark:text-[#A8A8A5]">

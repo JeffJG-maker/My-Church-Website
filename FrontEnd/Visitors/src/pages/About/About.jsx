@@ -197,7 +197,15 @@ function About() {
                             Raising champions.
                         </h2>
 
-                        <div className="mt-7 space-y-5 text-sm leading-8 text-gray-600 dark:text-gray-400 sm:text-base">
+
+                        <motion.div className="mt-7 space-y-5 text-sm leading-8 text-gray-600 dark:text-gray-400 sm:text-base"
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.18 }}
+                            transition={{
+                                duration: 0.5,
+                                delay: 0.1,
+                            }}>
                             <p>
                                 Living Faith Church Iguosa is a family of
                                 believers united by faith in Jesus Christ and
@@ -214,23 +222,23 @@ function About() {
                                 a deeper walk with God.
                             </p>
 
-                            <p>
-                                Our desire is to nurture a community where
-                                people can encounter God, strengthen their
-                                faith, build meaningful relationships, and
-                                make a positive difference in the lives of
-                                others.
-                            </p>
-                        </div>
+                        </motion.div>
 
-                        <div className="mt-9">
+                        <motion.div className="mt-9"
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.18 }}
+                            transition={{
+                                duration: 0.6,
+                                delay: 0.1,
+                            }}>
                             <p className="text-sm font-semibold">
                                 Living Faith Church Iguosa
                             </p>
                             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                 A local expression of a worldwide ministry.
                             </p>
-                        </div>
+                        </motion.div>
                     </motion.div>
 
                     <motion.div
@@ -303,7 +311,14 @@ function About() {
                             — The mandate associated with Bishop David O. Oyedepo
                         </p>
 
-                        <div className="mt-8 space-y-5 text-sm leading-8 text-gray-600 dark:text-gray-400">
+                        <motion.div className="mt-8 space-y-5 text-sm leading-8 text-gray-600 dark:text-gray-400"
+                            variants={reveal}
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, amount: 0.18 }}
+                            transition={{
+                                delay: shouldReduceMotion ? 0 : 0.15,
+                            }}>
                             <p>
                                 Living Faith Church Worldwide traces its
                                 founding vision to an 18-hour encounter
@@ -327,7 +342,7 @@ function About() {
                                 prayer, worship, fellowship, spiritual growth,
                                 and service to the community.
                             </p>
-                        </div>
+                        </motion.div>
                     </motion.div>
                 </div>
             </section>
@@ -360,6 +375,13 @@ function About() {
                     <motion.div
                         layout
                         className="mt-9"
+                        variants={reveal}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.18 }}
+                        transition={{
+                            delay: shouldReduceMotion ? 0 : 0.15,
+                        }}
                     >
                         <motion.div
                             layout
@@ -472,7 +494,7 @@ function About() {
                         </p>
 
                         <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
-                            Faith expressed in everyday life.
+                            A home of signs and wonders.
                         </h2>
 
                         <p className="mt-4 text-sm leading-7 text-gray-600 dark:text-gray-400 sm:text-base">

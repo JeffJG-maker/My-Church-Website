@@ -12,7 +12,7 @@ export const heroSlides = [
         alt: "Choir worship team",
     },
     {
-        image: "media/Living_Faith_Church_CanaanLand.png",
+        image: "/media/Living_Faith_Church_CanaanLand.png",
         alt: "Living Faith Church",
     },
     {

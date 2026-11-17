@@ -573,11 +573,8 @@ function AllSermons() {
 
                     )}
 
-                    {/* GRADIENT */}
-
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
 
-                    {/* TYPE */}
 
                     <div className="absolute left-3 top-3">
 
@@ -589,7 +586,6 @@ function AllSermons() {
 
                     </div>
 
-                    {/* DURATION */}
 
                     {sermon.duration && (
 
@@ -601,7 +597,6 @@ function AllSermons() {
 
                     )}
 
-                    {/* TEXT OVERLAY */}
 
                     <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
 
@@ -961,17 +956,9 @@ function AllSermons() {
                                 className="mb-7"
                             >
 
-                                <div className="flex items-center gap-3">
-
-                                    <span className="h-8 w-1 rounded-full bg-[#D91620]" />
+                                <div className="flex gap-1">
 
                                     <div>
-
-                                        <p className="inline-flex rounded-full border border-[#D91620]/15 bg-[#D91620]/[0.06] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#D91620] dark:border-white/10 dark:bg-white/[0.045] dark:text-[#ff858b]">
-
-                                            Living Faith Church Iguosa
-
-                                        </p>
 
                                         <h1 className="mt-1 text-3xl font-black sm:text-4xl">
 

@@ -243,7 +243,6 @@ function Header() {
                     </div>
                 </NavLink>
 
-                {/* Desktop Navigation */}
                 <nav
                     className="
                         hidden items-center gap-6
@@ -388,7 +387,7 @@ function Header() {
                 </button>
             </div>
 
-            {/* Mobile Navigation */}
+
             <div
                 className={`
                     absolute inset-x-0 top-full
@@ -417,7 +416,7 @@ function Header() {
                         renderNavItem(item, index, true)
                     )}
 
-                    {/* Mobile Theme Selector */}
+
                     <div className="mt-5">
                         <p className="mb-3 text-[10px] font-medium uppercase tracking-wider text-white/45">
                             Appearance

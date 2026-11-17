@@ -128,7 +128,7 @@ function Contact() {
                 className="relative flex min-h-[390px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-24 sm:min-h-[440px]"
                 style={{
                     backgroundImage:
-                        "linear-gradient(90deg, rgba(12,12,12,0.78), rgba(12,12,12,0.58)), url('media/Living_Faith_Church_CanaanLand.png')",
+                        "linear-gradient(90deg, rgba(12,12,12,0.78), rgba(12,12,12,0.58)), url('media/contactBackground.png')",
                 }}
             >
                 <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#E31B23]/20 blur-3xl" />
