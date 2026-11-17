@@ -153,7 +153,7 @@ function HomeHero() {
                         <div className="mb-5 flex items-center gap-4">
                             <span className="h-[3px] w-8 shrink-0 rounded-full bg-[#D91620]" />
 
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/85 sm:text-xs sm:tracking-[0.18em]">
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#cb9216] sm:text-xs sm:tracking-[0.18em]">
                                 Welcome to Living Faith Church Iguosa
                             </p>
                         </div>
