@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import SEO from "../../components/SEO/SEO";
 
 const contactItems = [
     {
@@ -123,7 +124,12 @@ function Contact() {
 
     return (
         <main className="min-h-screen overflow-hidden bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
-            {/* Hero */}
+
+            <SEO
+                title="Contact Living Faith Church Iguosa"
+                description="Contact Living Faith Church Iguosa, popularly known as Winners Chapel. Call 09157999889 or send us a message for prayer requests, enquiries, testimonies, and other assistance in Iguosa, Edo State, Nigeria."
+                path="/contact"
+            />
             <section
                 className="relative flex min-h-[390px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-24 sm:min-h-[440px]"
                 style={{
@@ -280,7 +286,6 @@ function Contact() {
                                 <i className="fa-solid fa-circle-exclamation mt-0.5" aria-hidden="true" />
                                 <div>
                                     <p className="font-semibold">Message could not be sent.</p>
-                                    <p className="mt-1 opacity-80">{errorMessage}</p>
                                 </div>
                             </motion.div>
                         )}
@@ -295,7 +300,7 @@ function Contact() {
                                         Your Name
                                     </label>
                                     <div className="relative">
-                                        
+
                                         <input
                                             id="name"
                                             name="name"
@@ -318,7 +323,7 @@ function Contact() {
                                         Email Address
                                     </label>
                                     <div className="relative">
-                                        
+
                                         <input
                                             id="email"
                                             name="email"
@@ -364,7 +369,7 @@ function Contact() {
                                     Message
                                 </label>
                                 <div className="relative">
-                
+
                                     <textarea
                                         id="message"
                                         name="message"
@@ -381,7 +386,7 @@ function Contact() {
                             <button
                                 type="submit"
                                 disabled={isSending}
-                                className="group flex w-full items-center justify-center gap-3 rounded-xl bg-[#E31B23] px-6 py-4 font-semibold text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#C9151C] disabled:cursor-not-allowed disabled:opacity-70"
+                                className="group flex w-full items-center justify-center gap-3 rounded-sm bg-[#E31B23] px-6 py-4 font-thin text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#C9151C] disabled:cursor-not-allowed disabled:opacity-70"
                             >
                                 {isSending ? (
                                     <>

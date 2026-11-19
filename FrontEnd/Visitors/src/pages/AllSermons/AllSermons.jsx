@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+
 import { motion } from "framer-motion";
 
 import SermonHeader from "./components/SermonHeader";
@@ -8,6 +9,7 @@ import SermonSidebar from "./components/SermonSidebar";
 import SermonPlayer from "./components/SermonPlayer";
 
 import { useTheme } from "../../context/ThemeContext";
+import SEO from "../../components/SEO/SEO";
 
 function AllSermons() {
 
@@ -547,8 +549,6 @@ function AllSermons() {
 
             >
 
-                {/* THUMBNAIL */}
-
                 <div className={`relative overflow-hidden ${compact ? "h-full min-h-[190px] lg:min-h-0" : "aspect-[4/3]"}`}>
 
                     {sermon.thumbnail ? (
@@ -575,7 +575,6 @@ function AllSermons() {
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
 
-
                     <div className="absolute left-3 top-3">
 
                         <span className="rounded-lg bg-black/70 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white backdrop-blur-md">
@@ -586,7 +585,6 @@ function AllSermons() {
 
                     </div>
 
-
                     {sermon.duration && (
 
                         <div className="absolute bottom-3 right-3 rounded-md bg-black/75 px-2 py-1 text-[10px] font-bold text-white backdrop-blur-sm">
@@ -596,7 +594,6 @@ function AllSermons() {
                         </div>
 
                     )}
-
 
                     <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
 
@@ -773,22 +770,39 @@ function AllSermons() {
                 </div>
 
                 <div className={`grid gap-5 ${gridClass}`}>
+
                     {items.map((sermon, index) => (
+
                         <motion.div
+
                             key={sermon.id}
+
                             initial={{ opacity: 0, y: 42, scale: 0.975, filter: "blur(4px)" }}
+
                             whileInView={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
+
                             viewport={{ once: true, amount: 0.16 }}
+
                             transition={{
-                                // Each row arrives together, with a noticeable pause before the next row.
+
+
+
                                 duration: 0.78,
+
                                 delay: Math.floor(index / columns) * 0.32,
+
                                 ease: [0.22, 1, 0.36, 1],
+
                             }}
+
                         >
+
                             <SermonCard sermon={sermon} />
+
                         </motion.div>
+
                     ))}
+
                 </div>
 
             </section>
@@ -800,6 +814,23 @@ function AllSermons() {
     return (
 
         <div data-theme={theme} className="min-h-screen bg-[#faf9f7] text-[#171717] transition-colors duration-300 dark:bg-[#101112] dark:text-white">
+            <SEO
+                title={
+                    selectedSermon
+                        ? `${selectedSermon.title} | Sermon`
+                        : "Sermons and Messages"
+                }
+                description={
+                    selectedSermon
+                        ? `${selectedSermon.title}${selectedSermon.speaker ? ` by ${selectedSermon.speaker}` : ""}. Watch or listen to this message from Living Faith Church Iguosa, popularly known as Winners Chapel.`
+                        : "Watch and listen to sermons from Living Faith Church Iguosa, popularly known as Winners Chapel. Explore messages on faith, prayer, wisdom, consecration, and the Word of God in Iguosa, Edo State, Nigeria."
+                }
+                path={
+                    selectedSermon
+                        ? `/sermons?sermon=${encodeURIComponent(selectedSermon.id)}`
+                        : "/sermons"
+                }
+            />
 
             <SermonHeader
 
@@ -816,8 +847,6 @@ function AllSermons() {
                 }
 
             />
-
-            {/* DESKTOP SIDEBAR */}
 
             <SermonSidebar
 
@@ -838,8 +867,6 @@ function AllSermons() {
                 onPopularClick={handlePopularSermons}
 
             />
-
-            {/* MOBILE SIDEBAR */}
 
             {isMobileMenuOpen && (
 
@@ -947,13 +974,16 @@ function AllSermons() {
 
                         <div className="mx-auto w-full max-w-[1440px]">
 
-                            {/* INTRO */}
-
                             <motion.div
+
                                 initial={{ opacity: 0, y: 16 }}
+
                                 animate={{ opacity: 1, y: 0 }}
+
                                 transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+
                                 className="mb-7"
+
                             >
 
                                 <div className="flex gap-1">
@@ -988,13 +1018,16 @@ function AllSermons() {
 
                             </motion.div>
 
-                            {/* CATEGORY NAVIGATION */}
-
                             <motion.div
+
                                 initial={{ opacity: 0, y: 18 }}
+
                                 animate={{ opacity: 1, y: 0 }}
+
                                 transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
+
                                 className="relative mb-8 overflow-hidden rounded-[1.8rem] border border-black/[0.055] bg-white/90 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.045)] backdrop-blur-xl before:absolute before:left-0 before:top-7 before:h-14 before:w-[3px] before:rounded-r-full before:bg-[#D91620] dark:border-white/[0.07] dark:bg-[#151617] sm:p-5 lg:p-6"
+
                             >
 
                                 <div className="relative flex flex-col gap-5">
@@ -1002,17 +1035,29 @@ function AllSermons() {
                                     <div className="flex flex-wrap items-center justify-between gap-3">
 
                                         <div className="flex items-start gap-3">
+
                                             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#D91620]/[0.09] text-[#D91620] dark:bg-[#D91620]/15 dark:text-[#ff7279]">
+
                                                 <i className="fa-solid fa-layer-group text-sm" />
+
                                             </span>
+
                                             <div>
+
                                                 <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#D91620] dark:text-[#ff7279]">
+
                                                     Explore the collection
+
                                                 </p>
+
                                                 <p className="mt-1 text-sm text-slate-600 dark:text-[#a1a1aa]">
+
                                                     Choose a topic or format to find a message.
+
                                                 </p>
+
                                             </div>
+
                                         </div>
 
                                         {extraCategories.length >
@@ -1259,13 +1304,16 @@ function AllSermons() {
 
                                     </div>
 
-                                    {/* MEDIA FILTER */}
-
                                     <motion.div
+
                                         initial={{ opacity: 0 }}
+
                                         animate={{ opacity: 1 }}
+
                                         transition={{ duration: 0.4, delay: 0.2 }}
+
                                         className="border-t border-black/[0.055] pt-4 dark:border-white/[0.07]"
+
                                     >
 
                                         <div className="flex flex-wrap items-center gap-2.5">
@@ -1348,8 +1396,6 @@ function AllSermons() {
 
                             </motion.div>
 
-                            {/* RESULTS COUNT */}
-
                             <div className="mb-6 flex items-center justify-between">
 
                                 <p className="text-sm font-semibold text-slate-500 dark:text-[#6f737a]">
@@ -1371,8 +1417,6 @@ function AllSermons() {
                                 </p>
 
                             </div>
-
-                            {/* LOADING */}
 
                             {isLoading ? (
 
@@ -1493,46 +1537,61 @@ function AllSermons() {
                                     {featuredSermon && (
 
                                         <motion.section
-                                            initial={{ opacity: 0, y: 22 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-                                            className="flex flex-col gap-5 lg:h-[85vh] lg:min-h-[560px] lg:max-h-[860px]"
-                                        >
 
-                                            {/* SECTION TITLE */}
+                                            initial={{ opacity: 0, y: 22 }}
+
+                                            animate={{ opacity: 1, y: 0 }}
+
+                                            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+
+                                            className="flex flex-col gap-5 lg:h-[85vh] lg:min-h-[560px] lg:max-h-[860px]"
+
+                                        >
 
                                             <div className="flex shrink-0 items-end justify-between gap-4 pb-1">
 
                                                 <div>
 
                                                     <div className="mb-2 flex items-center gap-2.5">
+
                                                         <span className="h-1 w-8 rounded-full bg-[#E31B23]" />
+
                                                         <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#E31B23] dark:text-[#F7941D]">
+
                                                             Featured message
+
                                                         </p>
+
                                                     </div>
+
                                                     <h2 className="text-2xl font-black tracking-tight text-[#171717] dark:text-white sm:text-3xl lg:text-[2rem]">
+
                                                         Today's Message
+
                                                     </h2>
 
                                                 </div>
 
                                             </div>
 
-                                            {/* FEATURED CARDS */}
-
                                             <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[1.55fr_1fr]">
 
-                                                {/* LARGE FEATURED CARD */}
-
                                                 <motion.button
+
                                                     type="button"
+
                                                     initial={{ opacity: 0, scale: 0.985 }}
+
                                                     animate={{ opacity: 1, scale: 1 }}
+
                                                     transition={{ duration: 0.7, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+
                                                     whileHover={{ y: -4 }}
+
                                                     whileTap={{ scale: 0.995 }}
+
                                                     onClick={() => handleSermonClick(featuredSermon)}
+
                                                     className="group relative min-h-[300px] overflow-hidden rounded-[1.75rem] border border-black/[0.06] bg-stone-100 text-left shadow-[0_18px_55px_rgba(0,0,0,0.09)] transition-shadow duration-500 hover:shadow-[0_28px_70px_rgba(0,0,0,0.18)] dark:border-white/[0.07] dark:bg-[#181a1d] lg:min-h-0"
 
                                                 >
@@ -1568,7 +1627,9 @@ function AllSermons() {
                                                     <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8 lg:p-9">
 
                                                         <span className="inline-flex rounded-full border border-white/20 bg-black/25 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/90 backdrop-blur-md">
+
                                                             {featuredSermon.category}
+
                                                         </span>
 
                                                         <h3 className="mt-3 max-w-2xl text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl lg:text-4xl">
@@ -1595,16 +1656,22 @@ function AllSermons() {
 
                                                 </motion.button>
 
-                                                {/* SUPPORTING FEATURED CARDS */}
-
                                                 <motion.div
+
                                                     initial="hidden"
+
                                                     animate="visible"
+
                                                     variants={{
+
                                                         hidden: { opacity: 0 },
+
                                                         visible: { opacity: 1, transition: { staggerChildren: 0.12, delayChildren: 0.18 } },
+
                                                     }}
+
                                                     className="grid min-h-0 auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-1"
+
                                                 >
 
                                                     {featuredSecondarySermons.map(
@@ -1616,14 +1683,23 @@ function AllSermons() {
                                                         ) => (
 
                                                             <motion.div
+
                                                                 key={sermon.id}
+
                                                                 variants={{
+
                                                                     hidden: { opacity: 0, y: 18 },
+
                                                                     visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
+
                                                                 }}
+
                                                                 className="min-h-0 [&>button]:h-full"
+
                                                             >
+
                                                                 <SermonCard sermon={sermon} compact />
+
                                                             </motion.div>
 
                                                         )
@@ -1638,8 +1714,6 @@ function AllSermons() {
 
                                     )}
 
-                                    {/* LATEST */}
-
                                     <SermonSection
 
                                         sectionId="latest-sermons"
@@ -1653,8 +1727,6 @@ function AllSermons() {
                                         columns={4}
 
                                     />
-
-                                    {/* POPULAR */}
 
                                     <SermonSection
 
@@ -1673,8 +1745,6 @@ function AllSermons() {
                                         columns={3}
 
                                     />
-
-                                    {/* PRAYER */}
 
                                     <SermonSection
 
@@ -1696,8 +1766,6 @@ function AllSermons() {
 
                                     />
 
-                                    {/* FAITH */}
-
                                     <SermonSection
 
                                         title="Faith"
@@ -1716,8 +1784,6 @@ function AllSermons() {
 
                                     />
 
-                                    {/* WISDOM */}
-
                                     <SermonSection
 
                                         title="Wisdom"
@@ -1735,8 +1801,6 @@ function AllSermons() {
                                         category="Wisdom"
 
                                     />
-
-                                    {/* CONSECRATION */}
 
                                     <SermonSection
 

@@ -55,5 +55,5 @@ createRoot(document.getElementById("root")).render(
       {/* <GlobalScrollbarController /> */}
       <App />
     </ThemeProvider>
-  </StrictMode>
+  </StrictMode> 
 );

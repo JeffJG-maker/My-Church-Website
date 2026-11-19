@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import SEO from "../../components/SEO/SEO";
 
 const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
@@ -93,7 +94,13 @@ function Events() {
 
     return (
         <main className="min-h-screen overflow-hidden bg-[#F8F8F7] text-[#191919] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
-            {/* Hero */}
+
+            <SEO
+                title="Upcoming Church Events in Iguosa, Edo State"
+                description="Explore upcoming events at Living Faith Church Iguosa, popularly known as Winners Chapel. Join us for worship services, prayer meetings, special programmes, and fellowship in Iguosa, Edo State, Nigeria."
+                path="/events"
+            />
+
             <section className="relative isolate overflow-hidden px-5 pb-16 pt-28 sm:px-8 sm:pb-20 sm:pt-32 lg:pb-24">
                 <div
                     aria-hidden="true"

@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import SEO from "../../components/SEO/SEO";
 import {
     AnimatePresence,
     motion,
@@ -134,8 +135,13 @@ function About() {
 
     return (
         <main className="min-h-screen overflow-hidden bg-white text-[#171717] transition-colors duration-500 dark:bg-[#101112] dark:text-white">
+            
+            <SEO
+                title="About Our Church"
+                description="Learn about Living Faith Church Iguosa, a local congregation of Living Faith Church Worldwide, popularly known as Winners Chapel. Discover our faith, vision, Twelve Pillars, and commitment to spiritual growth in Iguosa, Edo State."
+                path="/about"
+            />
 
-            {/* PAGE INTRODUCTION */}
             <section className="px-[6%] pb-14 pt-28 sm:pb-16 sm:pt-32">
                 <motion.div
                     className="mx-auto max-w-7xl"

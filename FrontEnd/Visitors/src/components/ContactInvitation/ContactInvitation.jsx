@@ -1,97 +1,70 @@
 
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 const smoothEase = [0.22, 1, 0.36, 1];
 
 function ContactInvitation() {
-    return (
-        <section className="overflow-hidden bg-white px-5 py-20 transition-colors duration-500 dark:bg-[#101112] sm:px-8 md:py-28">
-            <div className="mx-auto max-w-6xl">
-                <div className="max-w-3xl">
-                    {/* Section Label */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 35 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{
-                            duration: 1.2,
-                            delay: 0.1,
-                            ease: smoothEase,
-                        }}
-                        className="mb-6 flex items-center gap-3"
-                    >
-                        <span className="h-[3px] w-9 rounded-full bg-[#E31B23]" />
+    const shouldReduceMotion = useReducedMotion();
 
-                        <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#E31B23] dark:text-white">
+    const reveal = (delay = 0) => ({
+        initial: shouldReduceMotion ? false : { opacity: 0, y: 20 },
+        whileInView: { opacity: 1, y: 0 },
+        viewport: { once: true, amount: 0.3 },
+        transition: {
+            duration: shouldReduceMotion ? 0 : 0.9,
+            delay: shouldReduceMotion ? 0 : delay,
+            ease: smoothEase,
+        },
+    });
+
+    return (
+        <section
+            aria-labelledby="contact-invitation-heading"
+            className="bg-[#F7F7F7] px-5 py-16 transition-colors duration-500 dark:bg-[#101112] sm:px-8 md:py-20"
+        >
+            <div className="mx-auto max-w-6xl">
+                <div className="max-w-2xl">
+                    <motion.div
+                        {...reveal(0.1)}
+                        className="mb-5 flex items-center gap-3"
+                    >
+                        <span className="h-[3px] w-8 rounded-full bg-[#E31B23]" />
+                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#E31B23]">
                             Let's Connect
                         </p>
                     </motion.div>
 
-                    {/* Main Heading */}
                     <motion.h2
-                        initial={{ opacity: 0, y: 45 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{
-                            duration: 1.4,
-                            delay: 0.25,
-                            ease: smoothEase,
-                        }}
-                        className="max-w-2xl text-3xl font-extrabold leading-tight tracking-tight text-[#171717] dark:text-white sm:text-4xl lg:text-5xl"
+                        {...reveal(0.2)}
+                        id="contact-invitation-heading"
+                        className="text-3xl font-extrabold leading-tight tracking-tight text-[#171717] dark:text-white sm:text-4xl"
                     >
-                        We're here
-                        <span className="block text-[#E31B23]">
-                            for you.
-                        </span>
+                        We're here for you.
                     </motion.h2>
 
-                    {/* Description */}
                     <motion.p
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{
-                            duration: 1.4,
-                            delay: 0.4,
-                            ease: smoothEase,
-                        }}
-                        className="mt-6 max-w-2xl text-base leading-8 text-[#666666] dark:text-white/65 md:text-md"
+                        {...reveal(0.3)}
+                        className="mt-4 max-w-xl text-sm leading-7 text-[#666666] dark:text-white/65"
                     >
-                        Have a question, a prayer request, or a testimony
-                        to share? We'd love to hear from you. Reach out to
-                        us, and let us know how we can connect with you.
+                        Have a question, prayer request, or testimony to share?
+                        We'd love to hear from you. Get in touch with Living
+                        Faith Church Iguosa and connect with us.
                     </motion.p>
 
-                    {/* Contact Button and Tagline */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 40 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, amount: 0.3 }}
-                        transition={{
-                            duration: 1.4,
-                            delay: 0.55,
-                            ease: smoothEase,
-                        }}
-                        className="mt-9 flex flex-wrap items-center gap-x-6 gap-y-4"
-                    >
+                    <motion.div {...reveal(0.4)} className="mt-7">
                         <Link
                             to="/contact"
-                            className="group inline-flex items-center gap-3 rounded-full bg-[#E31B23] px-7 py-3.5 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-[#c8171e] focus:outline-none focus:ring-2 focus:ring-[#E31B23] focus:ring-offset-2 dark:focus:ring-offset-[#101112]"
+                            className="group inline-flex items-center gap-3 rounded-full bg-[#D91620] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_22px_rgba(217,22,32,0.14)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#B9121B] hover:shadow-[0_12px_26px_rgba(217,22,32,0.2)] focus:outline-none focus:ring-2 focus:ring-[#D91620] focus:ring-offset-2 dark:focus:ring-offset-[#101112]"
                         >
                             Contact Us
-
                             <span
-                                className="inline-block text-lg transition-transform duration-300 group-hover:translate-x-1"
                                 aria-hidden="true"
+                                className="inline-block text-lg transition-transform duration-300 group-hover:translate-x-1"
                             >
                                 →
                             </span>
                         </Link>
-
-                        <p className="text-sm text-[#777777] dark:text-white/45">
-                            Building Lives, Raising Champions
-                        </p>
                     </motion.div>
                 </div>
             </div>
