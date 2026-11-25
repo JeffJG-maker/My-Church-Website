@@ -134,7 +134,7 @@ function Contact() {
                 className="relative flex min-h-[390px] items-center justify-center overflow-hidden bg-cover bg-center px-6 py-24 sm:min-h-[440px]"
                 style={{
                     backgroundImage:
-                        "linear-gradient(90deg, rgba(12,12,12,0.78), rgba(12,12,12,0.58)), url('/media/Living_Faith_Church_Iguosa_Auditorium.png')",
+                        "linear-gradient(90deg, rgba(12,12,12,0.78), rgba(12,12,12,0.58)), url('/media/contactBackground.png')",
                 }}
             >
                 <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[#E31B23]/20 blur-3xl" />
@@ -221,16 +221,6 @@ function Contact() {
                                 </motion.div>
                             ))}
                         </motion.div>
-
-                        {/* <motion.p
-                            variants={fadeUp}
-                            className="mt-6 flex items-start gap-3 px-1 text-sm leading-6 text-gray-500 dark:text-gray-400"
-                        >
-                            <i className="fa-solid fa-heart mt-1 text-[#E31B23]" aria-hidden="true" />
-                            <span>
-                                You are welcome here. We look forward to connecting with you.
-                            </span>
-                        </motion.p> */}
                     </motion.div>
 
                     <motion.div
