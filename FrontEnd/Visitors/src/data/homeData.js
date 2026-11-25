@@ -1,27 +1,24 @@
 export const heroSlides = [
     {
-        image: "/media/Living_Faith_Church_Iguosa_Auditorium.png",
-        alt: "Living Faith Church Iguosa",
-    },
-    {
         image: "/media/Oyedepo_pulpit.png",
-        alt: "Welcome toLiving Faith Church Iguosa",
+        alt: "David Oyedepo preaching",
     },
     {
         image: "/media/auditoriumOgunState.png",
-        alt: "Choir worship team",
+        alt: "Ogun State auditorium",
     },
+
     {
-        image: "/media/Living_Faith_Church_CanaanLand.png",
-        alt: "Living Faith Church",
+        image: "/media/Living_Faith_Church_Iguosa_Auditorium.png",
+        alt: "Winners Chapel Iguosa auditorium",
     },
     {
         image: "/media/choirTeamWorship.png",
-        alt: "Prayer gathering",
+        alt: "choir worship",
     },
     {
-        image: "/media/theCross.png",
-        alt: "The Cross",
+        image: "/media/Living_Faith_Church_CanaanLand.png",
+        alt: "Canaan land pulpit altar",
     },
 ];
 
